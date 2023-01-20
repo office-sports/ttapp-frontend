@@ -1,0 +1,184 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+    --color-white: #ffffff;
+    --color-white-soft: #f8f8f8;
+    --color-white-mute: #f2f2f2;
+
+    --color-black: #1c1c28;
+    --color-black-soft: #222222;
+    --color-black-mute: #282828;
+
+    --color-indigo: #2c3e50;
+    --color-text: #9091a5;
+
+    --color-wrapper: #28293d;
+    --width-content: 1350px;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--color-text);
+    background: var(--color-black);
+    transition: color 0.5s, background-color 0.5s;
+    line-height: 1.6;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-size: 10pt;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+    font-weight: normal;
+}
+
+.txtHeader {
+    font-size: 12pt;
+}
+
+.roundWrapper {
+    background: var(--color-wrapper);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.txtr {
+    text-align: right;
+}
+
+.txtl {
+    text-align: left;
+}
+
+.txtc {
+    text-align: center;
+}
+
+.col-pur {
+    color: #5a78bd;
+}
+
+.col-white {
+    color: white;
+}
+
+.col-blue {
+    color: #6798ff;
+}
+
+.col-grey {
+    color: #9090a7;
+}
+
+.col-green {
+    color: #57eba3;
+}
+
+.col-winner {
+    color: #40c500;
+}
+
+.col-dark-green {
+    color: #31c26f;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.col-winner a {
+    color: #40c500;
+}
+
+a:hover {
+    color: #c2c2c2;
+}
+
+.rFloat {
+    float: right;
+}
+
+.lFloat {
+    float: left;
+}
+
+.w100pc {
+    width: 100%;
+}
+
+.wp50pc {
+    width: 50%;
+}
+
+.pad10 {
+    padding: 10px;
+}
+
+.padl10 {
+    padding-left: 10px;
+}
+
+.padt10 {
+    padding-top: 10px;
+}
+
+.padr10 {
+    padding-right: 10px;
+}
+
+.padt20 {
+    padding-top: 20px;
+}
+
+.padl30 {
+    padding-left: 30px;
+}
+
+.marb25 {
+    margin-bottom: 25px;
+}
+
+table {
+    width: 100%;
+    border: 0px solid white;
+    border-collapse: collapse
+}
+
+.valignTop {
+    vertical-align: top;
+}
+
+.txtSmall {
+    font-size: 10pt;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -25px;
+    left: -200px;
+}
+
+.tooltip:hover .tooltiptext {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-size: 10pt;
+    visibility: visible;
+}
