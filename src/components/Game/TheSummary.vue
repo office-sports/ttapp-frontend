@@ -7,18 +7,19 @@
           {{ homeName }} <span style="color: #8a8a8a">vs</span> {{ awayName }}
         </span>
       </div>
-      <div class="col-white">
-        {{ tournamentName }}, {{ groupName }}
-      </div>
+      <div class="col-white">{{ tournamentName }}, {{ groupName }}</div>
       <div class="padt20">
         <table>
           <tr style="height: 40px; line-height: 40px">
             <td></td>
-            <td class="txtc" style="min-width: 100px; color: white; font-weight: 600">
+            <td
+              class="txtc"
+              style="min-width: 100px; color: white; font-weight: 600"
+            >
               SCORE
             </td>
             <td
-                class="txtc"
+              class="txtc"
               style="min-width: 100px; color: #8e8e8e; font-weight: 600"
               v-for="(set, index) in this.setsData"
               v-bind:key="index"
@@ -34,81 +35,81 @@
           </tr>
           <tr>
             <td>
-            <span
+              <span
                 v-if="
-                parseInt(matchData.home_total_score) >
-                parseInt(matchData.away_total_score)
-              "
+                  parseInt(matchData.home_total_score) >
+                  parseInt(matchData.away_total_score)
+                "
                 class="col-winner"
-            >
-              {{ homeName }}
-            </span>
+              >
+                {{ homeName }}
+              </span>
               <span v-else>
-              {{ homeName }}
-            </span>
+                {{ homeName }}
+              </span>
             </td>
             <td class="txtc" style="font-weight: 600">
               {{ matchData.home_total_score }}
             </td>
             <td
-                class="txtc"
-                style="min-width: 100px"
-                v-for="(set, index) in this.setsData"
-                v-bind:key="index"
+              class="txtc"
+              style="min-width: 100px"
+              v-for="(set, index) in this.setsData"
+              v-bind:key="index"
             >
               {{ set.set_summary.home_points }}
             </td>
             <td>
               {{ matchData.home_total_points }}
               <span style="color: #8e8e8e"
-              >( {{ matchData.home_points_perc }}% )</span
+                >( {{ matchData.home_points_perc }}% )</span
               >
             </td>
             <td>
               {{ matchData.home_own_serve_points_total }} /
               {{ matchData.home_serves_total }}
               <span style="color: #8e8e8e"
-              >( {{ matchData.home_serve_points_perc }}% )</span
+                >( {{ matchData.home_serve_points_perc }}% )</span
               >
             </td>
           </tr>
           <tr>
             <td>
-            <span
+              <span
                 v-if="
-                parseInt(matchData.home_total_score) <
-                parseInt(matchData.away_total_score)
-              "
+                  parseInt(matchData.home_total_score) <
+                  parseInt(matchData.away_total_score)
+                "
                 class="col-winner"
-            >
-              {{ awayName }}
-            </span>
+              >
+                {{ awayName }}
+              </span>
               <span v-else>
-              {{ awayName }}
-            </span>
+                {{ awayName }}
+              </span>
             </td>
             <td class="txtc" style="font-weight: 600">
               {{ matchData.away_total_score }}
             </td>
             <td
-                class="txtc"
-                style="min-width: 100px"
-                v-for="(set, index) in this.setsData"
-                v-bind:key="index"
+              class="txtc"
+              style="min-width: 100px"
+              v-for="(set, index) in this.setsData"
+              v-bind:key="index"
             >
               {{ set.set_summary.away_points }}
             </td>
             <td style="min-width: 100px">
               {{ matchData.away_total_points }}
               <span style="color: #8e8e8e"
-              >( {{ matchData.away_points_perc }}% )</span
+                >( {{ matchData.away_points_perc }}% )</span
               >
             </td>
             <td>
               {{ matchData.away_own_serve_points_total }} /
               {{ matchData.away_serves_total }}
               <span style="color: #8e8e8e"
-              >( {{ matchData.away_serve_points_perc }}% )</span
+                >( {{ matchData.away_serve_points_perc }}% )</span
               >
             </td>
           </tr>
@@ -123,9 +124,7 @@
               <div class="group-header">
                 <table>
                   <tr>
-                    <td>
-                      Set {{ index }}
-                    </td>
+                    <td>SET {{ index }}</td>
                   </tr>
                 </table>
               </div>
@@ -134,23 +133,24 @@
                   <tr>
                     <td rowspan="2" class="setPointsScored"></td>
                     <td
-                        v-for="(pbp, index2) in set.events"
-                        v-bind:key="index2"
-                        style="width: 40px"
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      style="width: 40px"
+                      class="txtc"
                     >
-                    <span
+                      <span
                         v-if="pbp.current_server == pbp.home_player_id"
                         class="serve"
-                    >
-                      <i class="fas fa-table-tennis"></i>
-                    </span>
+                      >
+                        <i class="fas fa-table-tennis"></i>
+                      </span>
                     </td>
                   </tr>
                   <tr>
                     <td
-                        v-for="(pbp, index2) in set.events"
-                        v-bind:key="index2"
-                        class="pointsScored"
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      class="pointsScored"
                     >
                       <span>
                         {{ pbp.home_points_scored }}
@@ -158,7 +158,206 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>3</td>
+                    <td class="player_name">
+                      <span
+                        v-if="
+                          parseInt(set.set_summary.home_points) >
+                          parseInt(set.set_summary.away_points)
+                        "
+                        class="winnerColor"
+                      >
+                        {{ homeName }}
+                      </span>
+                      <span v-else>
+                        {{ homeName }}
+                      </span>
+                    </td>
+                    <td
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      class="txtc"
+                    >
+                      <span v-if="index2 === 0">
+                        <span v-if="pbp.is_home_point" class="point">
+                          <i class="fas fa-circle"></i>
+                        </span>
+                        <span v-else>
+                          <i class="far fa-circle"></i>
+                        </span>
+                      </span>
+                      <span v-else>
+                        <span
+                          v-if="pbp.is_home_point"
+                          class="point tool"
+                          v-bind:data-tip="
+                            'Rally length: ' + pbp.rallySeconds + ' seconds'
+                          "
+                        >
+                          <i class="fas fa-circle"></i>
+                        </span>
+                        <span v-else>
+                          <i class="far fa-circle"></i>
+                        </span>
+                      </span>
+                    </td>
+                    <td class="lastPointsResult">
+                      {{ set.set_summary.home_points }}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="player_name">
+                      <span
+                        v-if="
+                          parseInt(set.set_summary.home_points) <
+                          parseInt(set.set_summary.away_points)
+                        "
+                        class="winnerColor"
+                      >
+                        {{ awayName }}
+                      </span>
+                      <span v-else>
+                        {{ awayName }}
+                      </span>
+                    </td>
+                    <td
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      class="txtc"
+                    >
+                      <span v-if="index2 === 0">
+                        <span v-if="pbp.is_away_point" class="point">
+                          <i class="fas fa-circle"></i>
+                        </span>
+                        <span v-else>
+                          <i class="far fa-circle"></i>
+                        </span>
+                      </span>
+                      <span v-else>
+                        <span
+                          v-if="pbp.is_away_point"
+                          class="point tool"
+                          v-bind:data-tip="
+                            'Rally length: ' + pbp.rallySeconds + ' seconds'
+                          "
+                        >
+                          <i class="fas fa-circle"></i>
+                        </span>
+                        <span v-else>
+                          <i class="far fa-circle"></i>
+                        </span>
+                      </span>
+                    </td>
+                    <td class="lastPointsResult">
+                      {{ set.set_summary.away_points }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" class="setPointsScored"></td>
+                    <td
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      class="pointsScored"
+                    >
+                      <span>
+                        {{ pbp.away_points_scored }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      v-for="(pbp, index2) in set.events"
+                      v-bind:key="index2"
+                      style="width: 40px"
+                    >
+                      <span
+                        v-if="
+                          pbp.current_server == pbp.away_player_id
+                        "
+                        class="serve"
+                      >
+                        <i class="fas fa-table-tennis"></i>
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="padt20 mart20 set_summary">
+                <table>
+                  <tr>
+                    <td class="noborder txtc"></td>
+                    <td class="noborder txtc" style="color: #9a9a9a">duration</td>
+                    <td class="noborder txtc"></td>
+                    <td
+                        class="noborder txtc"
+                        style="padding: 0px 20px; color: #9a9a9a"
+                    >
+                      serve pts / serves / efficiency
+                    </td>
+                    <td
+                        class="noborder txtc"
+                        style="padding: 0px 20px; color: #9a9a9a"
+                    >
+                      max points in a row
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                        style="
+                  padding: 0px 20px;
+                  font-size: 20pt;
+                  border-right: 1px solid #02252e;
+                "
+                    >
+                      Set {{ index }}
+                    </td>
+                    <td
+                        style="
+                  padding: 0px 20px;
+                  font-size: 20pt;
+                  border-right: 1px solid #02252e;
+                "
+                    >
+                      {{ set.set_summary.durationMinutes }}:{{
+                        set.set_summary.durationSeconds
+                      }}
+                    </td>
+                    <td style="padding: 0px 20px; border-right: 1px solid #02252e">
+                      <div>{{ homeName }}</div>
+                      <div>{{ awayName }}</div>
+                    </td>
+                    <td
+                        style="
+                  padding: 0px 20px;
+                  border-right: 1px solid #02252e;
+                  text-align: center;
+                "
+                    >
+                      <div>
+                        {{ set.set_summary.homeServePoints }}
+                        <span style="color: #9a9a9a">/</span>
+                        {{ set.set_summary.homeServes }}
+                        <span style="color: #9a9a9a">/</span>
+                        {{ set.set_summary.homeServePointsPerc }}%
+                      </div>
+                      <div>
+                        {{ set.set_summary.awayServePoints }}
+                        <span style="color: #9a9a9a">/</span>
+                        {{ set.set_summary.awayServes }}
+                        <span style="color: #9a9a9a">/</span>
+                        {{ set.set_summary.awayServePointsPerc }}%
+                      </div>
+                    </td>
+                    <td
+                        style="
+                  padding: 0px 20px;
+                  border-right: 1px solid #02252e;
+                  text-align: center;
+                "
+                    >
+                      <div>{{ set.set_summary.homeStreak }}</div>
+                      <div>{{ set.set_summary.awayStreak }}</div>
+                    </td>
                   </tr>
                 </table>
               </div>
@@ -166,245 +365,6 @@
           </td>
         </tr>
       </table>
-    </div>
-  </div>
-
-
-
-  <div class="mainContainer" v-if="this.matchData">
-
-    <div v-for="(setData, index) in setsData" v-bind:key="index">
-      <div class="setContainer">
-        <table style="border: 1px solid white;">
-
-          <tr>
-            <td rowspan="2" class="setPointsScored"></td>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-              style="width: 40px"
-            >
-              <span
-                v-if="pointData.current_server == pointData.home_player_id"
-                class="serve"
-              >
-                <i class="fas fa-table-tennis"></i>
-              </span>
-            </td>
-          </tr>
-
-          <tr>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-              class="pointsScored"
-            >
-              <span>
-                {{ pointData.home_points_scored }}
-              </span>
-            </td>
-          </tr>
-
-          <tr style="height: 40px; line-height: 40px">
-            <td class="playerName">
-              <span
-                v-if="
-                  parseInt(setData.set_summary.home_points) >
-                  parseInt(setData.set_summary.away_points)
-                "
-                class="winnerColor"
-              >
-                {{ homeName }}
-              </span>
-              <span v-else>
-                {{ homeName }}
-              </span>
-            </td>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-              style="width: 40px"
-            >
-              <span v-if="index2 === 0">
-                <span v-if="pointData.isHomePoint" class="point">
-                  <i class="fas fa-circle"></i>
-                </span>
-                <span v-else>
-                  <i class="far fa-circle"></i>
-                </span>
-              </span>
-              <span v-else>
-                <span
-                  v-if="pointData.isHomePoint"
-                  class="point tool"
-                  v-bind:data-tip="
-                    'Rally length: ' + pointData.rallySeconds + ' seconds'
-                  "
-                >
-                  <i class="fas fa-circle"></i>
-                </span>
-                <span v-else>
-                  <i class="far fa-circle"></i>
-                </span>
-              </span>
-            </td>
-            <td class="lastPointsResult">
-              {{ setData.set_summary.home_points }}
-            </td>
-          </tr>
-          <tr style="height: 50px; line-height: 50px">
-            <td class="playerName">
-              <span
-                v-if="
-                  parseInt(setData.set_summary.home_points) <
-                  parseInt(setData.set_summary.awayPoints)
-                "
-                class="winnerColor"
-              >
-                {{ awayName }}
-              </span>
-              <span v-else>
-                {{ awayName }}
-              </span>
-            </td>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-            >
-              <span v-if="index2 === 0">
-                <span v-if="pointData.isAwayPoint" class="point">
-                  <i class="fas fa-circle"></i>
-                </span>
-                <span v-else>
-                  <i class="far fa-circle"></i>
-                </span>
-              </span>
-              <span v-else>
-                <span
-                  v-if="pointData.isAwayPoint"
-                  class="point tool"
-                  v-bind:data-tip="
-                    'Rally length: ' + pointData.rallySeconds + ' seconds'
-                  "
-                >
-                  <i class="fas fa-circle"></i>
-                </span>
-                <span v-else>
-                  <i class="far fa-circle"></i>
-                </span>
-              </span>
-            </td>
-            <td class="lastPointsResult">
-              {{ setData.set_summary.awayPoints }}
-            </td>
-          </tr>
-          <tr>
-            <td rowspan="2" class="setPointsScored"></td>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-              class="pointsScored"
-            >
-              <span>
-                {{ pointData.awayPointsScored }}
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td
-              v-for="(pointData, index2) in setData.events"
-              v-bind:key="index2"
-              style="width: 40px"
-            >
-              <span
-                v-if="pointData.current_server == pointData.awayPlayerId"
-                class="serve"
-              >
-                <i class="fas fa-table-tennis"></i>
-              </span>
-            </td>
-          </tr>
-        </table>
-        <div class="summaryFacts">
-          <table>
-            <tr>
-              <td class="noborder txtc"></td>
-              <td class="noborder txtc" style="color: #9a9a9a">duration</td>
-              <td class="noborder txtc"></td>
-              <td
-                class="noborder txtc"
-                style="padding: 0px 20px; color: #9a9a9a"
-              >
-                serve pts / serves / efficiency
-              </td>
-              <td
-                class="noborder txtc"
-                style="padding: 0px 20px; color: #9a9a9a"
-              >
-                max points in a row
-              </td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  padding: 0px 20px;
-                  font-size: 20pt;
-                  border-right: 1px solid #02252e;
-                "
-              >
-                Set {{ index }}
-              </td>
-              <td
-                style="
-                  padding: 0px 20px;
-                  font-size: 20pt;
-                  border-right: 1px solid #02252e;
-                "
-              >
-                {{ setData.set_summary.durationMinutes }}:{{
-                  setData.set_summary.durationSeconds
-                }}
-              </td>
-              <td style="padding: 0px 20px; border-right: 1px solid #02252e">
-                <div>{{ homeName }}</div>
-                <div>{{ awayName }}</div>
-              </td>
-              <td
-                style="
-                  padding: 0px 20px;
-                  border-right: 1px solid #02252e;
-                  text-align: center;
-                "
-              >
-                <div>
-                  {{ setData.set_summary.homeServePoints }}
-                  <span style="color: #9a9a9a">/</span>
-                  {{ setData.set_summary.homeServes }}
-                  <span style="color: #9a9a9a">/</span>
-                  {{ setData.set_summary.homeServePointsPerc }}%
-                </div>
-                <div>
-                  {{ setData.set_summary.awayServePoints }}
-                  <span style="color: #9a9a9a">/</span>
-                  {{ setData.set_summary.awayServes }}
-                  <span style="color: #9a9a9a">/</span>
-                  {{ setData.set_summary.awayServePointsPerc }}%
-                </div>
-              </td>
-              <td
-                style="
-                  padding: 0px 20px;
-                  border-right: 1px solid #02252e;
-                  text-align: center;
-                "
-              >
-                <div>{{ setData.set_summary.homeStreak }}</div>
-                <div>{{ setData.set_summary.awayStreak }}</div>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -437,7 +397,7 @@ export default {
         this.tournamentName = res.data.summary.tournament_name;
         this.matchData = res.data.summary;
 
-        console.log(this.setsData[1])
+        console.log(this.setsData[1]);
       });
   },
   methods: {
@@ -472,10 +432,10 @@ export default {
 .lastPointsResult {
   min-width: 60px;
   border: none;
-  font-size: 20pt;
-  text-align: center;
+  text-align: right;
   font-weight: 600;
   color: white;
+  padding-right: 20px;
 }
 
 .chartSpectators {
@@ -500,7 +460,6 @@ export default {
 
 .point {
   color: white;
-  font-size: 20pt;
 }
 
 .setPointsScored {
@@ -515,8 +474,8 @@ export default {
 }
 
 .pointsScored {
-  color: white;
-  font-size: 12pt;
+  color: #9091a5;
+  text-align: center;
 }
 
 .mainContainer {
@@ -531,11 +490,10 @@ export default {
   margin: 30px auto;
 }
 
-.playerName {
+.player_name {
   text-align: left;
-  font-size: 18pt;
   color: white;
-  min-width: 250px;
+  width: 250px;
   padding-right: 20px;
 }
 
@@ -548,11 +506,13 @@ export default {
   margin-right: auto;
   width: 20%;
   text-align: center;
+
   .midInfoHeader {
     text-transform: uppercase;
     font-size: 20px;
     font-weight: 600;
   }
+
   .midInfoValue {
     padding-top: 0px;
     font-size: 40px;
@@ -587,6 +547,10 @@ export default {
   color: #40c500;
 }
 
+.set_summary {
+  border-top: 1px solid #3e474f;
+}
+
 .scoreContainer {
   width: 40%;
   vertical-align: top;
@@ -612,6 +576,7 @@ export default {
 .span-score {
   min-width: 100px;
   margin-right: 30px;
+
   input {
     max-width: 30px;
     padding: 10px 10px;
@@ -672,7 +637,6 @@ export default {
 .tool {
   cursor: help;
   position: relative;
-  font-size: 20pt;
 }
 
 /*== common styles for both parts of tool tip ==*/

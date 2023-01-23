@@ -132,8 +132,20 @@ a:hover {
     padding-top: 20px;
 }
 
+.padl20 {
+    padding-left: 20px;
+}
+
 .padl30 {
     padding-left: 30px;
+}
+
+.marb20 {
+    margin-bottom: 20px;
+}
+
+.mart20 {
+    margin-top: 20px;
 }
 
 .marb25 {

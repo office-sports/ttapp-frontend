@@ -1,102 +1,102 @@
 <template>
-  <div class="mainContainer">
-    <div v-for="ladder in this.ladders" v-bind:key="ladder.id">
-      <div style="padding: 0px 10px">
-        <span class="header-title"> {{ ladder.divisionName }} LADDER </span>
+  <div v-for="ladder in this.ladders" v-bind:key="ladder.id">
+    <div class="roundWrapper marb25">
+      <div class="txtHeader col-dark-green">
+        <i class="fas fa-bullseye"></i> <span class="padl10">{{ ladder.group_name }} Ladder</span>
       </div>
-      <table style="width: 100%">
-        <tr>
-          <td v-for="i in stages" v-bind:key="i" class="stageColumn">
-            <div class="stageDiv">
-              <div v-for="match in ladder.data" v-bind:key="match.id">
-                <div
-                  v-if="match.stage == i"
-                  style="margin-bottom: 20px"
-                  class="matchContainer"
-                >
-                  <table class="ladderTable">
-                    <tr>
-                      <td rowspan="3" class="matchOrder">
+      <div>
+        <table>
+          <tr>
+            <td v-for="i in stages" v-bind:key="i" class="stageColumn">
+              <div class="stageDiv">
+                <div v-for="match in ladder.ladder_group" v-bind:key="match.id">
+                  <div
+                      v-if="match.stage === i"
+                      class="matchContainer marb20"
+                  >
+                    <table class="ladderTable">
+                      <tr>
+                        <td rowspan="3" class="matchOrder">
                         <span class="fa-stack">
                           <i class="fas fa-circle fa-stack-2x stack-shield"></i>
                           <i class="fas fa-stack-2x stack-star matchNum">{{
-                            match.order
-                          }}</i>
+                              match.order
+                            }}</i>
                         </span>
-                      </td>
-                      <td
-                        style="padding-left: 20px"
-                        class="matchName"
-                        colspan="2"
-                        v-if="match.winnerId == 0"
-                      >
-                        <span>{{ match.name }}</span>
-                      </td>
-                      <td
-                        style="padding-left: 20px"
-                        class="matchNameDone"
-                        colspan="2"
-                        v-else
-                      >
-                        <span>{{ match.name }}</span>
-                        <span v-if="match.isWalkover" style="float: right">
+                        </td>
+                        <td
+                            class="matchName padl20"
+                            colspan="2"
+                            v-if="match.winner_id == 0"
+                        >
+                          <span>{{ match.game_name }}</span>
+                        </td>
+                        <td
+                            style="padding-left: 20px"
+                            class="matchNameDone"
+                            colspan="2"
+                            v-else
+                        >
+                          <span>{{ match.game_name }}</span>
+                          <span v-if="match.is_walkover" class="rFloat">
                           <i class="fas fa-flag"></i>
                         </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style="padding-left: 10px"
-                        v-bind:class="
-                          match.winnerId != 0 &&
-                          match.winnerId == match.homePlayerId
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                            style="padding-left: 10px"
+                            v-bind:class="
+                          match.winner_id != 0 &&
+                          match.winner_id == match.home_player_id
                             ? 'winner-color'
                             : ''
                         "
-                      >
-                        <span
-                          style="color: #aaa"
-                          v-if="match.homePlayerId == 0"
-                          >{{ match.homePlayerDisplayName }}</span
                         >
-                        <span v-else>{{ match.homePlayerDisplayName }}</span>
-                      </td>
-                      <td style="text-align: right">
-                        <span v-if="match.winnerId != 0">
-                          {{ match.homeScoreTotal }}
+                        <span
+                            style="color: #aaa"
+                            v-if="match.home_player_id == 0"
+                        >{{ match.home_player_display_name }}</span
+                        >
+                          <span v-else>{{ match.home_player_display_name }}</span>
+                        </td>
+                        <td class="txtr">
+                        <span v-if="match.winner_id != 0">
+                          {{ match.home_score_total }}
                         </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style="padding-left: 10px"
-                        v-bind:class="
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                            style="padding-left: 10px"
+                            v-bind:class="
                           match.winnerId != 0 &&
-                          match.winnerId == match.awayPlayerId
+                          match.winnerId == match.away_player_id
                             ? 'winner-color'
                             : ''
                         "
-                      >
-                        <span
-                          style="color: #aaa"
-                          v-if="match.awayPlayerId == 0"
-                          >{{ match.awayPlayerDisplayName }}</span
                         >
-                        <span v-else>{{ match.awayPlayerDisplayName }}</span>
-                      </td>
-                      <td style="text-align: right">
-                        <span v-if="match.winnerId != 0">
-                          {{ match.awayScoreTotal }}
+                        <span
+                            style="color: #aaa"
+                            v-if="match.away_player_id == 0"
+                        >{{ match.away_player_display_name }}</span
+                        >
+                          <span v-else>{{ match.away_player_display_name }}</span>
+                        </td>
+                        <td style="text-align: right">
+                        <span v-if="match.winner_id != 0">
+                          {{ match.away_score_total }}
                         </span>
-                      </td>
-                    </tr>
-                  </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -127,9 +127,10 @@ export default {
   methods: {
     getData() {
       axios
-        .get("/api/playoffs/" + this.$route.params.id + "/groups")
+        .get("/api/tournaments/" + this.$route.params.id + "/ladders")
         .then((res) => {
           this.ladders = res.data;
+          console.log(this.ladders)
         });
     },
   },
@@ -184,9 +185,7 @@ export default {
   width: 25%;
   padding: 10px;
   .stageDiv {
-    padding: 20px;
-    padding-top: 40px;
-    // background-color: #151515;
+    padding: 40px 20px 20px;
   }
 }
 
@@ -219,7 +218,7 @@ export default {
 }
 
 .matchContainer {
-  background-color: #3e3e3e;
+  background-color: #1c1c28;
   padding: 5px;
   border-radius: 10px;
 }
@@ -231,7 +230,7 @@ export default {
 .matchNum {
   color: black;
   font-family: "Roboto", sans-serif;
-  font-size: 20px;
+  font-size: 10pt;
   font-weight: 600;
   margin-top: 6px;
 }
