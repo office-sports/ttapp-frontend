@@ -79,6 +79,10 @@ body {
     color: #40c500;
 }
 
+.col-red {
+    color: red;
+}
+
 .col-dark-green {
     color: #31c26f;
 }

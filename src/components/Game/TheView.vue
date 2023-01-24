@@ -69,14 +69,14 @@
               </span>
             </div>
           </div>
-          <!--          <div class="mart20">-->
-          <!--            <button-->
-          <!--              class="enter-scores-button"-->
-          <!--              @click="this.toggleVisibility()"-->
-          <!--            >-->
-          <!--              ENTER SCORES-->
-          <!--            </button>-->
-          <!--          </div>-->
+          <div class="mart20">
+            <button
+              class="enter-scores-button"
+              @click="this.toggleVisibility()"
+            >
+              EDIT SCORES
+            </button>
+          </div>
         </td>
         <td
           class="txtc player-name"
@@ -120,6 +120,13 @@
           <td colspan="3" class="txtc col-white">
             Manual scores entry. Remember to use points score, e.g. 11 - 5, 3 -
             11, 13 - 11, not total set scores for game.
+          </td>
+        </tr>
+        <tr v-if="this.errors">
+          <td colspan="3" class="errors">
+            <div v-for="(error, index) in this.errors" v-bind:key="index">
+              {{ error }}
+            </div>
           </td>
         </tr>
         <tr
@@ -170,85 +177,120 @@ export default {
     return {
       game: [],
       formVisible: false,
+      errors: [],
     };
   },
   methods: {
-    postResults(event) {
-      console.log(event.target.elements.home_set_1);
-      const json = JSON.stringify({
-        game_id: parseInt(event.target.elements.match_id.value),
-        s1hp:
-          typeof event.target.elements.home_set_11 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_1.value),
-        s2hp:
-          typeof event.target.elements.home_set_2 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_2.value),
-        s3hp:
-          typeof event.target.elements.home_set_3 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_3.value),
-        s4hp:
-          typeof event.target.elements.home_set_4 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_4.value),
-        s5hp:
-          typeof event.target.elements.home_set_5 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_5.value),
-        s6hp:
-          typeof event.target.elements.home_set_6 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_6.value),
-        s7hp:
-          typeof event.target.elements.home_set_7 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.home_set_7.value),
-        s1ap:
-          typeof event.target.elements.away_set_1 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_1.value),
-        s2ap:
-          typeof event.target.elements.away_set_2 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_2.value),
-        s3ap:
-          typeof event.target.elements.away_set_3 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_3.value),
-        s4ap:
-          typeof event.target.elements.away_set_4 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_4.value),
-        s5ap:
-          typeof event.target.elements.away_set_5 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_5.value),
-        s6ap:
-          typeof event.target.elements.away_set_6 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_6.value),
-        s7ap:
-          typeof event.target.elements.away_set_7 === "undefined"
-            ? -1
-            : parseInt(event.target.elements.away_set_7.value),
-      });
-      axios
-        .post("/api/games/save", json)
-        .then((res) => {
-          this.errors = [];
-          if (res.status === 200) {
-            // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
-            // TODO for now - fix that to use router
-            document.location.href = "/";
+    createPayload(event) {
+      const payload = {};
+      let homeElement, awayElement, hKey, aKey, hVal, aVal;
+      payload["game_id"] = parseInt(event.target.elements["match_id"].value);
+      for (let i = 1; i <= 7; i++) {
+        homeElement = event.target.elements["home_set_" + i];
+        awayElement = event.target.elements["away_set_" + i];
+        hKey = "s" + i + "hp";
+        aKey = "s" + i + "ap";
+
+        console.log(homeElement, awayElement);
+        // check if element exists
+        if (homeElement === undefined || awayElement === undefined) {
+          return payload;
+        } else if (homeElement.value === "" || awayElement.value === "") {
+          return payload;
+        } else {
+          hVal = parseInt(homeElement.value);
+          aVal = parseInt(awayElement.value);
+          payload[hKey] = hVal;
+          payload[aKey] = aVal;
+        }
+      }
+
+      return payload;
+    },
+    validatePayload(payload) {
+      this.errors = [];
+      let isValid = true;
+
+      // The same as minimum wins
+      let minimumSets = Math.ceil(this.game.max_sets / 2);
+      let minimumWins = minimumSets;
+      let hs = [];
+      let as = [];
+      let homeScore = 0;
+      let awayScore = 0;
+      for (let i = 1; i <= 7; i++) {
+        hs[i] = payload["s" + i + "hp"];
+        as[i] = payload["s" + i + "ap"];
+
+        if (i <= minimumSets) {
+          if (hs[i] === undefined || as[i] === undefined) {
+            this.errors.push("Invalid set " + i + " score");
+            return false;
+          } else {
+            // Both values present, numeric
+            if (hs[i] < 11 && as[i] < 11) {
+              this.errors.push(
+                "Invalid set " +
+                  i +
+                  " score. One player has to reach at least 11 points."
+              );
+              return false;
+            }
+
+            if (Math.abs(hs[i] - as[i]) < 2) {
+              this.errors.push(
+                "Invalid set " +
+                  i +
+                  " score. Set has to finish with at least 2 points advantage."
+              );
+              return false;
+            }
           }
-          return true;
-        })
-        .catch((error) => {
-          console.log(error);
-          this.errors = [];
-        });
+        }
+
+        if (hs[i] !== undefined && as[i] !== undefined) {
+          if (hs[i] > as[i]) {
+            homeScore++;
+          } else {
+            awayScore++;
+          }
+        }
+      }
+
+      console.log(homeScore, awayScore);
+      let wins = Math.max(homeScore, awayScore);
+      if (wins < minimumWins) {
+        this.errors.push(
+          "Invalid result. The number of sets required to win: " + minimumWins
+        );
+        return false;
+      }
+
+      return isValid;
+    },
+    postResults(event) {
+      let payload = this.createPayload(event);
+      let isValidPayload = this.validatePayload(payload);
+      if (isValidPayload === true) {
+        const json = JSON.stringify(payload);
+        axios
+          .post("/api/games/save", json)
+          .then((res) => {
+            this.errors = [];
+            if (res.status === 200) {
+              this.$router.go({
+                name: "GameView",
+                params: { id: this.game.game_id },
+              });
+            }
+            return true;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        console.log("Invalid input");
+      }
     },
     toggleVisibility() {
       this.formVisible = !this.formVisible;
@@ -300,6 +342,12 @@ export default {
 </script>
 
 <style scoped lang="less">
+.errors {
+  text-align: center;
+  padding-top: 20px;
+  color: red;
+}
+
 .enter-scores-button {
   border: none;
   padding: 10px 15px;
