@@ -8,6 +8,7 @@ import TheUpdates from "../components/TheUpdates.vue";
 import TournamentStandings from "@/components/Tournament/Standings.vue";
 import GameSummary from "@/components/Game/TheSummary.vue";
 import GameView from "@/components/Game/TheView.vue";
+import TournamentResults from "@/components/Tournament/FullResults.vue";
 import TournamentSchedule from "@/components/Tournament/FullSchedule.vue";
 
 const router = createRouter({
@@ -40,6 +41,11 @@ const router = createRouter({
       path: "/tournament/:id/schedule",
       name: "TournamentSchedule",
       component: TournamentSchedule,
+    },
+    {
+      path: "/tournament/:id/results",
+      name: "TournamentResults",
+      component: TournamentResults,
     },
     {
       path: "/games/:id/summary",

@@ -322,20 +322,7 @@ export default {
     this.idle = false;
     axios.get("/api/games/" + this.$route.params.id).then((res) => {
       this.game = res.data;
-      // this.currentServerId = res.data.currentServerId;
-      // this.currentNumServes = res.data.currentNumServes;
-      // this.setScores = res.data.scores;
-      // this.homeScore = res.data.currentHomePoints
-      //   ? res.data.currentHomePoints
-      //   : 0;
-      // this.awayScore = res.data.currentAwayPoints
-      //   ? res.data.currentAwayPoints
-      //   : 0;
-      // this.idle = true;
-      // this.checkServer();
-      // this.socket = io(
-      //   window.location.hostname + ":3001?game_id=" + this.match.matchId
-      // );
+      console.log(this.game);
     });
   },
 };

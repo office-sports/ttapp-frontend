@@ -14,9 +14,9 @@
               match.winner_id === match.home_player_id ? 'col-winner' : ''
             "
           >
-            <router-link :to="'/player/' + match.homePlayerId + '/profile'">{{
-              match.home_player_name
-            }}</router-link>
+            <router-link :to="'/player/' + match.homePlayerId + '/profile'"
+              >{{ match.home_player_name }}
+            </router-link>
           </td>
           <td class="txtc">-</td>
           <td
@@ -60,8 +60,9 @@
     <div class="padt20" v-if="filteredMatches.length">
       <i class="fas fa-arrow-circle-right"></i>&nbsp;&nbsp;
       <router-link
-        :to="'/tournament/' + filteredMatches[0].tournament_id + '/match/list'"
-        >show all results
+        :to="'/tournament/' + filteredMatches[0].tournament_id + '/results'"
+      >
+        show all results
       </router-link>
     </div>
     <div v-else>no results</div>

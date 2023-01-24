@@ -10,9 +10,6 @@
       <div>
         <router-link to="/player/list">Players</router-link>
       </div>
-      <div>
-        <router-link to="/leaders">Leaders</router-link>
-      </div>
       <div class="rFloat">
         <div>
           <router-link to="/updates">updates</router-link>
