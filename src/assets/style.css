@@ -94,6 +94,7 @@ a {
 
 a:hover {
     color: #c2c2c2;
+    text-decoration: underline;
 }
 
 .rFloat {
@@ -124,6 +125,10 @@ a:hover {
     padding-top: 10px;
 }
 
+.padt40 {
+    padding-top: 40px;
+}
+
 .padr10 {
     padding-right: 10px;
 }
@@ -140,8 +145,16 @@ a:hover {
     padding-left: 30px;
 }
 
+.marl20 {
+    margin-left: 20px;
+}
+
 .marb20 {
     margin-bottom: 20px;
+}
+
+.mart10 {
+    margin-top: 10px;
 }
 
 .mart20 {
@@ -193,4 +206,19 @@ table {
     Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-size: 10pt;
     visibility: visible;
+}
+
+.table-list {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-list .row-header {
+    color: white;
+}
+
+.table-list .row-data {
+    border-top: 1px solid #0e3c46;
+    height: 25px;
+    line-height: 25px;
 }

@@ -7,6 +7,8 @@ import Ladders from "../components/Tournament/Ladders.vue";
 import TheUpdates from "../components/TheUpdates.vue";
 import TournamentStandings from "@/components/Tournament/Standings.vue";
 import GameSummary from "@/components/Game/TheSummary.vue";
+import GameView from "@/components/Game/TheView.vue";
+import TournamentSchedule from "@/components/Tournament/FullSchedule.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,9 +37,19 @@ const router = createRouter({
       component: TournamentStandings,
     },
     {
+      path: "/tournament/:id/schedule",
+      name: "TournamentSchedule",
+      component: TournamentSchedule,
+    },
+    {
       path: "/games/:id/summary",
       name: "GameSummary",
       component: GameSummary,
+    },
+    {
+      path: "/games/:id/view",
+      name: "GameView",
+      component: GameView,
     },
   ],
 });

@@ -52,7 +52,7 @@
           >
             <td :class="['level', 'level-c' + player.pos_color]">
               <span style="color: black">{{ index + 1 }} .</span>
-              <router-link :to="'/player/' + player.player_id + '/info'">{{
+              <router-link :to="'/player/' + player.player_id + '/profile'">{{
                   player.player_name
                 }}
               </router-link>

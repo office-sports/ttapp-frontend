@@ -44,7 +44,7 @@
               >
                 {{ homeName }}
               </span>
-              <span v-else>
+              <span v-else class="col-white">
                 {{ homeName }}
               </span>
             </td>
@@ -84,7 +84,7 @@
               >
                 {{ awayName }}
               </span>
-              <span v-else>
+              <span v-else class="col-white">
                 {{ awayName }}
               </span>
             </td>
@@ -135,12 +135,11 @@
                     <td
                       v-for="(pbp, index2) in set.events"
                       v-bind:key="index2"
-                      style="width: 40px"
-                      class="txtc"
+                      class="txtc w40"
                     >
                       <span
                         v-if="pbp.current_server == pbp.home_player_id"
-                        class="serve"
+                        class="serve txtc"
                       >
                         <i class="fas fa-table-tennis"></i>
                       </span>
@@ -268,13 +267,13 @@
                     <td
                       v-for="(pbp, index2) in set.events"
                       v-bind:key="index2"
-                      style="width: 40px"
+                      class="txtc w40"
                     >
                       <span
                         v-if="
                           pbp.current_server == pbp.away_player_id
                         "
-                        class="serve"
+                        class="serve txtc"
                       >
                         <i class="fas fa-table-tennis"></i>
                       </span>
@@ -285,7 +284,6 @@
               <div class="padt20 mart20 set_summary">
                 <table>
                   <tr>
-                    <td class="noborder txtc"></td>
                     <td class="noborder txtc" style="color: #9a9a9a">duration</td>
                     <td class="noborder txtc"></td>
                     <td
@@ -309,15 +307,6 @@
                   border-right: 1px solid #02252e;
                 "
                     >
-                      Set {{ index }}
-                    </td>
-                    <td
-                        style="
-                  padding: 0px 20px;
-                  font-size: 20pt;
-                  border-right: 1px solid #02252e;
-                "
-                    >
                       {{ set.set_summary.durationMinutes }}:{{
                         set.set_summary.durationSeconds
                       }}
@@ -334,18 +323,18 @@
                 "
                     >
                       <div>
-                        {{ set.set_summary.homeServePoints }}
+                        {{ set.set_summary.home_serve_points }}
                         <span style="color: #9a9a9a">/</span>
-                        {{ set.set_summary.homeServes }}
+                        {{ set.set_summary.home_serves }}
                         <span style="color: #9a9a9a">/</span>
-                        {{ set.set_summary.homeServePointsPerc }}%
+                        {{ set.set_summary.home_serve_points_perc }}%
                       </div>
                       <div>
-                        {{ set.set_summary.awayServePoints }}
+                        {{ set.set_summary.away_serve_points }}
                         <span style="color: #9a9a9a">/</span>
-                        {{ set.set_summary.awayServes }}
+                        {{ set.set_summary.away_serves }}
                         <span style="color: #9a9a9a">/</span>
-                        {{ set.set_summary.awayServePointsPerc }}%
+                        {{ set.set_summary.away_serve_points_perc }}%
                       </div>
                     </td>
                     <td
@@ -396,8 +385,6 @@ export default {
         this.groupName = res.data.summary.group_name;
         this.tournamentName = res.data.summary.tournament_name;
         this.matchData = res.data.summary;
-
-        console.log(this.setsData[1]);
       });
   },
   methods: {
@@ -427,6 +414,10 @@ export default {
   font-weight: 300;
   margin-bottom: 5px;
   border-radius: 5px;
+}
+
+.w40 {
+  width: 40px;
 }
 
 .lastPointsResult {
@@ -470,7 +461,8 @@ export default {
 
 .serve {
   color: #636363;
-  font-size: 16pt;
+  font-size: 14pt;
+  text-align: center;
 }
 
 .pointsScored {

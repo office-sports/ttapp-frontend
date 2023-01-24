@@ -1,0 +1,357 @@
+<template>
+  <div class="roundWrapper">
+    <table v-if="game" class="table-game-view">
+      <tr>
+        <td
+          class="txtc player-name"
+          v-bind:class="
+            game.winner_id == game.home_player_id ? 'col-winner' : 'col-white'
+          "
+        >
+          {{ game.home_player_name }}
+        </td>
+        <td rowspan="2" class="txtc valignTop">
+          <div>MATCH MODE</div>
+          <div class="col-winner marb20">BO{{ game.max_sets }}</div>
+          <div>GAME STATUS</div>
+          <div class="col-winner">
+            <div v-if="!game.winner_id">SCHEDULED</div>
+            <div v-else-if="game.winner_id">FINISHED</div>
+          </div>
+          <div class="mart20" v-if="game.scores">
+            <div>SET SCORES</div>
+            <div
+              v-for="(score, index) in game.scores"
+              v-bind:key="index"
+              class="rowData mart10"
+            >
+              <span class="fa-stack" style="font-size: 15px">
+                <i
+                  v-if="parseInt(score.home) > parseInt(score.away)"
+                  class="fas fa-circle fa-stack-2x"
+                  style="color: #40c500"
+                ></i>
+                <i
+                  v-else
+                  class="fas fa-circle fa-stack-2x"
+                  style="color: white"
+                ></i>
+                <i
+                  class="fas fa-stack-1x"
+                  style="
+                    color: black;
+                    font-family: 'Poppins', 'Avenir', Helvetica, Arial,
+                      sans-serif;
+                  "
+                  >{{ score.home }}</i
+                >
+              </span>
+              <span class="fa-stack" style="font-size: 15px">
+                <i
+                  v-if="parseInt(score.away) > parseInt(score.home)"
+                  class="fas fa-circle fa-stack-2x"
+                  style="color: #40c500"
+                ></i>
+                <i
+                  v-else
+                  class="fas fa-circle fa-stack-2x"
+                  style="color: white"
+                ></i>
+                <i
+                  class="fas fa-stack-1x"
+                  style="
+                    color: black;
+                    font-family: 'Poppins', 'Avenir', Helvetica, Arial,
+                      sans-serif;
+                  "
+                  >{{ score.away }}</i
+                >
+              </span>
+            </div>
+          </div>
+          <!--          <div class="mart20">-->
+          <!--            <button-->
+          <!--              class="enter-scores-button"-->
+          <!--              @click="this.toggleVisibility()"-->
+          <!--            >-->
+          <!--              ENTER SCORES-->
+          <!--            </button>-->
+          <!--          </div>-->
+        </td>
+        <td
+          class="txtc player-name"
+          v-bind:class="
+            game.winner_id == game.away_player_id ? 'col-winner' : 'col-white'
+          "
+        >
+          {{ game.away_player_name }}
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="score-font"
+          v-bind:class="
+            game.winner_id == game.home_player_id ? 'col-winner' : 'col-white'
+          "
+        >
+          {{ game.home_score_total }}
+        </td>
+        <td
+          class="score-font"
+          v-bind:class="
+            game.winner_id == game.away_player_id ? 'col-winner' : 'col-white'
+          "
+        >
+          {{ game.away_score_total }}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="roundWrapper mart20" v-if="formVisible">
+    <form
+      class="mart10"
+      v-bind:key="'form_' + game.match_id"
+      method="post"
+      @submit.prevent="postResults"
+    >
+      <input type="hidden" name="match_id" :value="game.match_id" />
+      <table class="marb25">
+        <tr>
+          <td colspan="3" class="txtc col-white">
+            Manual scores entry. Remember to use points score, e.g. 11 - 5, 3 -
+            11, 13 - 11, not total set scores for game.
+          </td>
+        </tr>
+        <tr
+          v-for="i in range(1, game.max_sets)"
+          v-bind:key="i"
+          class="span-score"
+        >
+          <td class="txtr padt20" style="width: 45%">
+            <input
+              autocomplete="off"
+              :name="'home_set_' + i"
+              value=""
+              @keypress="isNumber($event)"
+            />
+          </td>
+          <td class="txtc padt20" style="width: 10%">SET {{ i }}</td>
+          <td class="txtl padt20" style="width: 45%">
+            <input
+              autocomplete="off"
+              :name="'away_set_' + i"
+              value=""
+              @keypress="isNumber($event)"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" class="txtc padt40">
+            <input class="enter-scores-button" type="submit" value="SAVE" />
+            <button
+              class="cancel-button marl20"
+              @click="this.toggleVisibility()"
+            >
+              CANCEL
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "GameView",
+  data() {
+    return {
+      game: [],
+      formVisible: false,
+    };
+  },
+  methods: {
+    postResults(event) {
+      console.log(event.target.elements.home_set_1);
+      const json = JSON.stringify({
+        game_id: parseInt(event.target.elements.match_id.value),
+        s1hp:
+          typeof event.target.elements.home_set_11 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_1.value),
+        s2hp:
+          typeof event.target.elements.home_set_2 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_2.value),
+        s3hp:
+          typeof event.target.elements.home_set_3 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_3.value),
+        s4hp:
+          typeof event.target.elements.home_set_4 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_4.value),
+        s5hp:
+          typeof event.target.elements.home_set_5 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_5.value),
+        s6hp:
+          typeof event.target.elements.home_set_6 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_6.value),
+        s7hp:
+          typeof event.target.elements.home_set_7 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.home_set_7.value),
+        s1ap:
+          typeof event.target.elements.away_set_1 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_1.value),
+        s2ap:
+          typeof event.target.elements.away_set_2 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_2.value),
+        s3ap:
+          typeof event.target.elements.away_set_3 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_3.value),
+        s4ap:
+          typeof event.target.elements.away_set_4 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_4.value),
+        s5ap:
+          typeof event.target.elements.away_set_5 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_5.value),
+        s6ap:
+          typeof event.target.elements.away_set_6 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_6.value),
+        s7ap:
+          typeof event.target.elements.away_set_7 === "undefined"
+            ? -1
+            : parseInt(event.target.elements.away_set_7.value),
+      });
+      axios
+        .post("/api/games/save", json)
+        .then((res) => {
+          this.errors = [];
+          if (res.status === 200) {
+            // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
+            // TODO for now - fix that to use router
+            document.location.href = "/";
+          }
+          return true;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.errors = [];
+        });
+    },
+    toggleVisibility() {
+      this.formVisible = !this.formVisible;
+    },
+    isNumber: function (evt) {
+      evt = evt ? evt : window.event;
+      var charCode = evt.which ? evt.which : evt.keyCode;
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode !== 46
+      ) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    range: function (min, max) {
+      var array = [];
+      var j = 0;
+      for (var i = min; i <= max; i++) {
+        array[j] = i;
+        j++;
+      }
+      return array;
+    },
+  },
+  mounted() {
+    this.idle = false;
+    axios.get("/api/games/" + this.$route.params.id).then((res) => {
+      this.game = res.data;
+      // this.currentServerId = res.data.currentServerId;
+      // this.currentNumServes = res.data.currentNumServes;
+      // this.setScores = res.data.scores;
+      // this.homeScore = res.data.currentHomePoints
+      //   ? res.data.currentHomePoints
+      //   : 0;
+      // this.awayScore = res.data.currentAwayPoints
+      //   ? res.data.currentAwayPoints
+      //   : 0;
+      // this.idle = true;
+      // this.checkServer();
+      // this.socket = io(
+      //   window.location.hostname + ":3001?game_id=" + this.match.matchId
+      // );
+    });
+  },
+};
+</script>
+
+<style scoped lang="less">
+.enter-scores-button {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #40c500;
+  color: white;
+}
+
+.cancel-button {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.table-game-view {
+  table-layout: fixed;
+
+  td {
+    text-align: center;
+  }
+
+  .score-font {
+    font-size: 60pt;
+  }
+
+  .player-name {
+    text-transform: uppercase;
+    font-size: 20pt;
+  }
+}
+
+.tbl-fixed {
+  table-layout: fixed;
+}
+
+input[type="submit"] {
+  padding: 10px 25px;
+  margin: 0;
+  font-family: inherit;
+  font-size: 10pt;
+}
+
+input {
+  max-width: 100px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  font-size: 15pt;
+  text-align: center;
+  font-family: inherit;
+  margin: 0px;
+}
+</style>

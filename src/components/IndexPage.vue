@@ -5,7 +5,7 @@
         <td class="wp50pc padr10 valignTop">
           <div class="roundWrapper">
             <div class="txtHeader col-dark-green">
-              <i class="fas fa-bullseye col-dark-green"></i> <span class="padl10">Tournament schedule</span>
+              <i class="fas fa-bullseye col-dark-green"></i> <span class="padl10">Tournament schedule (next 20)</span>
             </div>
             <div class="padt20">
               <TournamentSchedule/>
@@ -15,7 +15,7 @@
         <td class="wp50pc padl10 valignTop">
           <div class="roundWrapper">
             <div class="txtHeader col-blue">
-              <i class="fas fa-bullseye"></i> <span class="padl10">Tournament results</span>
+              <i class="fas fa-bullseye"></i> <span class="padl10">Tournament results (last 20)</span>
             </div>
             <div class="padt20">
               <TournamentResults/>
