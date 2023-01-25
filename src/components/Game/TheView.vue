@@ -257,7 +257,6 @@ export default {
         }
       }
 
-      console.log(homeScore, awayScore);
       let wins = Math.max(homeScore, awayScore);
       if (wins < minimumWins) {
         this.errors.push(
@@ -322,7 +321,6 @@ export default {
     this.idle = false;
     axios.get("/api/games/" + this.$route.params.id).then((res) => {
       this.game = res.data;
-      console.log(this.game);
     });
   },
 };

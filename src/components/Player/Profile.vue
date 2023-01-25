@@ -4,7 +4,7 @@
       <tr>
         <td class="profileLeftCol txtc valignTop">
           <div class="cutoutPic">
-            <img :src="playerPicUrl" class="pic"/>
+            <img :src="playerPicUrl" class="pic" />
           </div>
           <div class="padt20">
             <span class="playerName">{{ player.name }}</span>
@@ -13,21 +13,39 @@
             ELO rating: <span class="col-green">{{ player.elo }}</span>
           </div>
           <div class="txtBig">
-            Games played: <span class="col-green">{{ player.games_played }}</span>
+            Games played:
+            <span class="col-green">{{ player.games_played }}</span>
           </div>
           <div class="bar txtBig">
-            <span>W: <span class="col-dark-green">{{ player.win_percentage.toFixed(2) }}%</span></span> |
-            <span>D: <span class="col-dark-green">{{ player.draw_percentage.toFixed(2) }}%</span></span> |
-            <span>L: <span class="col-dark-green">{{ player.loss_percentage.toFixed(2) }}%</span></span>
+            <span
+              >W:
+              <span class="col-dark-green"
+                >{{ player.win_percentage.toFixed(2) }}%</span
+              ></span
+            >
+            |
+            <span
+              >D:
+              <span class="col-dark-green"
+                >{{ player.draw_percentage.toFixed(2) }}%</span
+              ></span
+            >
+            |
+            <span
+              >L:
+              <span class="col-dark-green"
+                >{{ player.loss_percentage.toFixed(2) }}%</span
+              ></span
+            >
           </div>
         </td>
         <td class="valignTop">
           <div id="eloChart">
             <GChart
-                type="AreaChart"
-                :data="lineChartData"
-                :options="lineChartOptions"
-                class="chartElo"
+              type="AreaChart"
+              :data="lineChartData"
+              :options="lineChartOptions"
+              class="chartElo"
             />
           </div>
           <div class="inlineContainer padl30">
@@ -39,27 +57,35 @@
               LAST TOURNAMENT MATCHES
             </div>
             <table v-if="results" style="width: 100%">
-              <tr v-for="result in results" v-bind:key="result.id" class="row-data">
+              <tr
+                v-for="result in results"
+                v-bind:key="result.id"
+                class="row-data"
+              >
                 <td>
                   {{ result.date_played }}
                 </td>
                 <td class="w30pc">
-              <span
-                  v-bind:class="
-                  result.winner_id == result.home_player_id ? 'winner-color' : ''
-                "
-              >
-                {{ result.home_player_name }}
-              </span>
+                  <span
+                    v-bind:class="
+                      result.winner_id == result.home_player_id
+                        ? 'winner-color'
+                        : ''
+                    "
+                  >
+                    {{ result.home_player_name }}
+                  </span>
                 </td>
                 <td class="w30pc">
-              <span
-                  v-bind:class="
-                  result.winner_id == result.away_player_id ? 'winner-color' : ''
-                "
-              >
-                {{ result.away_player_name }}
-              </span>
+                  <span
+                    v-bind:class="
+                      result.winner_id == result.away_player_id
+                        ? 'winner-color'
+                        : ''
+                    "
+                  >
+                    {{ result.away_player_name }}
+                  </span>
                 </td>
                 <td>
                   {{ result.home_score_total }}
@@ -71,26 +97,33 @@
                 <td style="text-align: right">
                   <span v-if="result.is_walkover == '1'"> walkover </span>
                   <span v-else class="setScores">
-                (
-                <span
-                    v-for="score in result.scores"
-                    v-bind:key="score.set"
-                    class="score"
-                >
-                  {{ score.home }} - {{ score.away }}
-                </span>
-                )
-              </span>
+                    (
+                    <span
+                      v-for="score in result.scores"
+                      v-bind:key="score.set"
+                      class="score"
+                    >
+                      {{ score.home }} - {{ score.away }}
+                    </span>
+                    )
+                  </span>
                 </td>
               </tr>
             </table>
           </div>
-          <div id="tabUpcoming" v-bind:class="activeTab === 2 ? 'show' : 'hide'">
+          <div
+            id="tabUpcoming"
+            v-bind:class="activeTab === 2 ? 'show' : 'hide'"
+          >
             <div style="padding: 10px 0px; font-size: 20px; color: white">
               UPCOMING TOURNAMENT MATCHES
             </div>
             <table style="width: 100%">
-              <tr v-for="event in schedule" v-bind:key="event.id" class="row-data">
+              <tr
+                v-for="event in schedule"
+                v-bind:key="event.id"
+                class="row-data"
+              >
                 <td style="width: 200px">
                   {{ event.date_of_match }}
                 </td>
@@ -101,28 +134,32 @@
                   {{ event.home_player_name }}
                 </td>
                 <td v-if="event.home_player_id == player.id">
-                  ELO rating <span style="color: white">{{ event.away_elo }}</span>
+                  ELO rating
+                  <span style="color: white">{{ event.away_elo }}</span>
                 </td>
                 <td v-else>
-                  ELO rating <span style="color: white">{{ event.home_elo }}</span>
+                  ELO rating
+                  <span style="color: white">{{ event.home_elo }}</span>
                 </td>
                 <td v-if="event.home_player_id == player.id">
-              <span v-if="event.away_elo_diff < 0">
-                <i class="fas fa-chevron-circle-down"></i>
-                {{ event.away_elo_diff }}
-              </span>
+                  <span v-if="event.away_elo_diff < 0">
+                    <i class="fas fa-chevron-circle-down"></i>
+                    {{ event.away_elo_diff }}
+                  </span>
                   <span v-else>
-                <i class="fas fa-chevron-circle-up"></i> {{ event.away_elo_diff }}
-              </span>
+                    <i class="fas fa-chevron-circle-up"></i>
+                    {{ event.away_elo_diff }}
+                  </span>
                 </td>
                 <td v-else>
-              <span v-if="event.home_elo_diff < 0">
-                <i class="fas fa-chevron-circle-down"></i>
-                {{ event.home_elo_diff }}
-              </span>
+                  <span v-if="event.home_elo_diff < 0">
+                    <i class="fas fa-chevron-circle-down"></i>
+                    {{ event.home_elo_diff }}
+                  </span>
                   <span v-else>
-                <i class="fas fa-chevron-circle-up"></i> {{ event.home_elo_diff }}
-              </span>
+                    <i class="fas fa-chevron-circle-up"></i>
+                    {{ event.home_elo_diff }}
+                  </span>
                 </td>
               </tr>
             </table>
@@ -135,21 +172,20 @@
 
 <script>
 import axios from "axios";
-import {GChart} from "vue-google-charts";
+import { GChart } from "vue-google-charts";
 import results from "@/components/Tournament/Results.vue";
 
 export default {
   name: "PlayerProfile",
   methods: {
     results() {
-      return results
+      return results;
     },
     setActiveTab(data) {
       this.activeTab = data;
-      GChart.render()
     },
   },
-  components: {GChart},
+  components: { GChart },
   data() {
     return {
       activeTab: 1,
@@ -215,30 +251,35 @@ export default {
   },
   mounted() {
     axios
-        .all([
-          axios.get("/api/players/" + this.$route.params.id),
-          axios.get("/api/players/" + this.$route.params.id + "/results"),
-          axios.get("/api/players/" + this.$route.params.id + "/schedule"),
-        ]).then(
+      .all([
+        axios.get("/api/players/" + this.$route.params.id),
+        axios.get("/api/players/" + this.$route.params.id + "/results"),
+        axios.get("/api/players/" + this.$route.params.id + "/schedule"),
+      ])
+      .then(
         axios.spread((player, results, schedule) => {
           this.player = player.data;
           this.strokeDashArrayWins =
-              player.data.win_percentage + " " + player.data.not_win_percentage;
+            player.data.win_percentage + " " + player.data.not_win_percentage;
           this.winPercentage = player.data.winPercentage;
           this.strokeDashArrayDraws =
-              player.data.draw_percentage + " " + player.data.not_draw_percentage;
+            player.data.draw_percentage + " " + player.data.not_draw_percentage;
           this.drawPercentage = player.data.drawPercentage;
           this.strokeDashArrayLosses =
-              player.data.loss_percentage + " " + player.data.not_loss_percentage;
+            player.data.loss_percentage + " " + player.data.not_loss_percentage;
           this.lossPercentage = player.data.loss_percentage;
           this.playerPicUrl = player.data.profile_pic_url;
-          this.lineChartData = [["order", "ELO history"], ...player.data.elo_history];
+          this.lineChartData = [
+            ["order", "ELO history"],
+            ...player.data.elo_history,
+          ];
           this.results = results.data;
           this.schedule = schedule.data;
         })
-    ).catch((error) => {
-      console.log("Error when getting data for matches " + error);
-    });
+      )
+      .catch((error) => {
+        console.log("Error when getting data for matches " + error);
+      });
   },
 };
 </script>
@@ -247,7 +288,6 @@ export default {
 <style lang="less" scoped>
 .show {
   visibility: visible;
-
 }
 
 .hide {

@@ -2,7 +2,8 @@
   <div v-for="ladder in this.ladders" v-bind:key="ladder.id">
     <div class="roundWrapper marb25">
       <div class="txtHeader col-dark-green">
-        <i class="fas fa-bullseye"></i> <span class="padl10">{{ ladder.group_name }} Ladder</span>
+        <i class="fas fa-bullseye"></i>
+        <span class="padl10">{{ ladder.group_name }} Ladder</span>
       </div>
       <div>
         <table>
@@ -10,83 +11,86 @@
             <td v-for="i in stages" v-bind:key="i" class="stageColumn">
               <div class="stageDiv">
                 <div v-for="match in ladder.ladder_group" v-bind:key="match.id">
-                  <div
-                      v-if="match.stage === i"
-                      class="matchContainer marb20"
-                  >
+                  <div v-if="match.stage === i" class="matchContainer marb20">
                     <table class="ladderTable">
                       <tr>
                         <td rowspan="3" class="matchOrder">
-                        <span class="fa-stack">
-                          <i class="fas fa-circle fa-stack-2x stack-shield"></i>
-                          <i class="fas fa-stack-2x stack-star matchNum">{{
+                          <span class="fa-stack">
+                            <i
+                              class="fas fa-circle fa-stack-2x stack-shield"
+                            ></i>
+                            <i class="fas fa-stack-2x stack-star matchNum">{{
                               match.order
                             }}</i>
-                        </span>
+                          </span>
                         </td>
                         <td
-                            class="matchName padl20"
-                            colspan="2"
-                            v-if="match.winner_id == 0"
+                          class="matchName padl20"
+                          colspan="2"
+                          v-if="match.winner_id == 0"
                         >
                           <span>{{ match.game_name }}</span>
                         </td>
                         <td
-                            style="padding-left: 20px"
-                            class="matchNameDone"
-                            colspan="2"
-                            v-else
+                          style="padding-left: 20px"
+                          class="matchNameDone"
+                          colspan="2"
+                          v-else
                         >
                           <span>{{ match.game_name }}</span>
                           <span v-if="match.is_walkover" class="rFloat">
-                          <i class="fas fa-flag"></i>
-                        </span>
+                            <i class="fas fa-flag"></i>
+                          </span>
                         </td>
                       </tr>
                       <tr>
                         <td
-                            style="padding-left: 10px"
-                            v-bind:class="
-                          match.winner_id != 0 &&
-                          match.winner_id == match.home_player_id
-                            ? 'winner-color'
-                            : ''
-                        "
+                          style="padding-left: 10px"
+                          v-bind:class="
+                            match.winner_id != 0 &&
+                            match.winner_id == match.home_player_id
+                              ? 'winner-color'
+                              : ''
+                          "
                         >
-                        <span
+                          <span
                             style="color: #aaa"
                             v-if="match.home_player_id == 0"
-                        >{{ match.home_player_display_name }}</span
-                        >
-                          <span v-else>{{ match.home_player_display_name }}</span>
+                            >{{ match.home_player_display_name }}</span
+                          >
+                          <span v-else>{{
+                            match.home_player_display_name
+                          }}</span>
                         </td>
                         <td class="txtr">
-                        <span v-if="match.winner_id != 0">
-                          {{ match.home_score_total }}
-                        </span>
+                          <span v-if="match.winner_id != 0">
+                            {{ match.home_score_total }}
+                          </span>
                         </td>
                       </tr>
                       <tr>
                         <td
-                            style="padding-left: 10px"
-                            v-bind:class="
-                          match.winnerId != 0 &&
-                          match.winnerId == match.away_player_id
-                            ? 'winner-color'
-                            : ''
-                        "
+                          style="padding-left: 10px"
+                          v-bind:class="
+                            match.winnerId != 0 &&
+                            match.winnerId == match.away_player_id
+                              ? 'winner-color'
+                              : ''
+                          "
                         >
-                        <span
+                          <span
                             style="color: #aaa"
                             v-if="match.away_player_id == 0"
-                        >{{ match.away_player_display_name }}</span
-                        >
-                          <span v-else>{{ match.away_player_display_name }}</span>
+                            >{{ match.away_player_display_name }}</span
+                          >
+                          <span v-else>{{
+                            match.away_player_display_name
+                          }}</span>
                         </td>
                         <td style="text-align: right">
-                        <span v-if="match.winner_id != 0">
-                          {{ match.away_score_total }}
-                        </span>
+                          <span v-if="match.winner_id != 0">
+                            {{ match.away_score_total }}
+                          </span>
                         </td>
                       </tr>
                     </table>
@@ -130,7 +134,6 @@ export default {
         .get("/api/tournaments/" + this.$route.params.id + "/ladders")
         .then((res) => {
           this.ladders = res.data;
-          console.log(this.ladders)
         });
     },
   },
@@ -142,21 +145,26 @@ export default {
 .mainMatchContainer {
   background: #3e3e3e;
   padding: 20px;
+
   table {
     .padl20 {
       padding-left: 20px;
     }
+
     .padr20 {
       padding-right: 20px;
     }
+
     .playerName {
       color: white;
     }
+
     .totalScore {
       color: white;
       font-weight: 600;
       padding-right: 15px;
     }
+
     .setScores {
       color: #979797;
     }
@@ -184,6 +192,7 @@ export default {
 .stageColumn {
   width: 25%;
   padding: 10px;
+
   .stageDiv {
     padding: 40px 20px 20px;
   }
@@ -212,6 +221,7 @@ export default {
 .ladderTable {
   width: 100%;
   color: white;
+
   td {
     padding: 10px 10px;
   }

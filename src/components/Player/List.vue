@@ -17,47 +17,46 @@
           <th class="txtc"><a @click="winSort()">m.win%</a></th>
         </tr>
         <tr
-            v-for="(player, index) in this.filteredPlayers"
-            v-bind:key="player.id"
-            class="row-data"
+          v-for="(player, index) in this.filteredPlayers"
+          v-bind:key="player.id"
+          class="row-data"
         >
           <td>{{ index + 1 }}</td>
           <td class="txtl player-link">
-            <router-link :to="'/player/' + player.id + '/profile'">{{
-                player.name
-              }}
+            <router-link :to="'/player/' + player.id + '/profile'"
+              >{{ player.name }}
             </router-link>
           </td>
           <td class="txtr">
             <span v-if="player.games_played >= 15" style="color: white">{{
-                player.elo
-              }}</span>
+              player.elo
+            }}</span>
             <span v-else>?</span>
           </td>
           <td class="txtr">
             {{ player.elo - player.old_elo }}
             <span style="margin-left: 10px">
               <span
-                  style="color: red"
-                  v-if="player.elo - player.old_elo <= -100"
+                style="color: red"
+                v-if="player.elo - player.old_elo <= -100"
               >
                 <i class="fas fa-angle-double-down"></i>
               </span>
               <span
-                  style="color: red"
-                  v-else-if="player.elo - player.old_elo < 0"
+                style="color: red"
+                v-else-if="player.elo - player.old_elo < 0"
               >
                 <i class="fas fa-angle-down"></i>
               </span>
               <span
-                  style="color: green"
-                  v-else-if="player.elo - player.old_elo > 100"
+                style="color: green"
+                v-else-if="player.elo - player.old_elo > 100"
               >
                 <i class="fas fa-angle-double-up"></i>
               </span>
               <span
-                  style="color: green"
-                  v-else-if="player.elo - player.old_elo > 0"
+                style="color: green"
+                v-else-if="player.elo - player.old_elo > 0"
               >
                 <i class="fas fa-angle-up"></i>
               </span>
@@ -107,7 +106,6 @@ export default {
   },
   computed: {
     filteredPlayers: function () {
-      console.log(this.officeId)
       return this.players.filter((player) => {
         return parseInt(player.office_id) === parseInt(this.officeId);
       });
@@ -139,16 +137,15 @@ export default {
       this.players = _.orderBy(this.players, "name", this.nameOrder);
     },
     gameSort() {
-      console.log(this.players);
       if (this.gamesPlayedOrder === "desc") {
         this.gamesPlayedOrder = "asc";
       } else {
         this.gamesPlayedOrder = "desc";
       }
       this.players = _.orderBy(
-          this.players,
-          "gamesPlayed",
-          this.gamesPlayedOrder
+        this.players,
+        "gamesPlayed",
+        this.gamesPlayedOrder
       );
     },
     winSort() {
