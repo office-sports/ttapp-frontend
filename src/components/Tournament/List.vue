@@ -56,6 +56,7 @@
 
 <script>
 import axios from "axios";
+import { Tournament } from "@/models/tournament";
 
 export default {
   name: "App",
@@ -67,7 +68,24 @@ export default {
   },
   mounted() {
     axios.get("/api/tournaments").then((res) => {
-      this.tournaments = res.data;
+      if (res.data && res.data.length > 0) {
+        for (let i = 0; i < res.data.length; i++) {
+          this.tournaments.push(
+            new Tournament(
+              res.data[i].finished,
+              res.data[i].id,
+              res.data[i].is_finished,
+              res.data[i].is_playoffs,
+              res.data[i].name,
+              res.data[i].office_id,
+              res.data[i].participants,
+              res.data[i].phase,
+              res.data[i].scheduled,
+              res.data[i].start_time
+            )
+          );
+        }
+      }
       if (localStorage.getItem("ttappOfficeId") === null) {
         this.officeId = 1;
       } else {

@@ -70,10 +70,10 @@
                       </tr>
                       <tr>
                         <td
-                          style="padding-left: 10px"
+                          class="padl10"
                           v-bind:class="
-                            match.winnerId != 0 &&
-                            match.winnerId == match.away_player_id
+                            match.winner_id != 0 &&
+                            match.winner_id == match.away_player_id
                               ? 'winner-color'
                               : ''
                           "
@@ -87,7 +87,7 @@
                             match.away_player_display_name
                           }}</span>
                         </td>
-                        <td style="text-align: right">
+                        <td class="txtr">
                           <span v-if="match.winner_id != 0">
                             {{ match.away_score_total }}
                           </span>
