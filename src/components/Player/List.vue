@@ -1,7 +1,20 @@
 <template>
   <div class="roundWrapper">
     <div class="txtHeader col-dark-green">
-      <i class="fas fa-bullseye"></i> <span class="padl10">Player list</span>
+      <table>
+        <tr>
+          <td>
+            <i class="fas fa-bullseye"></i>
+            <span class="padl10">Player list</span>
+          </td>
+          <td class="txtr" style="font-size: 10pt">
+            <span class="cur-pointer" @click="toggleShowInactive()">
+              <span v-if="this.showInactive">show active</span>
+              <span v-else>show inactive</span>
+            </span>
+          </td>
+        </tr>
+      </table>
     </div>
     <div class="txtSmall">
       <table class="table-player-list">
@@ -84,6 +97,7 @@ export default {
   name: "App",
   data() {
     return {
+      showInactive: false,
       players: [],
       eloOrder: "asc",
       eloChangeOrder: "asc",
@@ -107,11 +121,17 @@ export default {
   computed: {
     filteredPlayers: function () {
       return this.players.filter((player) => {
-        return parseInt(player.office_id) === parseInt(this.officeId);
+        let isCurrentOffice =
+          parseInt(player.office_id) === parseInt(this.officeId);
+        let isActive = player.active || (this.showInactive && !player.active);
+        return isCurrentOffice && isActive;
       });
     },
   },
   methods: {
+    toggleShowInactive() {
+      this.showInactive = !this.showInactive;
+    },
     eloChangeSort() {
       if (this.eloChangeOrder === "desc") {
         this.eloChangeOrder = "asc";

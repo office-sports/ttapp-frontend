@@ -33,6 +33,10 @@ body {
     font-weight: normal;
 }
 
+.cur-pointer {
+    cursor: pointer;
+}
+
 .txtHeader {
     font-size: 12pt;
 }

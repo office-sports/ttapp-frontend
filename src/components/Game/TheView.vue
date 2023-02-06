@@ -10,7 +10,7 @@
         >
           {{ game.home_player_name }}
         </td>
-        <td rowspan="2" class="txtc valignTop">
+        <td rowspan="3" class="txtc valignTop">
           <div>MATCH MODE</div>
           <div class="col-winner marb20">BO{{ game.max_sets }}</div>
           <div>GAME STATUS</div>
@@ -25,48 +25,20 @@
               v-bind:key="index"
               class="rowData mart10"
             >
-              <span class="fa-stack" style="font-size: 15px">
-                <i
-                  v-if="parseInt(score.home) > parseInt(score.away)"
-                  class="fas fa-circle fa-stack-2x"
-                  style="color: #40c500"
-                ></i>
-                <i
-                  v-else
-                  class="fas fa-circle fa-stack-2x"
-                  style="color: white"
-                ></i>
-                <i
-                  class="fas fa-stack-1x"
-                  style="
-                    color: black;
-                    font-family: 'Poppins', 'Avenir', Helvetica, Arial,
-                      sans-serif;
-                  "
-                  >{{ score.home }}</i
-                >
-              </span>
-              <span class="fa-stack" style="font-size: 15px">
-                <i
-                  v-if="parseInt(score.away) > parseInt(score.home)"
-                  class="fas fa-circle fa-stack-2x"
-                  style="color: #40c500"
-                ></i>
-                <i
-                  v-else
-                  class="fas fa-circle fa-stack-2x"
-                  style="color: white"
-                ></i>
-                <i
-                  class="fas fa-stack-1x"
-                  style="
-                    color: black;
-                    font-family: 'Poppins', 'Avenir', Helvetica, Arial,
-                      sans-serif;
-                  "
-                  >{{ score.away }}</i
-                >
-              </span>
+              <CircleScore
+                :is-winner="parseInt(score.home) > parseInt(score.away)"
+              >
+                <template #score>
+                  {{ score.home }}
+                </template>
+              </CircleScore>
+              <CircleScore
+                :is-winner="parseInt(score.away) > parseInt(score.home)"
+              >
+                <template #score>
+                  {{ score.away }}
+                </template>
+              </CircleScore>
             </div>
           </div>
           <div class="mart20">
@@ -103,6 +75,18 @@
           "
         >
           {{ game.away_score_total }}
+        </td>
+      </tr>
+      <tr v-if="parseInt(game.is_finished) === 1">
+        <td class="elo-diff">
+          ELO
+          <span v-if="game.home_elo_diff > 0">+</span>
+          {{ game.home_elo_diff }}
+        </td>
+        <td class="elo-diff">
+          ELO
+          <span v-if="game.away_elo_diff > 0">+</span>
+          {{ game.away_elo_diff }}
         </td>
       </tr>
     </table>
@@ -170,9 +154,11 @@
 
 <script>
 import axios from "axios";
+import CircleScore from "@/components/Game/CircleScore.vue";
 
 export default {
   name: "GameView",
+  components: { CircleScore },
   data() {
     return {
       game: [],
@@ -357,13 +343,18 @@ export default {
   }
 
   .score-font {
-    font-size: 60pt;
+    font-size: 100pt;
+    font-weight: 600;
   }
 
   .player-name {
     text-transform: uppercase;
     font-size: 20pt;
   }
+}
+
+.elo-diff {
+  font-size: 20pt;
 }
 
 .tbl-fixed {

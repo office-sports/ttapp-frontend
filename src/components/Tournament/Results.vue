@@ -53,7 +53,12 @@
               ><i class="far fa-play-circle"></i
             ></router-link>
           </td>
-          <td v-else></td>
+          <td v-else>
+            <router-link
+              :to="{ name: 'GameView', params: { id: match.match_id } }"
+              ><i class="far fa-play-circle"></i
+            ></router-link>
+          </td>
         </tr>
       </table>
     </div>
