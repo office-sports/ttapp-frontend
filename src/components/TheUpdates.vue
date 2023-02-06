@@ -6,6 +6,7 @@
       <li>Added toggle show active / show inactive to list of players</li>
       <li>Finished games now show how much ELO was gained / lost</li>
       <li>Added link to game result on main page</li>
+      <li>Added simple statistics and ongoing tournament to main view</li>
     </ul>
   </div>
 </template>

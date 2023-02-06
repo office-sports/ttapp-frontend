@@ -41,6 +41,15 @@ body {
     font-size: 12pt;
 }
 
+
+.col-txt-green {
+    color: #40c500;
+}
+
+.col-txt-white {
+    color: white;
+}
+
 .roundWrapper {
     background: var(--color-wrapper);
     border-radius: 10px;

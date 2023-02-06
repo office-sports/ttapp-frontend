@@ -21,12 +21,4 @@ export default {
   font-size: 10pt;
   font-weight: 900;
 }
-
-.col-txt-green {
-  color: #40c500;
-}
-
-.col-txt-white {
-  color: white;
-}
 </style>
