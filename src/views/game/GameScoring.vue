@@ -6,11 +6,15 @@
           {{ this.gh.game.homePlayerName }}
         </div>
         <div class="fnt-big-score">{{ this.gh.game.currentHomePoints }}</div>
-        <div v-if="this.gh.serve.currentServerId === this.gh.game.homePlayerId">
-          <span v-for="index in this.gh.serve.numServes" :key="index">
-            <i class="fas fa-table-tennis"></i>
-          </span>
-        </div>
+        <template v-if="this.manualScoringEnabled">
+          <div
+            v-if="this.gh.serve.currentServerId === this.gh.game.homePlayerId"
+          >
+            <span v-for="index in this.gh.serve.numServes" :key="index">
+              <i class="fas fa-table-tennis"></i>
+            </span>
+          </div>
+        </template>
       </div>
       <div class="con-mid round-container txtc">
         <div>MATCH MODE</div>
@@ -30,11 +34,15 @@
           {{ this.gh.game.awayPlayerName }}
         </div>
         <div class="fnt-big-score">{{ this.gh.game.currentAwayPoints }}</div>
-        <div v-if="this.gh.serve.currentServerId === this.gh.game.awayPlayerId">
-          <span v-for="index in this.gh.serve.numServes" :key="index">
-            <i class="fas fa-table-tennis"></i>
-          </span>
-        </div>
+        <template v-if="this.manualScoringEnabled">
+          <div
+            v-if="this.gh.serve.currentServerId === this.gh.game.awayPlayerId"
+          >
+            <span v-for="index in this.gh.serve.numServes" :key="index">
+              <i class="fas fa-table-tennis"></i>
+            </span>
+          </div>
+        </template>
       </div>
     </div>
 
