@@ -61,7 +61,7 @@
 
 <script>
 import axios from "axios";
-import { Tournament } from "@/models/tournament";
+import { Tournament } from "@/models/Tournament";
 
 export default {
   name: "TournamentList",

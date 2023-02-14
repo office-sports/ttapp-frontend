@@ -270,9 +270,7 @@
                       class="txtc w40"
                     >
                       <span
-                        v-if="
-                          pbp.current_server == pbp.away_player_id
-                        "
+                        v-if="pbp.current_server == pbp.away_player_id"
                         class="serve txtc"
                       >
                         <i class="fas fa-table-tennis"></i>
@@ -284,43 +282,47 @@
               <div class="padt20 mart20 set_summary">
                 <table>
                   <tr>
-                    <td class="noborder txtc" style="color: #9a9a9a">duration</td>
+                    <td class="noborder txtc" style="color: #9a9a9a">
+                      duration
+                    </td>
                     <td class="noborder txtc"></td>
                     <td
-                        class="noborder txtc"
-                        style="padding: 0px 20px; color: #9a9a9a"
+                      class="noborder txtc"
+                      style="padding: 0px 20px; color: #9a9a9a"
                     >
                       serve pts / serves / efficiency
                     </td>
                     <td
-                        class="noborder txtc"
-                        style="padding: 0px 20px; color: #9a9a9a"
+                      class="noborder txtc"
+                      style="padding: 0px 20px; color: #9a9a9a"
                     >
                       max points in a row
                     </td>
                   </tr>
                   <tr>
                     <td
-                        style="
-                  padding: 0px 20px;
-                  font-size: 20pt;
-                  border-right: 1px solid #02252e;
-                "
+                      style="
+                        padding: 0px 20px;
+                        font-size: 20pt;
+                        border-right: 1px solid #02252e;
+                      "
                     >
                       {{ set.set_summary.durationMinutes }}:{{
                         set.set_summary.durationSeconds
                       }}
                     </td>
-                    <td style="padding: 0px 20px; border-right: 1px solid #02252e">
+                    <td
+                      style="padding: 0px 20px; border-right: 1px solid #02252e"
+                    >
                       <div>{{ homeName }}</div>
                       <div>{{ awayName }}</div>
                     </td>
                     <td
-                        style="
-                  padding: 0px 20px;
-                  border-right: 1px solid #02252e;
-                  text-align: center;
-                "
+                      style="
+                        padding: 0px 20px;
+                        border-right: 1px solid #02252e;
+                        text-align: center;
+                      "
                     >
                       <div>
                         {{ set.set_summary.home_serve_points }}
@@ -338,11 +340,11 @@
                       </div>
                     </td>
                     <td
-                        style="
-                  padding: 0px 20px;
-                  border-right: 1px solid #02252e;
-                  text-align: center;
-                "
+                      style="
+                        padding: 0px 20px;
+                        border-right: 1px solid #02252e;
+                        text-align: center;
+                      "
                     >
                       <div>{{ set.set_summary.homeStreak }}</div>
                       <div>{{ set.set_summary.awayStreak }}</div>
