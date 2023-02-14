@@ -1,4 +1,7 @@
 <template>
+  <div class="round-container marb20" v-if="this.tournament">
+    <TournamentPanel :tournament="this.tournament" />
+  </div>
   <div class="round-container">
     <TournamentResults :result-count="10" />
   </div>
@@ -11,16 +14,18 @@
 import axios from "axios";
 import TournamentResults from "@/components/tournament/TournamentResults.vue";
 import TournamentSchedule from "@/components/tournament/TournamentSchedule.vue";
+import TournamentPanel from "@/components/tournament/TournamentPanel.vue";
 
 export default {
   name: "IndexPage",
   components: {
+    TournamentPanel,
     TournamentResults,
     TournamentSchedule,
   },
   data() {
     return {
-      tournament: {},
+      tournament: null,
     };
   },
   mounted() {

@@ -9,6 +9,8 @@ export class Tournament {
   phase: string;
   scheduled: number;
   start_time: string;
+  sets: number;
+  points: number;
 
   constructor(
     finished: number,
@@ -20,7 +22,9 @@ export class Tournament {
     participants: number,
     phase: string,
     scheduled: number,
-    start_time: string
+    start_time: string,
+    sets: number,
+    points: number
   ) {
     this.office_id = office_id;
     this.phase = phase;
@@ -32,5 +36,7 @@ export class Tournament {
     this.participants = participants;
     this.scheduled = scheduled;
     this.start_time = start_time;
+    this.sets = sets;
+    this.points = points;
   }
 }

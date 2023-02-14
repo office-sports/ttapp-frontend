@@ -33,24 +33,12 @@
               >{{ match.away_player_name }}
             </router-link>
           </td>
-
           <td>
             <router-link
               :to="{ name: 'GameScoring', params: { id: match.match_id } }"
               ><i class="far fa-play-circle"></i
             ></router-link>
           </td>
-          <!--          <td v-if="parseInt(match.has_points) > 0" style="color: #fff">-->
-          <!--            <router-link :to="'/games/' + match.match_id + '/summary'"-->
-          <!--              ><i class="far fa-play-circle"></i-->
-          <!--            ></router-link>-->
-          <!--          </td>-->
-          <!--          <td v-else>-->
-          <!--            <router-link-->
-          <!--              :to="{ name: 'GameView', params: { id: match.match_id } }"-->
-          <!--              ><i class="far fa-play-circle"></i-->
-          <!--            ></router-link>-->
-          <!--          </td>-->
         </tr>
       </template>
     </table>
