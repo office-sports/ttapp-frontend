@@ -245,7 +245,7 @@
 <script>
 import axios from "axios";
 import { GChart } from "vue-google-charts";
-import results from "@/components/Tournament/TournamentResults.vue";
+import results from "@/components/tournament/TournamentResults.vue";
 
 export default {
   name: "PlayerProfile",
