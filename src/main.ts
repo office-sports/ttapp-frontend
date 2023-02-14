@@ -1,14 +1,12 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
 import scrollto from "vue-scrollto";
-
-import "./assets/style.css";
+import router from "./router";
 
 const app = createApp(App);
+localStorage.setItem("officeId", localStorage.getItem("officeId") ?? "1");
 
 app.use(router);
 app.use(scrollto);
-//app.use(VueGamepad);
 
 app.mount("#app");

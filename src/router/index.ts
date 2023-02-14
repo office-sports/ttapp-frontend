@@ -1,61 +1,59 @@
 import { createRouter, createWebHistory } from "vue-router";
-import IndexPage from "../components/IndexPage.vue";
-import PlayerProfile from "../components/Player/Profile.vue";
-import PlayerList from "../components/Player/List.vue";
-import TournamentList from "../components/Tournament/List.vue";
-import Ladders from "../components/Tournament/Ladders.vue";
-import TheUpdates from "../components/TheUpdates.vue";
-import TournamentStandings from "@/components/Tournament/Standings.vue";
-import GameSummary from "@/components/Game/TheSummary.vue";
-import GameView from "@/components/Game/TheView.vue";
-import TournamentResults from "@/components/Tournament/FullResults.vue";
-import TournamentSchedule from "@/components/Tournament/FullSchedule.vue";
+import HomePage from "@/views/HomePage.vue";
+import PlayerList from "@/views/player/PlayerList.vue";
+import TournamentFullSchedule from "@/views/tournament/TournamentFullSchedule.vue";
+import TournamentFullResults from "@/views/tournament/TournamentFullResults.vue";
+import TournamentList from "@/views/tournament/TournamentList.vue";
+import TournamentStandings from "@/views/tournament/TournamentStandings.vue";
+import PlayerProfile from "@/views/player/PlayerProfile.vue";
+import Ladders from "@/views/tournament/TournamentLadders.vue";
+import GameScoring from "@/views/game/GameScoring.vue";
+import GameResult from "@/views/game/GameResult.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "IndexPage",
-      component: IndexPage,
+      name: "HomePage",
+      component: HomePage,
+    },
+    { path: "/players", name: "PlayerList", component: PlayerList },
+    {
+      path: "/tournament/:id/schedule",
+      name: "TournamentFullSchedule",
+      component: TournamentFullSchedule,
     },
     {
-      path: "/player/:id/profile",
-      name: "PlayerProfile",
-      component: PlayerProfile,
+      path: "/tournament/:id/results",
+      name: "TournamentFullResults",
+      component: TournamentFullResults,
     },
-    { path: "/player/list", name: "PlayerList", component: PlayerList },
-    { path: "/updates", name: "TheUpdates", component: TheUpdates },
     {
-      path: "/tournament/list",
+      path: "/tournaments",
       name: "TournamentList",
       component: TournamentList,
     },
-    { path: "/tournaments/:id/ladders", name: "Ladders", component: Ladders },
     {
       path: "/tournament/:id/standings",
       name: "TournamentStandings",
       component: TournamentStandings,
     },
+    { path: "/tournament/:id/ladders", name: "Ladders", component: Ladders },
     {
-      path: "/tournament/:id/schedule",
-      name: "TournamentSchedule",
-      component: TournamentSchedule,
+      path: "/player/:id/profile",
+      name: "PlayerProfile",
+      component: PlayerProfile,
     },
     {
-      path: "/tournament/:id/results",
-      name: "TournamentResults",
-      component: TournamentResults,
+      path: "/game/:id/scoring",
+      name: "GameScoring",
+      component: GameScoring,
     },
     {
-      path: "/games/:id/summary",
-      name: "GameSummary",
-      component: GameSummary,
-    },
-    {
-      path: "/games/:id/view",
-      name: "GameView",
-      component: GameView,
+      path: "/game/:id/result",
+      name: "GameResult",
+      component: GameResult,
     },
   ],
 });

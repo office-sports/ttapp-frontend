@@ -1,6 +1,6 @@
 <template>
   <span class="fa-stack" style="font-size: 15px">
-    <i v-if="isWinner" class="fas fa-circle fa-stack-2x col-txt-green"></i>
+    <i v-if="isWinner" class="fas fa-circle fa-stack-2x txt-col-green"></i>
     <i v-else class="fas fa-circle fa-stack-2x col-txt-white"> </i>
     <i class="fas fa-stack-1x circle-score">
       <slot name="score" />
