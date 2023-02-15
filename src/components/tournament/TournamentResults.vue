@@ -48,6 +48,7 @@
               {{ match.home_score_total }} -
               {{ match.away_score_total }}
             </span>
+            <span v-if="match.has_points">*</span>
           </td>
           <td>
             <span
@@ -87,11 +88,18 @@ export default {
     };
   },
   mounted() {
-    axios.get("/api/tournaments/0/results/" + this.resultCount).then((res) => {
-      if (res.data.length > 0) {
-        this.matches = res.data;
-      }
-    });
+    axios
+      .get(
+        "/api/tournaments/" +
+          this.$route.params.id +
+          "/results/" +
+          this.resultCount
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          this.matches = res.data;
+        }
+      });
   },
 };
 </script>

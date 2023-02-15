@@ -10,6 +10,7 @@ export class Game {
   homeScoreTotal: number;
   awayScoreTotal: number;
   winnerId: number;
+  hasPoints: boolean;
   scores: [];
 
   public constructor(data: any) {
@@ -25,5 +26,6 @@ export class Game {
     this.awayScoreTotal = data.away_score_total;
     this.winnerId = data.winner_id;
     this.scores = data.scores;
+    this.hasPoints = !!data.has_points;
   }
 }

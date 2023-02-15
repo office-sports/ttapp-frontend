@@ -79,6 +79,12 @@ export default {
       .then(
         axios.spread((game) => {
           this.game = new Game(game.data);
+          if (this.game.hasPoints) {
+            this.$router.push({
+              name: "GameResultDetailed",
+              params: { id: this.game.id },
+            });
+          }
         })
       )
       .catch((error) => {

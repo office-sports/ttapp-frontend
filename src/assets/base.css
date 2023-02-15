@@ -83,6 +83,10 @@ table {
     width: 50%;
 }
 
+.w200 {
+    width: 200px;
+}
+
 table td {
     vertical-align: top;
 }
