@@ -33,8 +33,16 @@ table {
     border-collapse: collapse;
 }
 
+.tbl-compact {
+    display: block;
+}
+
 .cur-pointer {
     cursor: pointer;
+}
+
+.v-mid {
+    vertical-align: middle;
 }
 
 .player-name-container {

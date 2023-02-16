@@ -9,7 +9,6 @@ import PlayerProfile from "@/views/player/PlayerProfile.vue";
 import Ladders from "@/views/tournament/TournamentLadders.vue";
 import GameScoring from "@/views/game/GameScoring.vue";
 import GameResult from "@/views/game/GameResult.vue";
-import GameResultDetailed from "@/views/game/GameResultDetailed.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,11 +54,6 @@ const router = createRouter({
       path: "/game/:id/result",
       name: "GameResult",
       component: GameResult,
-    },
-    {
-      path: "/game/:id/details",
-      name: "GameResultDetailed",
-      component: GameResultDetailed,
     },
   ],
 });
