@@ -304,7 +304,6 @@ export default {
     },
   },
   mounted() {
-    console.log(import.meta.env.TTAPP_SLACK_KEY);
     axios
       .all([
         axios.get("/api/games/" + this.$route.params.id),

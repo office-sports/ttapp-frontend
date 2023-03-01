@@ -48,7 +48,6 @@
               {{ match.home_score_total }} -
               {{ match.away_score_total }}
             </span>
-            <span v-if="match.has_points">*</span>
           </td>
           <td>
             <span
@@ -59,7 +58,10 @@
               {{ score.home }}:{{ score.away }}</span
             >
           </td>
-          <td>
+          <td class="txtr">
+            <span v-if="match.has_points" class="marr10 txt-col-darkest">
+              <i class="fas fa-keyboard"></i>
+            </span>
             <router-link
               :to="{ name: 'GameResult', params: { id: match.match_id } }"
               ><i class="far fa-play-circle"></i

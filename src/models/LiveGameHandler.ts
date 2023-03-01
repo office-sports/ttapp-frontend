@@ -23,8 +23,65 @@ export class LiveGameHandler {
     this.statusMessage = "";
   }
 
+  public loadGameData(gid: number) {
+    axios
+      .all([
+        axios.get("/api/games/" + gid),
+        axios.get("/api/games/" + gid + "/serve"),
+      ])
+      .then(
+        axios.spread((game, serve) => {
+          if (game.data.is_finished) {
+            window.location.reload();
+          } else {
+            //console.log("new game object", game.data);
+            this.game = new Game(game.data);
+            this.serve = new Serve(serve.data);
+          }
+        })
+      )
+      .catch((error) => {
+        console.log("Error when getting live game data " + error);
+      });
+  }
+
   public flipSides() {
     this.isFlipped = !this.isFlipped;
+  }
+
+  public finalizeSet(gid: number) {
+    console.log(this.game, gid);
+    if (this.isEndSet && this.isIdle && this.game.id === gid) {
+      console.log("finalizing set for game ", gid);
+      // set idle state to false, sending change request to API
+      this.isIdle = false;
+      axios
+        .post("/api/games/finalize", {
+          headers: {
+            "Content-type": "application/x-www-form-urlencoded",
+          },
+          game_id: this.game.id,
+          wins_required: this.game.winsRequired,
+          home: this.game.currentHomePoints,
+          away: this.game.currentAwayPoints,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            // @ts-ignore
+            delete this.game;
+            this.isEndSet = false;
+            this.flipSides();
+            this.isIdle = true;
+            console.log("reloading game: ", gid);
+            this.loadGameData(gid);
+            console.log("reloaded ? game: ", gid);
+          }
+        })
+        .catch((error) => {
+          this.isIdle = true;
+          console.log("error while finalising game / set: " + error.response);
+        });
+    }
   }
 
   // changes initial game server, all following serves
@@ -57,14 +114,7 @@ export class LiveGameHandler {
       });
   }
 
-  private startGameWarning() {
-    if (!this.isGameStarted) {
-      this.statusMessage = "PRESS START (SPACE)";
-      return;
-    }
-  }
-
-  private checkIsEnded() {
+  public checkIsEnded() {
     if (
       this.game.currentHomePoints >= 11 ||
       this.game.currentAwayPoints >= 11
@@ -136,7 +186,6 @@ export class LiveGameHandler {
   }
 
   public addPointLeft() {
-    this.startGameWarning();
     if (!this.isEndSet && this.isIdle) {
       if (this.isFlipped) {
         this.game.currentAwayPoints++;
@@ -151,22 +200,24 @@ export class LiveGameHandler {
   }
 
   subPointLeft() {
-    this.startGameWarning();
     if (this.isIdle) {
+      let cHP = this.game.currentHomePoints;
+      let cAP = this.game.currentAwayPoints;
       if (this.isFlipped) {
-        if (this.game.currentAwayPoints > 0) {
-          this.game.currentAwayPoints =
-            this.game.currentAwayPoints - 1 < 0
-              ? this.game.currentAwayPoints
-              : --this.game.currentAwayPoints;
+        if (this.isEndSet && cAP < cHP) {
+          return;
+        }
+        if (cAP > 0) {
+          this.game.currentAwayPoints = cAP - 1 < 0 ? cAP : --cAP;
           this.delPoint(0, 1);
         }
       } else {
-        if (this.game.currentHomePoints > 0) {
-          this.game.currentHomePoints =
-            this.game.currentHomePoints - 1 < 0
-              ? this.game.currentHomePoints
-              : --this.game.currentHomePoints;
+        // check if the set is ended, if so, do not subtract lower number
+        if (this.isEndSet && cHP < cAP) {
+          return;
+        }
+        if (cHP > 0) {
+          this.game.currentHomePoints = cHP - 1 < 0 ? cHP : --cHP;
           this.delPoint(1, 0);
         }
       }
@@ -177,7 +228,6 @@ export class LiveGameHandler {
   }
 
   public addPointRight() {
-    this.startGameWarning();
     if (!this.isEndSet && this.isIdle) {
       if (this.isFlipped) {
         this.game.currentHomePoints++;
@@ -192,22 +242,24 @@ export class LiveGameHandler {
   }
 
   subPointRight() {
-    this.startGameWarning();
     if (this.isIdle) {
+      let cHP = this.game.currentHomePoints;
+      let cAP = this.game.currentAwayPoints;
+
       if (this.isFlipped) {
-        if (this.game.currentHomePoints > 0) {
-          this.game.currentHomePoints =
-            this.game.currentHomePoints - 1 < 0
-              ? this.game.currentHomePoints
-              : --this.game.currentHomePoints;
+        if (this.isEndSet && cHP < cAP) {
+          return;
+        }
+        if (cHP > 0) {
+          this.game.currentHomePoints = cHP - 1 < 0 ? cHP : --cHP;
           this.delPoint(1, 0);
         }
       } else {
-        if (this.game.currentAwayPoints > 0) {
-          this.game.currentAwayPoints =
-            this.game.currentAwayPoints - 1 < 0
-              ? this.game.currentAwayPoints
-              : --this.game.currentAwayPoints;
+        if (this.isEndSet && cAP < cHP) {
+          return;
+        }
+        if (cAP > 0) {
+          this.game.currentAwayPoints = cAP - 1 < 0 ? cAP : --cAP;
           this.delPoint(0, 1);
         }
       }
