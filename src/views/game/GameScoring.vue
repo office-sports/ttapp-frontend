@@ -157,12 +157,13 @@
     </div>
   </div>
   <div v-show="this.gh.game && this.gh.isEndSet" class="end-set-overlay">
-    <div>Press [=] to confirm set score.</div>
+    <div>Press [*] to confirm set score.</div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import io from "socket.io-client";
 import { LiveGameHandler } from "@/models/LiveGameHandler";
 import { Serve } from "@/models/Serve";
 import { Game } from "@/models/Game";
@@ -176,6 +177,7 @@ export default {
   },
   data() {
     return {
+      socket: null,
       keyPressDelta: 300,
       thisKeypressTime: 0,
       lastKeypressTime: 0,
@@ -306,7 +308,7 @@ export default {
     },
     isNumber: function (evt) {
       evt = evt ? evt : window.event;
-      var charCode = evt.which ? evt.which : evt.keyCode;
+      let charCode = evt.which ? evt.which : evt.keyCode;
       if (
         charCode > 31 &&
         (charCode < 48 || charCode > 57) &&
@@ -325,40 +327,6 @@ export default {
         j++;
       }
       return array;
-    },
-    checkIsFinished() {
-      console.log(this.gh.game);
-      // this is the state of finishing current set, so the game
-      // has all the data up to the last set
-      let isFinished = false;
-      let g = this.gh.game;
-
-      // check if we've reached last set
-      if (g.awayScoreTotal + g.homeScoreTotal === g.maxSets - 1) {
-        isFinished = true;
-      }
-      // home won
-      if (
-        g.currentHomePoints > g.currentAwayPoints &&
-        g.homeScoreTotal === g.winsRequired - 1
-      ) {
-        isFinished = true;
-      }
-      // away won
-      if (
-        g.currentHomePoints < g.currentAwayPoints &&
-        g.awayScoreTotal === g.winsRequired - 1
-      ) {
-        isFinished = true;
-      }
-
-      if (isFinished === true) {
-        //window.location.reload();
-        // this.$router.push({
-        //   name: "GameResult",
-        //   params: { id: this.gh.game.id },
-        // });
-      }
     },
     keyPressHandler(e) {
       if (e.keyCode === 13) {
@@ -418,11 +386,10 @@ export default {
             this.gh.subPointRight();
             this.statusMessage = this.gh.statusMessage;
             break;
-          case 61:
-            console.log("route id: ", this.$route.params.id);
-            this.gh.isEndSet = true;
-            this.gh.finalizeSet(parseInt(this.$route.params.id));
-            //this.checkIsFinished();
+          case 42:
+            if (this.gh.isEndSet === true) {
+              this.gh.finalizeSet(parseInt(this.$route.params.id));
+            }
             break;
         }
       }
@@ -445,6 +412,10 @@ export default {
               params: { id: g.id },
             });
           }
+
+          this.socket = io(
+            window.location.hostname + ":3001?game_id=" + this.gh.game.id
+          );
         })
       )
       .catch((error) => {

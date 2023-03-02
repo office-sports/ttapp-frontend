@@ -34,7 +34,6 @@ export class LiveGameHandler {
           if (game.data.is_finished) {
             window.location.reload();
           } else {
-            //console.log("new game object", game.data);
             this.game = new Game(game.data);
             this.serve = new Serve(serve.data);
           }
@@ -50,9 +49,7 @@ export class LiveGameHandler {
   }
 
   public finalizeSet(gid: number) {
-    console.log(this.game, gid);
     if (this.isEndSet && this.isIdle && this.game.id === gid) {
-      console.log("finalizing set for game ", gid);
       // set idle state to false, sending change request to API
       this.isIdle = false;
       axios
@@ -72,14 +69,12 @@ export class LiveGameHandler {
             this.isEndSet = false;
             this.flipSides();
             this.isIdle = true;
-            console.log("reloading game: ", gid);
             this.loadGameData(gid);
-            console.log("reloaded ? game: ", gid);
           }
         })
         .catch((error) => {
           this.isIdle = true;
-          console.log("error while finalising game / set: " + error.response);
+          console.log("error while finalizing game / set: " + error.response);
         });
     }
   }

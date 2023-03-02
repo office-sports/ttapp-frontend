@@ -10,7 +10,6 @@ const server = app.listen(3001, function () {
 
 const io = require("socket.io")(server, {
   cors: {
-    //                      origin: "http://10.12.121.194:3000"
     origin: "*",
   },
 });
