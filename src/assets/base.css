@@ -156,6 +156,31 @@ div.cutoutPic:before {
     box-shadow: 0 200px 0 300px var(--color-container);
 }
 
+
+div.cutoutPicSmall {
+    width: 104px;
+    height: 104px;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+div.cutoutPicSmall > .pic {
+    margin: -20px auto;
+    width: 100px;
+}
+
+div.cutoutPicSmall:before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 96px;
+    height: 96px;
+    border-radius: 100%;
+    border: 2px solid #989898;
+    box-shadow: 0 200px 0 300px var(--color-container);
+}
+
 .content-wrapper {
     max-width: 1200px;
     margin: 0 auto;
