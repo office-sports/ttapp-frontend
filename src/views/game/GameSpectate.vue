@@ -93,20 +93,15 @@
         </table>
       </div>
     </div>
-    <div class="padt20">
-      <div
-        style="
-          height: 300px;
-          width: 600px;
-          margin: 0 auto;
-          border: 0px solid #efefef;
-          position: relative;
-          display: flex;
-        "
-      >
-        <div id="midtable" class="grd tbl-midside">&nbsp;</div>
-        <div id="ltable" class="tbl-lside">&nbsp;</div>
-        <div id="rtable" class="tbl-rside">&nbsp;</div>
+    <div class="mid-current-score">{{ homeScore }} : {{ awayScore }}</div>
+    <div class="padt20" style="margin-top: 100px">
+      <div class="table-wrapper">
+        <div class="ball"></div>
+        <div class="ball-shadow"></div>
+        <div id="midtablenet">&nbsp;</div>
+        <div id="midtable" class="grd">&nbsp;</div>
+        <div id="ltable">&nbsp;</div>
+        <div id="rtable">&nbsp;</div>
       </div>
     </div>
   </template>
@@ -116,10 +111,14 @@
 import axios from "axios";
 import { DetailedSummary } from "@/models/DetailedSummary";
 import { Game } from "@/models/Game";
+import { SocketHandler } from "@/models/SocketHandler";
 
 export default {
   data() {
     return {
+      homeScore: 0,
+      awayScore: 0,
+      socketHandler: {},
       game: null,
       gameDetails: null,
       statusMessage: null,
@@ -131,6 +130,7 @@ export default {
     },
   },
   mounted() {
+    this.socketHandler = new SocketHandler(this.$route.params.id);
     axios
       .all([
         axios.get("/api/games/" + this.$route.params.id),
@@ -140,42 +140,50 @@ export default {
         axios.spread((game, gameDetails) => {
           this.game = new Game(game.data);
           this.gameDetails = new DetailedSummary(gameDetails.data);
+
+          this.homeScore = this.game.currentHomePoints;
+          this.awayScore = this.game.currentAwayPoints;
         })
       )
       .catch((error) => {
         console.log("Error when getting game result " + error);
+      })
+      .finally(() => {
+        this.socketHandler.socket.on("MESSAGE", (data) => {
+          this.homeScore = data.score.homeScore;
+          this.awayScore = data.score.awayScore;
+          // if (this.isFinished === 0) {
+          //   this.homeScore = data.message.score.homeScore;
+          //   this.awayScore = data.message.score.awayScore;
+          //   this.matchScores = data.message.setScores;
+          //   this.currentSet = data.message.currentSet;
+          //   this.isFinished = data.message.isFinished;
+          //   this.currentServerId = data.message.currentServerId;
+          //   this.currentNumServes = data.message.currentNumServes;
+          //   this.homeScoreTotal = data.message.homeScoreTotal;
+          //   this.awayScoreTotal = data.message.awayScoreTotal;
+          //   console.log(this.currentNumServes);
+          // }
+        });
       });
   },
 };
 </script>
 
 <style>
-.tbl-rside {
-  animation: animRight 5s forwards;
-  width: 280px !important;
-  height: 200px;
-  border-radius: 0 3px 3px 0;
-  border-top: 2px solid white;
-  border-left: none;
-  border-bottom: 2px solid white;
-  border-right: 2px solid white;
+.table-wrapper {
+  height: 300px;
+  width: 600px;
+  margin: 0 auto;
+  border: 0px solid #efefef;
   position: relative;
+  display: flex;
 }
 
-.tbl-lside {
-  animation: animLeft 5s forwards;
-  width: 280px !important;
-  height: 200px;
-  border-radius: 3px 0 0 3px;
-  border-top: 2px solid white;
-  border-left: 2px solid white;
-  border-bottom: 2px solid white;
-  border-right: none;
-  position: relative;
-}
-
-.tbl-midside {
-  animation: animMid 5s forwards;
+.mid-current-score {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 30pt;
 }
 
 @keyframes animLeft {
@@ -188,7 +196,7 @@ export default {
   }
   100% {
     height: 50px;
-    transform: skew(-20deg);
+    transform: skew(-45deg);
     /*background-color: #2399b5;*/
   }
 }
@@ -211,7 +219,7 @@ export default {
   }
   100% {
     height: 50px;
-    transform: skew(20deg);
+    transform: skew(45deg);
     /*background-color: #2399b5;*/
   }
 }
@@ -225,7 +233,30 @@ export default {
   );
 }
 
+@keyframes animNet {
+  0% {
+    height: 250px;
+  }
+  100% {
+    height: 70px;
+  }
+}
+
+#midtablenet {
+  animation: animNet 5s forwards;
+  left: 50%;
+  border: 1px solid white;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  height: 70px;
+  top: -20px;
+  z-index: 1;
+  width: 0px;
+}
+
 #midtable {
+  animation: animMid 5s forwards;
   position: absolute;
   left: 50%;
   width: 500px;
@@ -244,6 +275,15 @@ export default {
     rgba(82, 99, 155, 1) 100%
   );
   transform: skew(10deg);
+  animation: animLeft 5s forwards;
+  width: 280px !important;
+  height: 200px;
+  border-radius: 3px 0 0 3px;
+  border-top: 2px solid white;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  border-right: none;
+  position: relative;
 }
 
 #rtable {
@@ -255,6 +295,15 @@ export default {
     rgba(82, 99, 155, 1) 100%
   );
   transform: skew(10deg);
+  animation: animRight 5s forwards;
+  width: 280px !important;
+  height: 200px;
+  border-radius: 0 3px 3px 0;
+  border-top: 2px solid white;
+  border-left: none;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
+  position: relative;
 }
 
 .serve-paddle {
@@ -269,5 +318,79 @@ export default {
 
 table td {
   border: 0px solid #000000;
+}
+
+.ball {
+  opacity: 0;
+  animation: animBall linear 3s infinite;
+  animation-delay: 5s;
+  background-color: #fff;
+  border-radius: 50%;
+  height: 1rem;
+  position: absolute;
+  width: 1rem;
+  z-index: 5;
+  top: -50px;
+}
+
+.ball-shadow {
+  opacity: 0;
+  animation: animBallShadow linear 3s infinite;
+  animation-delay: 5s;
+  background-color: #000;
+  border-radius: 50%;
+  height: 1rem;
+  position: absolute;
+  width: 1rem;
+  z-index: 3;
+  top: 23px;
+  transform: scale(1.5, 0.4);
+}
+
+@keyframes animBallShadow {
+  0% {
+    opacity: 0.5;
+    left: 0px;
+  }
+  40% {
+    top: 23px;
+  }
+  50% {
+    left: 600px;
+    opacity: 0.5;
+  }
+  90% {
+    top: 23px;
+  }
+  100% {
+    left: 0px;
+    opacity: 0.5;
+  }
+}
+
+@keyframes animBall {
+  0% {
+    opacity: 1;
+    left: 0px;
+    top: -50px;
+  }
+  40% {
+    opacity: 1;
+    top: 20px;
+  }
+  50% {
+    opacity: 1;
+    left: 600px;
+    top: -50px;
+  }
+  90% {
+    opacity: 1;
+    top: 20px;
+  }
+  100% {
+    opacity: 1;
+    left: 0px;
+    top: -50px;
+  }
 }
 </style>

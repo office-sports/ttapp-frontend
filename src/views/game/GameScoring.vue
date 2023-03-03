@@ -163,12 +163,12 @@
 
 <script>
 import axios from "axios";
-import io from "socket.io-client";
 import { LiveGameHandler } from "@/models/LiveGameHandler";
 import { Serve } from "@/models/Serve";
 import { Game } from "@/models/Game";
 import SliderOnOff from "@/components/items/SliderOnOff.vue";
 import CircleScore from "@/components/game/CircleScore.vue";
+import { SocketHandler } from "@/models/SocketHandler";
 
 export default {
   components: { CircleScore, SliderOnOff },
@@ -177,7 +177,6 @@ export default {
   },
   data() {
     return {
-      socket: null,
       keyPressDelta: 300,
       thisKeypressTime: 0,
       lastKeypressTime: 0,
@@ -186,6 +185,7 @@ export default {
       formVisible: false,
       errors: [],
       gh: {},
+      socketHandler: {},
     };
   },
   methods: {
@@ -328,6 +328,23 @@ export default {
       }
       return array;
     },
+    getMessagePayload() {
+      return {
+        score: {
+          homeScore: this.gh.game.currentHomePoints ?? 0,
+          awayScore: this.gh.game.currentAwayPoints ?? 0,
+        },
+        // setScores: this.match.scores,
+        // currentSet: this.match.currentSet,
+        // isFinished: this.match.isFinished,
+        // homeScoreTotal: this.match.homeScoreTotal,
+        // awayScoreTotal: this.match.awayScoreTotal,
+        // startingServer: this.match.serverId,
+        // serverFlipped: this.serverFlipped,
+        // currentNumServes: this.currentNumServes,
+        // currentServerId: this.currentServerId,
+      };
+    },
     keyPressHandler(e) {
       if (e.keyCode === 13) {
         this.thisKeypressTime = new Date();
@@ -369,22 +386,22 @@ export default {
           case 55:
           case 113:
             this.gh.addPointLeft();
-            this.statusMessage = this.gh.statusMessage;
+            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 49:
           case 97:
             this.gh.subPointLeft();
-            this.statusMessage = this.gh.statusMessage;
+            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 57:
           case 101:
             this.gh.addPointRight();
-            this.statusMessage = this.gh.statusMessage;
+            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 51:
           case 100:
             this.gh.subPointRight();
-            this.statusMessage = this.gh.statusMessage;
+            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 42:
             if (this.gh.isEndSet === true) {
@@ -413,9 +430,7 @@ export default {
             });
           }
 
-          this.socket = io(
-            window.location.hostname + ":3001?game_id=" + this.gh.game.id
-          );
+          this.socketHandler = new SocketHandler(this.gh.game.id);
         })
       )
       .catch((error) => {
