@@ -93,7 +93,7 @@
         </table>
       </div>
     </div>
-    <div>
+    <div class="padt20">
       <div
         style="
           height: 300px;
