@@ -7,7 +7,7 @@ export class SocketHandler {
     this.socket = io(window.location.hostname + ":3001?game_id=" + id);
   }
 
-  public sendMessage(data) {
+  public sendMessage(data: object) {
     this.socket.emit("SEND_MESSAGE", data);
   }
 }

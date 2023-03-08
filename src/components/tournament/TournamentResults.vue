@@ -71,7 +71,7 @@
       </template>
     </table>
     <div class="mart20" v-if="resultCount > 0">
-      <router-link :to="'/tournament/0/results'">
+      <router-link :to="'/tournament/' + this.tournamentId + '/results'">
         <div class="btn-link">show all</div>
       </router-link>
     </div>
@@ -90,12 +90,10 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$route.params.id);
     axios
       .get(
-        "/api/tournaments/" +
-          this.$route.params.id +
-          "/results/" +
-          this.resultCount
+        "/api/tournaments/" + this.tournamentId + "/results/" + this.resultCount
       )
       .then((res) => {
         if (res.data.length > 0) {

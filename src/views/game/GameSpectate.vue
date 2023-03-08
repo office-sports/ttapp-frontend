@@ -13,88 +13,68 @@
           <tr>
             <td class="w200"></td>
             <td class="txtc txt-col-darker">SCORE</td>
-            <td
-              class="txtc txt-col-darker"
+            <template
               v-for="(set, index) in this.game.scores"
               v-bind:key="index"
             >
-              SET {{ index + 1 }}
-            </td>
-            <td class="txtc txt-col-darker">POINTS</td>
+              <td v-if="index + 1 < this.setNumber" class="txtc txt-col-darker">
+                SET {{ index + 1 }}
+              </td>
+            </template>
           </tr>
           <tr>
-            <td :class="isWinner(game.homePlayerId) ? 'col-winner' : ''">
+            <td>
               {{ game.homePlayerName }}
             </td>
-            <td
-              class="txtc"
-              :class="isWinner(game.homePlayerId) ? 'col-winner' : ''"
-            >
-              {{ game.homeScoreTotal }}
+            <td class="txtc">
+              {{ this.homeScoreTotal }}
             </td>
-            <td
-              class="txtc"
+            <template
               v-for="(set, index) in this.game.scores"
               v-bind:key="index"
-              :class="set.home > set.away ? 'txt-col-green' : ''"
             >
-              {{ set.home }}
-            </td>
-            <td class="txtc txt-col-darkest">
-              <span
+              <td
+                v-if="index + 1 < this.setNumber"
                 :class="
-                  isWinner(game.homePlayerId)
-                    ? 'txt-col-green'
-                    : 'txt-col-white'
+                  parseInt(set.home) > parseInt(set.away)
+                    ? 'txtc txt-col-green'
+                    : 'txtc'
                 "
               >
-                {{ gameDetails.summary.homeTotalPoints }}
-              </span>
-              /
-              <span class="txt-col-darker">
-                {{ gameDetails.summary.homePointsPerc }}%
-              </span>
-            </td>
+                {{ set.home }}
+              </td>
+            </template>
           </tr>
           <tr>
-            <td :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''">
+            <td>
               {{ game.awayPlayerName }}
             </td>
-            <td
-              class="txtc"
-              :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''"
-            >
-              {{ game.awayScoreTotal }}
+            <td class="txtc">
+              {{ this.awayScoreTotal }}
             </td>
-            <td
-              class="txtc"
+            <template
               v-for="(set, index) in this.game.scores"
               v-bind:key="index"
-              :class="set.home < set.away ? 'txt-col-green' : ''"
             >
-              {{ set.away }}
-            </td>
-            <td class="txtc txt-col-darkest">
-              <span
+              <td
+                v-if="index + 1 < this.setNumber"
                 :class="
-                  isWinner(game.awayPlayerId)
-                    ? 'txt-col-green'
-                    : 'txt-col-white'
+                  parseInt(set.home) < parseInt(set.away)
+                    ? 'txtc txt-col-green'
+                    : 'txtc'
                 "
               >
-                {{ gameDetails.summary.awayTotalPoints }}
-              </span>
-              /
-              <span class="txt-col-darker">
-                {{ gameDetails.summary.awayPointsPerc }}%
-              </span>
-            </td>
+                {{ set.away }}
+              </td>
+            </template>
           </tr>
         </table>
       </div>
     </div>
-    <div class="mid-current-score">{{ homeScore }} : {{ awayScore }}</div>
-    <div class="padt20" style="margin-top: 100px">
+    <div class="mid-current-score" style="margin-top: 50px">
+      {{ homeScore }} : {{ awayScore }}
+    </div>
+    <div class="padt20">
       <div class="table-wrapper">
         <div class="ball"></div>
         <div class="ball-shadow"></div>
@@ -102,6 +82,38 @@
         <div id="midtable" class="grd">&nbsp;</div>
         <div id="ltable">&nbsp;</div>
         <div id="rtable">&nbsp;</div>
+        <table class="table-users">
+          <tr>
+            <td>
+              {{ this.game.homePlayerName }}
+            </td>
+            <td class="txtr">
+              {{ this.game.awayPlayerName }}
+            </td>
+          </tr>
+          <tr>
+            <td class="txtl">
+              <div
+                class="serve-paddles"
+                v-if="this.currentServerId === this.game.homePlayerId"
+              >
+                <span v-for="index in this.numServes" :key="index">
+                  <i class="fas fa-table-tennis"></i>
+                </span>
+              </div>
+            </td>
+            <td class="txtr">
+              <div
+                class="serve-paddles"
+                v-if="this.currentServerId === this.game.awayPlayerId"
+              >
+                <span v-for="index in this.numServes" :key="index">
+                  <i class="fas fa-table-tennis"></i>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
   </template>
@@ -118,7 +130,12 @@ export default {
     return {
       homeScore: 0,
       awayScore: 0,
+      homeScoreTotal: 0,
+      awayScoreTotal: 0,
+      currentServerId: 0,
+      numServes: 0,
       socketHandler: {},
+      setNumber: 1,
       game: null,
       gameDetails: null,
       statusMessage: null,
@@ -138,11 +155,21 @@ export default {
       ])
       .then(
         axios.spread((game, gameDetails) => {
-          this.game = new Game(game.data);
-          this.gameDetails = new DetailedSummary(gameDetails.data);
+          if (game.data.winner_id !== 0) {
+            this.$router.push({
+              name: "GameResult",
+              params: { id: game.data.match_id },
+            });
+          } else {
+            this.game = new Game(game.data);
+            this.gameDetails = new DetailedSummary(gameDetails.data);
 
-          this.homeScore = this.game.currentHomePoints;
-          this.awayScore = this.game.currentAwayPoints;
+            this.homeScore = this.game.currentHomePoints;
+            this.awayScore = this.game.currentAwayPoints;
+
+            this.setNumber =
+              this.game.homeScoreTotal + this.game.awayScoreTotal + 1;
+          }
         })
       )
       .catch((error) => {
@@ -150,20 +177,26 @@ export default {
       })
       .finally(() => {
         this.socketHandler.socket.on("MESSAGE", (data) => {
-          this.homeScore = data.score.homeScore;
-          this.awayScore = data.score.awayScore;
-          // if (this.isFinished === 0) {
-          //   this.homeScore = data.message.score.homeScore;
-          //   this.awayScore = data.message.score.awayScore;
-          //   this.matchScores = data.message.setScores;
-          //   this.currentSet = data.message.currentSet;
-          //   this.isFinished = data.message.isFinished;
-          //   this.currentServerId = data.message.currentServerId;
-          //   this.currentNumServes = data.message.currentNumServes;
-          //   this.homeScoreTotal = data.message.homeScoreTotal;
-          //   this.awayScoreTotal = data.message.awayScoreTotal;
-          //   console.log(this.currentNumServes);
-          // }
+          console.log(data);
+          if (data.isFinished) {
+            this.$router.push({
+              name: "GameResult",
+              params: { id: this.$route.params.id },
+            });
+          } else {
+            this.homeScore = data.score.homeScore;
+            this.awayScore = data.score.awayScore;
+
+            this.homeScoreTotal = data.homeScoreTotal;
+            this.awayScoreTotal = data.awayScoreTotal;
+
+            this.currentServerId = data.currentServerId;
+
+            this.numServes = data.numServes;
+            this.setNumber = this.homeScoreTotal + this.awayScoreTotal + 1;
+
+            this.game.scores = data.setScores;
+          }
         });
       });
   },
@@ -392,5 +425,36 @@ table td {
     left: 0px;
     top: -50px;
   }
+}
+
+.table-users {
+  position: absolute;
+  top: 80px;
+  font-size: 20pt;
+}
+
+.table-users td {
+  width: 50%;
+}
+
+#home-player {
+  z-index: 0;
+  position: absolute;
+  top: -130px;
+  left: -135px;
+}
+
+#away-player {
+  z-index: 0;
+  position: absolute;
+  top: -130px;
+  left: 625px;
+}
+
+.paddle-right {
+  font-size: 40pt;
+  rotate: -35deg;
+  left: -235px;
+  top: -20px;
 }
 </style>

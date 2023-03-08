@@ -8,6 +8,8 @@ import TopMenu from "./components/menus/TopMenu.vue";
     <TopMenu />
   </div>
 
+  <div class="clear"></div>
+
   <div class="content-wrapper">
     <RouterView />
   </div>

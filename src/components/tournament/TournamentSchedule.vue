@@ -43,7 +43,7 @@
       </template>
     </table>
     <div class="mart20" v-if="fixtureCount > 0">
-      <router-link :to="'/tournament/0/schedule'">
+      <router-link :to="'/tournament/' + this.tournamentId + '/schedule'">
         <div class="btn-link">show all</div>
       </router-link>
     </div>
@@ -63,7 +63,12 @@ export default {
   },
   mounted() {
     axios
-      .get("/api/tournaments/0/schedule/" + this.fixtureCount)
+      .get(
+        "/api/tournaments/" +
+          this.tournamentId +
+          "/schedule/" +
+          this.fixtureCount
+      )
       .then((res) => {
         if (res.data.length > 0) {
           this.matches = res.data;

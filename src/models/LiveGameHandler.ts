@@ -3,8 +3,10 @@ import axios from "axios";
 import { Serve } from "@/models/Serve";
 // @ts-ignore
 import { Game } from "@/models/Game";
+import io from "socket.io-client";
 
 export class LiveGameHandler {
+  public socket;
   isFlipped: boolean;
   isIdle: boolean;
   isEndSet: boolean;
@@ -21,6 +23,11 @@ export class LiveGameHandler {
     this.isEndSet = false;
     this.isGameStarted = false;
     this.statusMessage = "";
+    this.socket = io(window.location.hostname + ":3001?game_id=" + game.id);
+  }
+
+  public sendMessage() {
+    this.socket.emit("SEND_MESSAGE", this.getMessagePayload());
   }
 
   public loadGameData(gid: number) {
@@ -59,10 +66,11 @@ export class LiveGameHandler {
           },
           game_id: this.game.id,
           wins_required: this.game.winsRequired,
-          home: this.game.currentHomePoints,
-          away: this.game.currentAwayPoints,
+          home: this.game.currentHomePoints ?? 0,
+          away: this.game.currentAwayPoints ?? 0,
         })
         .then((res) => {
+          console.log(res.data);
           if (res.status === 200) {
             // @ts-ignore
             delete this.game;
@@ -74,7 +82,7 @@ export class LiveGameHandler {
         })
         .catch((error) => {
           this.isIdle = true;
-          console.log("error while finalizing game / set: " + error.response);
+          console.log("error while finalizing game / set: " + error);
         });
     }
   }
@@ -122,6 +130,22 @@ export class LiveGameHandler {
     }
   }
 
+  getMessagePayload() {
+    return {
+      score: {
+        homeScore: this.game ? this.game.currentHomePoints : 0,
+        awayScore: this.game ? this.game.currentAwayPoints : 0,
+      },
+      currentServerId: this.serve.currentServerId,
+      numServes: this.serve.numServes,
+      homeScoreTotal: this.game.homeScoreTotal,
+      awayScoreTotal: this.game.awayScoreTotal,
+      setScores: this.game.scores,
+      currentSet: this.serve.setNumber,
+      isFinished: this.game.winnerId !== 0,
+    };
+  }
+
   private savePoint(homePoint: number, awayPoint: number) {
     // allow only when idle
     if (!this.isIdle) {
@@ -142,8 +166,7 @@ export class LiveGameHandler {
       .then((res) => {
         this.serve = new Serve(res.data);
         this.isIdle = true;
-        // TODO broadcast point
-        // this.sendMessage(this.getPayload());
+        this.sendMessage();
       })
       .catch((error) => {
         this.isIdle = true;
@@ -171,8 +194,7 @@ export class LiveGameHandler {
       .then((res) => {
         this.serve = new Serve(res.data);
         this.isIdle = true;
-        // TODO broadcast point
-        // this.sendMessage(this.getPayload());
+        this.sendMessage();
       })
       .catch((error) => {
         this.isIdle = true;
@@ -190,7 +212,6 @@ export class LiveGameHandler {
         this.savePoint(1, 0);
       }
       this.checkIsEnded();
-      // TODO broadcast points
     }
   }
 
@@ -217,8 +238,6 @@ export class LiveGameHandler {
         }
       }
       this.checkIsEnded();
-      // TODO broadcast points
-      //this.sendMessage(this.getPayload());
     }
   }
 
@@ -233,7 +252,6 @@ export class LiveGameHandler {
       }
       this.checkIsEnded();
     }
-    // TODO broadcast
   }
 
   subPointRight() {
@@ -259,22 +277,6 @@ export class LiveGameHandler {
         }
       }
       this.checkIsEnded();
-      // TODO - broadcast point
-      //this.sendMessage(this.getPayload());
     }
-  }
-
-  // TODO - check if necessary
-  public loadServeData() {
-    axios
-      .all([axios.get("/api/games/" + this.game.id + "/serve")])
-      .then(
-        axios.spread((serve) => {
-          this.serve = serve.data;
-        })
-      )
-      .catch((error) => {
-        console.log("Error when loading game serve data " + error);
-      });
   }
 }

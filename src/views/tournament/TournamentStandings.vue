@@ -95,4 +95,9 @@ export default {
 .tbl-fixtures > tr:first-child {
   color: white;
 }
+
+.tbl-fixtures > tr {
+  line-height: 1em;
+  height: 1em;
+}
 </style>

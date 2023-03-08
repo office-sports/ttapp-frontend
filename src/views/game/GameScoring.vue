@@ -168,7 +168,6 @@ import { Serve } from "@/models/Serve";
 import { Game } from "@/models/Game";
 import SliderOnOff from "@/components/items/SliderOnOff.vue";
 import CircleScore from "@/components/game/CircleScore.vue";
-import { SocketHandler } from "@/models/SocketHandler";
 
 export default {
   components: { CircleScore, SliderOnOff },
@@ -185,7 +184,6 @@ export default {
       formVisible: false,
       errors: [],
       gh: {},
-      socketHandler: {},
     };
   },
   methods: {
@@ -328,23 +326,6 @@ export default {
       }
       return array;
     },
-    getMessagePayload() {
-      return {
-        score: {
-          homeScore: this.gh.game.currentHomePoints ?? 0,
-          awayScore: this.gh.game.currentAwayPoints ?? 0,
-        },
-        // setScores: this.match.scores,
-        // currentSet: this.match.currentSet,
-        // isFinished: this.match.isFinished,
-        // homeScoreTotal: this.match.homeScoreTotal,
-        // awayScoreTotal: this.match.awayScoreTotal,
-        // startingServer: this.match.serverId,
-        // serverFlipped: this.serverFlipped,
-        // currentNumServes: this.currentNumServes,
-        // currentServerId: this.currentServerId,
-      };
-    },
     keyPressHandler(e) {
       if (e.keyCode === 13) {
         this.thisKeypressTime = new Date();
@@ -386,22 +367,18 @@ export default {
           case 55:
           case 113:
             this.gh.addPointLeft();
-            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 49:
           case 97:
             this.gh.subPointLeft();
-            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 57:
           case 101:
             this.gh.addPointRight();
-            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 51:
           case 100:
             this.gh.subPointRight();
-            this.socketHandler.sendMessage(this.getMessagePayload());
             break;
           case 42:
             if (this.gh.isEndSet === true) {
@@ -423,14 +400,13 @@ export default {
           let s = new Serve(serve.data);
           let g = new Game(game.data);
           this.gh = new LiveGameHandler(false, g, s);
+          this.gh.sendMessage();
           if (g.winnerId !== 0) {
             this.$router.push({
               name: "GameResult",
               params: { id: g.id },
             });
           }
-
-          this.socketHandler = new SocketHandler(this.gh.game.id);
         })
       )
       .catch((error) => {
@@ -482,7 +458,7 @@ input {
 }
 
 .serve-paddles {
-  font-size: 40px;
+  font-size: 30px;
 }
 
 .serve-paddles span:first-child {
