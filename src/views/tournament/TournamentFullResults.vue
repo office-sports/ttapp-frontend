@@ -1,11 +1,13 @@
 <template>
   <div class="round-container mart20 marb20">
-    <TournamentResults :result-count="0" />
+    <TournamentResults
+      :result-count="0"
+      :tournament-id="this.$route.params.id"
+    />
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import TournamentResults from "@/components/tournament/TournamentResults.vue";
 
 export default {
@@ -15,13 +17,8 @@ export default {
   },
   data() {
     return {
-      tournament: {},
+      tournament: null,
     };
-  },
-  mounted() {
-    axios.get("/api/tournaments/live").then((res) => {
-      this.tournament = res.data.pop();
-    });
   },
 };
 </script>

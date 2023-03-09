@@ -90,7 +90,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route.params.id);
     axios
       .get(
         "/api/tournaments/" + this.tournamentId + "/results/" + this.resultCount

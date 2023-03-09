@@ -1,6 +1,9 @@
 <template>
   <div class="round-container mart20 marb20">
-    <TournamentSchedule :fixture-count="0" />
+    <TournamentSchedule
+      :fixture-count="0"
+      :tournament-id="this.$route.params.id"
+    />
   </div>
 </template>
 
@@ -17,11 +20,6 @@ export default {
     return {
       tournament: {},
     };
-  },
-  mounted() {
-    axios.get("/api/tournaments/live").then((res) => {
-      this.tournament = res.data.pop();
-    });
   },
 };
 </script>
