@@ -112,7 +112,6 @@ export default {
   },
   methods: {
     filterPlayers(data) {
-      console.log(data);
       return _.filter(data, (p) => {
         return parseInt(p.office_id) === parseInt(this.officeId);
       });

@@ -26,7 +26,6 @@ io.on("connection", function (socket) {
 
   // emit number of connections to game 'room' on new connection
   io.to(game).emit("CONNECTIONS", total);
-  // console.log('Number of clients connected to game ' + game + ': ' + total)
 
   socket.on("disconnect", function () {
     socket.leave(game);

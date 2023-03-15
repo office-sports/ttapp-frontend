@@ -177,7 +177,6 @@ export default {
       })
       .finally(() => {
         this.socketHandler.socket.on("MESSAGE", (data) => {
-          console.log(data);
           if (data.isFinished) {
             this.$router.push({
               name: "GameResult",

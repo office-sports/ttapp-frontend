@@ -31,6 +31,16 @@
       <div class="con-mid round-container txtc">
         <div>MATCH MODE</div>
         <div class="col-winner marb20">BO{{ this.gh.game.maxSets }}</div>
+        <template v-if="this.manualScoringEnabled && this.spectators > 0">
+          <div>SPECTATORS</div>
+          <div class="marb20">
+            <CircleScore :is-winner="false">
+              <template #score>
+                {{ this.spectators }}
+              </template>
+            </CircleScore>
+          </div>
+        </template>
         <div
           v-if="this.gh.game.homeScoreTotal + this.gh.game.awayScoreTotal > 0"
         >
@@ -173,10 +183,37 @@ export default {
   components: { CircleScore, SliderOnOff },
   created() {
     window.addEventListener("keypress", this.keyPressHandler);
+    axios
+      .all([
+        axios.get("/api/games/" + this.$route.params.id),
+        axios.get("/api/games/" + this.$route.params.id + "/serve"),
+      ])
+      .then(
+        axios.spread((game, serve) => {
+          let s = new Serve(serve.data);
+          let g = new Game(game.data);
+          this.gh = new LiveGameHandler(false, g, s);
+          this.gh.sendMessage();
+          if (g.winnerId !== 0) {
+            this.$router.push({
+              name: "GameResult",
+              params: { id: g.id },
+            });
+          }
+        })
+      )
+      .catch((error) => {
+        console.log("Error when getting live game data " + error);
+      })
+      .finally(() => {
+        this.gh.socket.on("CONNECTIONS", (data) => {
+          this.spectators = data;
+        });
+      });
   },
   data() {
     return {
-      keyPressDelta: 300,
+      keyPressDelta: 200,
       thisKeypressTime: 0,
       lastKeypressTime: 0,
       manualScoringEnabled: false,
@@ -184,13 +221,25 @@ export default {
       formVisible: false,
       errors: [],
       gh: {},
+      spectators: 0,
+      requestsSent: 0,
     };
   },
   methods: {
     turnOnManualScoring() {
+      if (this.manualScoringEnabled) {
+        return;
+      }
       this.manualScoringEnabled = true;
       this.gh.game.isGameStarted = true;
       this.gh.checkIsEnded();
+
+      axios
+        .get("/api/games/" + this.$route.params.id + "/announce")
+        .then(() => {})
+        .catch((error) => {
+          console.log("Error when announcing game " + error);
+        });
     },
     createPayload(event) {
       const payload = {};
@@ -357,6 +406,7 @@ export default {
          * 101 - e (right side +1 point)
          * 100 - d (right side -1 point)
          */
+        let gid = parseInt(this.$route.params.id);
         switch (e.keyCode) {
           case 46:
             this.gh.flipSides();
@@ -381,37 +431,40 @@ export default {
             this.gh.subPointRight();
             break;
           case 42:
-            if (this.gh.isEndSet === true) {
-              this.gh.finalizeSet(parseInt(this.$route.params.id));
+            if (this.gh.isEndSet && this.gh.isIdle && this.gh.game.id === gid) {
+              // set idle state to false, sending change request to API
+              this.gh.isIdle = false;
+              axios
+                .post("/api/games/finalize", {
+                  headers: {
+                    "Content-type": "application/x-www-form-urlencoded",
+                  },
+                  game_id: this.gh.game.id,
+                  wins_required: this.gh.game.winsRequired,
+                  home: this.gh.game.currentHomePoints ?? 0,
+                  away: this.gh.game.currentAwayPoints ?? 0,
+                })
+                .then((res) => {
+                  if (res.status === 200) {
+                    // @ts-ignore
+                    delete this.gh.game;
+                    this.gh.isEndSet = false;
+                    this.gh.flipSides();
+                    this.gh.isIdle = true;
+                    this.gh.loadGameData(gid);
+                  }
+                })
+                .catch((error) => {
+                  this.gh.isIdle = true;
+                  console.log("error while finalizing game / set: " + error);
+                });
             }
+            //this.gh.finalizeSet(parseInt(this.$route.params.id));
+
             break;
         }
       }
     },
-  },
-  mounted() {
-    axios
-      .all([
-        axios.get("/api/games/" + this.$route.params.id),
-        axios.get("/api/games/" + this.$route.params.id + "/serve"),
-      ])
-      .then(
-        axios.spread((game, serve) => {
-          let s = new Serve(serve.data);
-          let g = new Game(game.data);
-          this.gh = new LiveGameHandler(false, g, s);
-          this.gh.sendMessage();
-          if (g.winnerId !== 0) {
-            this.$router.push({
-              name: "GameResult",
-              params: { id: g.id },
-            });
-          }
-        })
-      )
-      .catch((error) => {
-        console.log("Error when getting live game data " + error);
-      });
   },
 };
 </script>
@@ -469,8 +522,8 @@ input {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   font-size: 50px;
   text-align: center;
   color: white;

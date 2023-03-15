@@ -69,14 +69,5 @@ export default {
       matches: [],
     };
   },
-  mounted() {
-    axios
-      .get("/api/tournaments/0/schedule/" + this.fixtureCount)
-      .then((res) => {
-        if (res.data.length > 0) {
-          this.matches = res.data;
-        }
-      });
-  },
 };
 </script>
