@@ -36,19 +36,17 @@ export default {
     return {
       officeId: 0,
       tournament: null,
-      liveGames: [],
     };
   },
   mounted() {
     this.officeId = localStorage.getItem("officeId");
     axios
-      .all([axios.get("/api/tournaments/live"), axios.get("/api/games/live")])
+      .all([axios.get("/api/tournaments/live")])
       .then(
         axios.spread((t, g) => {
           this.tournament = _.findWhere(t.data, {
             office_id: parseInt(this.officeId),
           });
-          this.liveGames = g.data;
         })
       )
       .catch((error) => {
