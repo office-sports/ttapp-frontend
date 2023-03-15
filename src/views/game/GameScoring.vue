@@ -181,6 +181,10 @@ import CircleScore from "@/components/game/CircleScore.vue";
 
 export default {
   components: { CircleScore, SliderOnOff },
+  unmounted() {
+    delete this.gh;
+    window.removeEventListener("keypress", this.keyPressHandler);
+  },
   created() {
     window.addEventListener("keypress", this.keyPressHandler);
     axios
