@@ -4,7 +4,11 @@ export class SocketHandler {
   public socket;
 
   constructor(id: number) {
-    this.socket = io(`https://${window.location.hostname}?game_id=${id}`);
+    const socketPrefix = import.meta.env.VITE_SOCKET_HOST ?? "";
+    const socketSuffix = import.meta.env.VITE_SOCKET_SUFFIX ?? "";
+    this.socket = io(
+      socketPrefix + window.location.hostname + socketSuffix + id
+    );
   }
 
   public sendMessage(data: object) {

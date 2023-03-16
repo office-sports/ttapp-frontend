@@ -23,7 +23,11 @@ export class LiveGameHandler {
     this.isEndSet = false;
     this.isGameStarted = false;
     this.statusMessage = "";
-    this.socket = io(`https://${window.location.hostname}?game_id=${game.id}`);
+    const socketPrefix = import.meta.env.VITE_SOCKET_HOST ?? "";
+    const socketSuffix = import.meta.env.VITE_SOCKET_SUFFIX ?? "";
+    this.socket = io(
+      socketPrefix + window.location.hostname + socketSuffix + game.id
+    );
   }
 
   public sendMessage() {
@@ -54,37 +58,6 @@ export class LiveGameHandler {
   public flipSides() {
     this.isFlipped = !this.isFlipped;
   }
-
-  // public finalizeSet(gid: number) {
-  //   if (this.isEndSet && this.isIdle && this.game.id === gid) {
-  //     // set idle state to false, sending change request to API
-  //     this.isIdle = false;
-  //     axios
-  //       .post("/api/games/finalize", {
-  //         headers: {
-  //           "Content-type": "application/x-www-form-urlencoded",
-  //         },
-  //         game_id: this.game.id,
-  //         wins_required: this.game.winsRequired,
-  //         home: this.game.currentHomePoints ?? 0,
-  //         away: this.game.currentAwayPoints ?? 0,
-  //       })
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           // @ts-ignore
-  //           delete this.game;
-  //           this.isEndSet = false;
-  //           this.flipSides();
-  //           this.isIdle = true;
-  //           this.loadGameData(gid);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         this.isIdle = true;
-  //         console.log("error while finalizing game / set: " + error);
-  //       });
-  //   }
-  // }
 
   // changes initial game server, all following serves
   // are calculated and returned through API
