@@ -71,10 +71,25 @@
         </table>
       </div>
     </div>
-    <div class="mid-current-score" style="margin-top: 50px">
-      {{ homeScore }} : {{ awayScore }}
+    <div class="round-container mart10">
+      <div class="round-container-dark-small flex txt-col-darker">
+        {{ this.spectators }} SPECTATORS &nbsp;
+        <span v-for="i in range(1, this.spectators)" v-bind:key="i" class="txt-col-white">
+          <i class="fas fa-child"></i>&nbsp;
+        </span>
+      </div>
     </div>
-    <div class="padt20">
+    <div class="mid-current-score flex-center" style="margin-top: 50px; overflow: hidden">
+      <div class="score-card">
+        {{ homeScore }}
+        <div class="score-card-cover"></div>
+      </div>&nbsp;
+      <div class="score-card">
+        {{ awayScore }}
+        <div class="score-card-cover"></div>
+      </div>
+    </div>
+    <div class="padt20 mart20">
       <div class="table-wrapper">
         <div class="ball"></div>
         <div class="ball-shadow"></div>
@@ -139,9 +154,19 @@ export default {
       game: null,
       gameDetails: null,
       statusMessage: null,
+      spectators: 0,
     };
   },
   methods: {
+    range: function (min, max) {
+      var array = [];
+      var j = 0;
+      for (var i = min; i <= max; i++) {
+        array[j] = i;
+        j++;
+      }
+      return array;
+    },
     isWinner(playerId) {
       return playerId === this.game.winnerId;
     },
@@ -197,6 +222,9 @@ export default {
             this.game.scores = data.setScores;
           }
         });
+        this.socketHandler.socket.on("CONNECTIONS", (data) => {
+          this.spectators = data;
+        });
       });
   },
 };
@@ -216,6 +244,12 @@ export default {
   margin: 0 auto;
   text-align: center;
   font-size: 30pt;
+}
+
+.mid-spectators {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 20pt;
 }
 
 @keyframes animLeft {
@@ -316,6 +350,28 @@ export default {
   border-bottom: 2px solid white;
   border-right: none;
   position: relative;
+}
+
+.score-card {
+  background: rgb(255 255 255);
+  padding: 0 5px;
+  color: black;
+  border-radius: 5px;
+  max-height: 60px;
+  overflow: hidden;
+  font-weight: 900;
+  max-width: 45px;
+}
+
+.score-card-cover {
+  border-top: 1px solid black;
+  top: -32px;
+  position: relative;
+  width: 55px;
+  left: -5px;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(255,255,255,1) 0%, rgba(166,166,166,1) 100%);
+  opacity: 0.4;
 }
 
 #rtable {

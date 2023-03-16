@@ -226,7 +226,6 @@ export default {
       errors: [],
       gh: {},
       spectators: 0,
-      requestsSent: 0,
     };
   },
   methods: {
