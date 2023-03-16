@@ -23,7 +23,7 @@ export class LiveGameHandler {
     this.isEndSet = false;
     this.isGameStarted = false;
     this.statusMessage = "";
-    this.socket = io(window.location.hostname + ":3001?game_id=" + game.id);
+    this.socket = io(`https://${window.location.hostname}?game_id=${game.id}`);
   }
 
   public sendMessage() {
