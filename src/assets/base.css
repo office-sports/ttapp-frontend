@@ -133,8 +133,8 @@ table td {
 }
 
 .tbl-fixtures > tr {
-    line-height: 1.5em;
-    height: 1.5em;
+    /*line-height: 1.5em;*/
+    /*height: 1.5em;*/
 }
 
 div.cutoutPic {
@@ -294,6 +294,12 @@ a:hover {
 
 .round-container-dark-small {
     background: #0f1017;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.round-container-light {
+    background: #30323c;
     border-radius: 10px;
     padding: 10px;
 }

@@ -4,9 +4,10 @@ import { Serve } from "@/models/Serve";
 // @ts-ignore
 import { Game } from "@/models/Game";
 import io from "socket.io-client";
+import { SocketHandler } from "@/models/SocketHandler";
 
 export class LiveGameHandler {
-  public socket;
+  public socketHandler;
   isFlipped: boolean;
   isIdle: boolean;
   isEndSet: boolean;
@@ -23,15 +24,17 @@ export class LiveGameHandler {
     this.isEndSet = false;
     this.isGameStarted = false;
     this.statusMessage = "";
-    const socketPrefix = import.meta.env.VITE_SOCKET_HOST ?? "";
-    const socketSuffix = import.meta.env.VITE_SOCKET_SUFFIX ?? "";
-    this.socket = io(
-      socketPrefix + window.location.hostname + socketSuffix + game.id
-    );
+
+    this.socketHandler = new SocketHandler();
+    this.socketHandler.setGameSocket(game.id);
+    this.socketHandler.setAppSocket();
   }
 
   public sendMessage() {
-    this.socket.emit("SEND_MESSAGE", this.getMessagePayload());
+    this.socketHandler.gameSocket.emit(
+      "SEND_MESSAGE",
+      this.getMessagePayload()
+    );
   }
 
   public loadGameData(gid: number) {
@@ -43,7 +46,18 @@ export class LiveGameHandler {
       .then(
         axios.spread((game, serve) => {
           if (game.data.is_finished) {
-            window.location.reload();
+            const gd = game.data;
+            this.socketHandler.gameSocket.emit("MSG_GAME_FINISHED", {
+              homeScoreTotal: gd.home_score_total,
+              awayScoreTotal: gd.away_score_total,
+              setScores: gd.scores,
+              id: gd.match_id,
+            });
+            if (game.data.play_order > 0) {
+              window.location.replace(window.location.origin);
+            } else {
+              window.location.reload();
+            }
           } else {
             this.game = new Game(game.data);
             this.serve = new Serve(serve.data);

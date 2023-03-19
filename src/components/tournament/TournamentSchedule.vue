@@ -14,24 +14,14 @@
       <tr class="table-th">
         <td>date of match</td>
         <td>group name</td>
-        <td class="txtr">home player</td>
         <td>&nbsp;</td>
-        <td class="txtl">away player</td>
       </tr>
       <template v-for="(match, index) in this.matches" v-bind:key="index">
         <tr class="tr-row">
           <td class="txt-col-darker">{{ match.date_of_match }}</td>
           <td>{{ match.group_name }}</td>
-          <td class="txtr">
-            <router-link :to="'/player/' + match.homePlayerId + '/profile'"
-              >{{ match.home_player_name }}
-            </router-link>
-          </td>
-          <td class="txtc">-</td>
           <td>
-            <router-link :to="'/player/' + match.away_player_id + '/profile'"
-              >{{ match.away_player_name }}
-            </router-link>
+            <GameVersusTable :match="match" />
           </td>
           <td>
             <router-link
@@ -52,9 +42,11 @@
 
 <script>
 import axios from "axios";
+import GameVersusTable from "@/components/tournament/GameVersusTable.vue";
 
 export default {
   name: "TournamentSchedule",
+  components: { GameVersusTable },
   props: ["fixtureCount", "officeId", "tournamentId"],
   data() {
     return {

@@ -18,6 +18,9 @@ io.on("connection", function (socket) {
   var game = socket.handshake.query.game_id;
 
   socket.join(game);
+
+  console.log(io.sockets.adapter.rooms);
+
   var total =
     io.sockets.adapter.rooms.get(game) !== undefined
       ? io.sockets.adapter.rooms.get(game).size
@@ -35,6 +38,14 @@ io.on("connection", function (socket) {
         : 0;
     console.log("Spectator disconnected from game: " + game, total);
     io.to(game).emit("CONNECTIONS", total);
+  });
+
+  socket.on("MSG_GAME_FINISHED", function (msg) {
+    io.to(game).emit("MSG_GAME_FINISHED", msg);
+  });
+
+  socket.on("MSG_GAME_STARTED", function (msg) {
+    io.to(game).emit("MSG_GAME_STARTED", msg);
   });
 
   socket.on("SEND_MESSAGE", function (msg) {

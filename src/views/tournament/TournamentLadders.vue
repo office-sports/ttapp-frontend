@@ -52,9 +52,9 @@
                         <span
                           style="color: #aaa"
                           v-if="match.home_player_id == 0"
-                          >{{ match.home_player_display_name }}</span
+                          >{{ match.home_player_name }}</span
                         >
-                        <span v-else>{{ match.home_player_display_name }}</span>
+                        <span v-else>{{ match.home_player_name }}</span>
                       </td>
                       <td class="txtr match-player">
                         <span v-if="match.winner_id != 0">
@@ -74,9 +74,9 @@
                         <span
                           style="color: #aaa"
                           v-if="match.away_player_id == 0"
-                          >{{ match.away_player_display_name }}</span
+                          >{{ match.away_player_name }}</span
                         >
-                        <span v-else>{{ match.away_player_display_name }}</span>
+                        <span v-else>{{ match.away_player_name }}</span>
                       </td>
                       <td class="txtr match-player">
                         <span v-if="match.winner_id != 0">
@@ -108,16 +108,20 @@ export default {
       division: null,
       playoffs: false,
       ladders: [],
+      intervalId: 0,
     };
   },
   mounted() {
     this.getData();
-    setInterval(
+    this.intervalId = setInterval(
       function () {
         this.getData();
       }.bind(this),
       10000
     );
+  },
+  unmounted() {
+    clearInterval(this.intervalId);
   },
   methods: {
     getData() {

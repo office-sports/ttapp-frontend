@@ -15,7 +15,7 @@
         <span class="txt-col-darker">{{ group.group_name }}</span>
       </div>
       <div class="pad10">
-        <table class="tbl-fixtures">
+        <table class="tbl-fixtures tbl-standings">
           <tr>
             <td class="txtl">name</td>
             <td class="txtc">played</td>
@@ -31,11 +31,13 @@
             v-bind:key="player.playerId"
             class="group-container txt-col-darker"
           >
-            <td :class="['level', 'level-c' + player.pos_color]">
-              <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
-              <router-link :to="'/player/' + player.player_id + '/profile'"
-                >{{ player.player_name }}
-              </router-link>
+            <td>
+              <div :class="['level', 'level-c' + player.pos_color]">
+                <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
+                <router-link :to="'/player/' + player.player_id + '/profile'"
+                  >{{ player.player_name }}
+                </router-link>
+              </div>
             </td>
             <td class="txtc">{{ player.played }}</td>
             <td class="txtc">
@@ -78,7 +80,12 @@ export default {
 };
 </script>
 
-<style scoped="scoped">
+<style scoped lang="less">
+.level {
+  border-radius: 5px;
+  padding: 2px 0;
+}
+
 .level > a {
   color: black;
 }
@@ -89,15 +96,14 @@ export default {
 
 .group-container > td:first-child {
   border-radius: 7px;
-  border: 2px solid #1e1e26;
+  border: 0px solid #1e1e26;
 }
 
-.tbl-fixtures > tr:first-child {
+.tbl-standings > tr:first-child {
   color: white;
 }
 
-.tbl-fixtures > tr {
-  line-height: 1em;
-  height: 1em;
+.tbl-standings td {
+  padding: 1px;
 }
 </style>

@@ -13,34 +13,15 @@
     <table class="tbl-fixtures">
       <tr class="table-th">
         <td>played</td>
-        <td class="txtr">home player</td>
-        <td>&nbsp;</td>
-        <td class="txtl">away player</td>
+        <td class="txtc">&nbsp;</td>
         <td class="txtc">score</td>
         <td class="txtl">set scores</td>
       </tr>
       <template v-for="(match, index) in this.matches" v-bind:key="index">
         <tr class="tr-row">
           <td class="txt-col-darker">{{ match.date_played }}</td>
-          <td
-            class="txtr"
-            v-bind:class="
-              match.winner_id === match.home_player_id ? 'col-winner' : ''
-            "
-          >
-            <router-link :to="'/player/' + match.home_player_id + '/profile'"
-              >{{ match.home_player_name }}
-            </router-link>
-          </td>
-          <td class="txtc">-</td>
-          <td
-            v-bind:class="
-              match.winner_id === match.away_player_id ? 'col-winner' : ''
-            "
-          >
-            <router-link :to="'/player/' + match.away_player_id + '/profile'"
-              >{{ match.away_player_name }}
-            </router-link>
+          <td>
+            <GameVersusTable :match="match" />
           </td>
           <td class="txtc">
             <span v-if="parseInt(match.is_walkover) === 1"> walkover </span>
@@ -80,9 +61,11 @@
 
 <script>
 import axios from "axios";
+import GameVersusTable from "@/components/tournament/GameVersusTable.vue";
 
 export default {
   name: "TournamentResults",
+  components: { GameVersusTable },
   props: ["resultCount", "officeId", "tournamentId"],
   data() {
     return {

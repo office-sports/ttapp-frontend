@@ -74,16 +74,24 @@
     <div class="round-container mart10">
       <div class="round-container-dark-small flex txt-col-darker">
         {{ this.spectators }} SPECTATORS &nbsp;
-        <span v-for="i in range(1, this.spectators)" v-bind:key="i" class="txt-col-white">
+        <span
+          v-for="i in range(1, this.spectators)"
+          v-bind:key="i"
+          class="txt-col-white"
+        >
           <i class="fas fa-child"></i>&nbsp;
         </span>
       </div>
     </div>
-    <div class="mid-current-score flex-center" style="margin-top: 50px; overflow: hidden">
+    <div
+      class="mid-current-score flex-center"
+      style="margin-top: 50px; overflow: hidden"
+    >
       <div class="score-card">
         {{ homeScore }}
         <div class="score-card-cover"></div>
-      </div>&nbsp;
+      </div>
+      &nbsp;
       <div class="score-card">
         {{ awayScore }}
         <div class="score-card-cover"></div>
@@ -172,7 +180,8 @@ export default {
     },
   },
   mounted() {
-    this.socketHandler = new SocketHandler(this.$route.params.id);
+    this.socketHandler = new SocketHandler();
+    this.socketHandler.setGameSocket(this.$route.params.id);
     axios
       .all([
         axios.get("/api/games/" + this.$route.params.id),
@@ -201,28 +210,27 @@ export default {
         console.log("Error when getting game result " + error);
       })
       .finally(() => {
-        this.socketHandler.socket.on("MESSAGE", (data) => {
-          if (data.isFinished) {
-            this.$router.push({
-              name: "GameResult",
-              params: { id: this.$route.params.id },
-            });
-          } else {
-            this.homeScore = data.score.homeScore;
-            this.awayScore = data.score.awayScore;
-
-            this.homeScoreTotal = data.homeScoreTotal;
-            this.awayScoreTotal = data.awayScoreTotal;
-
-            this.currentServerId = data.currentServerId;
-
-            this.numServes = data.numServes;
-            this.setNumber = this.homeScoreTotal + this.awayScoreTotal + 1;
-
-            this.game.scores = data.setScores;
-          }
+        this.socketHandler.gameSocket.on("MSG_GAME_FINISHED", (data) => {
+          this.$router.push({
+            name: "GameResult",
+            params: { id: data.id },
+          });
         });
-        this.socketHandler.socket.on("CONNECTIONS", (data) => {
+        this.socketHandler.gameSocket.on("MESSAGE", (data) => {
+          this.homeScore = data.score.homeScore;
+          this.awayScore = data.score.awayScore;
+
+          this.homeScoreTotal = data.homeScoreTotal;
+          this.awayScoreTotal = data.awayScoreTotal;
+
+          this.currentServerId = data.currentServerId;
+
+          this.numServes = data.numServes;
+          this.setNumber = this.homeScoreTotal + this.awayScoreTotal + 1;
+
+          this.game.scores = data.setScores;
+        });
+        this.socketHandler.gameSocket.on("CONNECTIONS", (data) => {
           this.spectators = data;
         });
       });
@@ -370,7 +378,12 @@ export default {
   width: 55px;
   left: -5px;
   height: 28px;
-  background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(255,255,255,1) 0%, rgba(166,166,166,1) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(166, 166, 166, 1) 100%
+  );
   opacity: 0.4;
 }
 

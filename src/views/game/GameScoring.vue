@@ -210,7 +210,7 @@ export default {
         console.log("Error when getting live game data " + error);
       })
       .finally(() => {
-        this.gh.socket.on("CONNECTIONS", (data) => {
+        this.gh.socketHandler.gameSocket.on("CONNECTIONS", (data) => {
           this.spectators = data;
         });
       });
@@ -239,7 +239,11 @@ export default {
 
       axios
         .get("/api/games/" + this.$route.params.id + "/announce")
-        .then(() => {})
+        .then(() => {
+          this.gh.socketHandler.appSocket.emit("MSG_GAME_STARTED", {
+            id: this.$route.params.id,
+          });
+        })
         .catch((error) => {
           console.log("Error when announcing game " + error);
         });
@@ -462,8 +466,6 @@ export default {
                   console.log("error while finalizing game / set: " + error);
                 });
             }
-            //this.gh.finalizeSet(parseInt(this.$route.params.id));
-
             break;
         }
       }
