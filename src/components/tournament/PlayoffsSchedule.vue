@@ -63,13 +63,15 @@
                           {{ match.away_score_total }}
                         </span>
                         <span class="padl20">
-                          <span
-                            v-for="score in match.scores"
-                            v-bind:key="score.set"
-                            class="sets-score"
-                          >
-                            {{ score.home }}:{{ score.away }}</span
-                          >
+                          <template v-if="match.winner_id !== 0">
+                            <span
+                              v-for="score in match.scores"
+                              v-bind:key="score.set"
+                              class="sets-score"
+                            >
+                              {{ score.home }}:{{ score.away }}</span
+                            >
+                          </template>
                         </span>
                       </td>
                       <td class="txtc w80">
@@ -159,47 +161,73 @@ export default {
       liveMatchId: 0,
       matches: [],
       socketHandler: {},
+      intervalId: 0,
     };
   },
   methods: {
     isLive(match) {
       return match.announced === 1 && match.winner_id === 0;
     },
+    getData() {
+      axios
+        .all([
+          axios.get("/api/tournaments/" + this.tournament.id + "/ladders"),
+          axios.get("/api/tournaments/" + this.tournament.id + "/live_games"),
+        ])
+        .then(
+          axios.spread((ladders, games) => {
+            let matchData = [];
+            for (let i = 0; i < ladders.data.length; i++) {
+              matchData.push(...ladders.data[i].ladder_group);
+            }
+            matchData = _.sortBy(matchData, function (elem) {
+              return elem.order;
+            });
+            if (games.data.length > 0) {
+              this.liveMatchId = _.first(games.data).id;
+            }
+            this.matches = matchData;
+          })
+        )
+        .catch((error) => {
+          console.log("Error fetching tournament ladder " + error);
+        })
+        .finally(() => {
+          this.socketHandler.appSocket.on("MSG_GAME_FINISHED", (data) => {
+            for (let i = 0; i < this.matches.length; i++) {
+              if (this.matches[i].game_id === parseInt(data.id)) {
+                this.matches[i].winner_id = data.winnerId;
+                this.matches[i].home_score_total = data.homeScoreTotal;
+                this.matches[i].away_score_total = data.awayScoreTotal;
+                this.matches[i].scores = data.setScores;
+              }
+            }
+            this.liveMatchId = data.id;
+          });
+          this.socketHandler.appSocket.on("MSG_GAME_STARTED", (data) => {
+            for (let i = 0; i < this.matches.length; i++) {
+              if (this.matches[i].game_id === parseInt(data.id)) {
+                this.matches[i].announced = 1;
+              }
+            }
+            this.liveMatchId = data.id;
+          });
+        });
+    },
   },
   mounted() {
+    this.getData();
+    this.intervalId = setInterval(
+      function () {
+        this.getData();
+      }.bind(this),
+      10000
+    );
     this.socketHandler = new SocketHandler();
     this.socketHandler.setAppSocket();
-    axios
-      .all([
-        axios.get("/api/tournaments/" + this.tournament.id + "/ladders"),
-        axios.get("/api/tournaments/" + this.tournament.id + "/live_games"),
-      ])
-      .then(
-        axios.spread((ladders, games) => {
-          for (let i = 0; i < ladders.data.length; i++) {
-            this.matches.push(...ladders.data[i].ladder_group);
-          }
-          this.matches = _.sortBy(this.matches, function (elem) {
-            return elem.order;
-          });
-          if (games.data.length > 0) {
-            this.liveMatchId = _.first(games.data).id;
-          }
-        })
-      )
-      .catch((error) => {
-        console.log("Error fetching tournament ladder " + error);
-      })
-      .finally(() => {
-        this.socketHandler.appSocket.on("MSG_GAME_STARTED", (data) => {
-          for (let i = 0; i < this.matches.length; i++) {
-            if (this.matches[i].game_id === parseInt(data.id)) {
-              this.matches[i].announced = 1;
-            }
-          }
-          this.liveMatchId = data.id;
-        });
-      });
+  },
+  unmounted() {
+    clearInterval(this.intervalId);
   },
 };
 </script>

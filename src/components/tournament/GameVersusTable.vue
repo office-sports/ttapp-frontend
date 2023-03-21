@@ -20,7 +20,7 @@
       <td class="w-vs txtc txt-col-darker">vs</td>
       <td
         class="w-player-name"
-        :class="match.home_player_id !== 0 ? 'txtl' : 'txtr txt-col-darker'"
+        :class="match.home_player_id !== 0 ? 'txtl' : 'txtl txt-col-darker'"
       >
         <span
           :class="

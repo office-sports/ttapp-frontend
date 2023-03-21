@@ -181,6 +181,7 @@ export default {
   },
   mounted() {
     this.socketHandler = new SocketHandler();
+    this.socketHandler.setAppSocket();
     this.socketHandler.setGameSocket(this.$route.params.id);
     axios
       .all([
@@ -210,7 +211,7 @@ export default {
         console.log("Error when getting game result " + error);
       })
       .finally(() => {
-        this.socketHandler.gameSocket.on("MSG_GAME_FINISHED", (data) => {
+        this.socketHandler.appSocket.on("MSG_GAME_FINISHED", (data) => {
           this.$router.push({
             name: "GameResult",
             params: { id: data.id },

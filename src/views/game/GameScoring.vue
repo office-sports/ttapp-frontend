@@ -425,7 +425,7 @@ export default {
           case 113:
             this.gh.addPointLeft();
             break;
-          case 49:
+          case 52:
           case 97:
             this.gh.subPointLeft();
             break;
@@ -433,7 +433,7 @@ export default {
           case 101:
             this.gh.addPointRight();
             break;
-          case 51:
+          case 54:
           case 100:
             this.gh.subPointRight();
             break;

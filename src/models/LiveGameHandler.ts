@@ -47,11 +47,12 @@ export class LiveGameHandler {
         axios.spread((game, serve) => {
           if (game.data.is_finished) {
             const gd = game.data;
-            this.socketHandler.gameSocket.emit("MSG_GAME_FINISHED", {
+            this.socketHandler.appSocket.emit("MSG_GAME_FINISHED", {
               homeScoreTotal: gd.home_score_total,
               awayScoreTotal: gd.away_score_total,
               setScores: gd.scores,
               id: gd.match_id,
+              winnerId: gd.winner_id,
             });
             if (game.data.play_order > 0) {
               window.location.replace(window.location.origin);
