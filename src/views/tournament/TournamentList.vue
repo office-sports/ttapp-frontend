@@ -12,7 +12,7 @@
             <td class="txtc">participants</td>
             <td class="txtc">games played</td>
             <td class="txtc">games scheduled</td>
-            <td class="txtc">options</td>
+            <td class="txtc" colspan="2">options</td>
           </tr>
           <template
             v-for="(tournament, index) in this.filteredTournaments"
@@ -24,30 +24,33 @@
               <td class="txtc">{{ tournament.participants }}</td>
               <td class="txtc">{{ tournament.finished }}</td>
               <td class="txtc">{{ tournament.scheduled }}</td>
-              <td class="txtc">
-                <span v-if="tournament.is_playoffs == 0">
+              <td class="txtr padr10">
+                <span v-if="tournament.is_playoffs === 0">
                   <router-link
                     :to="'/tournament/' + tournament.id + '/standings'"
                     >standings</router-link
                   >
-                  <span v-if="tournament.is_finished == 0">
-                    .
-                    <router-link
-                      :to="'/tournament/' + tournament.id + '/schedule'"
-                      >schedule</router-link
-                    >
-                  </span>
-                  <span v-if="tournament.is_finished == 1">
-                    .
-                    <router-link
-                      :to="'/tournament/' + tournament.id + '/results'"
-                      >results</router-link
-                    >
-                  </span>
                 </span>
                 <span v-else>
                   <router-link :to="'/tournament/' + tournament.id + '/ladders'"
                     >ladder</router-link
+                  >
+                </span>
+              </td>
+              <td class="txtl">
+                <span
+                  v-if="
+                    tournament.is_finished === 0 && tournament.is_playoffs === 0
+                  "
+                >
+                  <router-link
+                    :to="'/tournament/' + tournament.id + '/schedule'"
+                    >schedule</router-link
+                  >
+                </span>
+                <span v-if="tournament.is_finished === 1">
+                  <router-link :to="'/tournament/' + tournament.id + '/results'"
+                    >results</router-link
                   >
                 </span>
               </td>

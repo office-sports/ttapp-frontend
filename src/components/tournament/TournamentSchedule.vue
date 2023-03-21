@@ -1,26 +1,36 @@
 <template>
   <div class="round-container-dark-small flex txt-col-darker flex-full-width">
-    <span v-if="fixtureCount === 0" class="txt-col-white"
-      >Full tournament schedule</span
-    >
-    <span v-else class="txt-col-white">Tournament schedule</span>
-    <span class="marl10" v-if="fixtureCount > 0"
-      >(next {{ fixtureCount }})</span
-    >
-    <!--    <template v-if="fixtureCount === 0">-->
-    <!--      <form @submit.prevent="nameSearch" style="display: inline-block">-->
-    <!--        <input-->
-    <!--          v-model="searchName"-->
-    <!--          placeholder="name"-->
-    <!--          type="text"-->
-    <!--          class="textInput"-->
-    <!--          @keyup="this.filterName()"-->
-    <!--        />-->
-    <!--      </form>-->
-    <!--      <span class="pl10" v-if="this.searchName && this.searchName.length >= 3">-->
-    <!--        <i @click="this.clearSearchName" class="fa-solid fa-circle-xmark"></i>-->
-    <!--      </span>-->
-    <!--    </template>-->
+    <table class="tbl-nopad">
+      <tr>
+        <td class="padl10">
+          <span v-if="fixtureCount === 0" class="txt-col-white">
+            Full tournament schedule
+          </span>
+          <span v-else class="txt-col-white">Tournament schedule</span>
+          <span class="marl10" v-if="fixtureCount > 0"
+            >(next {{ fixtureCount }})</span
+          >
+        </td>
+        <td class="txtr padr10" style="padding: 0">
+          <template v-if="fixtureCount === 0">
+            <form @submit.prevent="nameSearch" style="display: inline-block">
+              <input
+                v-model="searchName"
+                placeholder="name"
+                type="text"
+                class="textInput txtl"
+              />
+            </form>
+            <span
+              class="padl10"
+              v-if="this.searchName !== '' && this.searchName.length >= 3"
+            >
+              <i @click="this.clearSearchName" class="far fa-times-circle"></i>
+            </span>
+          </template>
+        </td>
+      </tr>
+    </table>
   </div>
 
   <div v-if="matches.length > 0" class="pad10">
@@ -83,28 +93,19 @@ export default {
       });
   },
   methods: {
-    filterName: function () {
-      // remove all filters
-      this.toggleAll();
-    },
-    toggleAll() {
-      // this.finishedOnly = false;
-      // this.unfinishedOnly = false;
-      // this.betsOnly = false;
-    },
-    hasPlayerName(game) {
-      // get game players
-      let names = (
-        game.home_player_name +
-        " " +
-        game.away_player_name
-      ).toLowerCase();
-      return names.indexOf(this.searchName.toLowerCase()) > -1;
+    clearSearchName() {
+      this.searchName = "";
     },
     isShown(game) {
       // By default, do not hide (hide = false)
       if (this.searchName !== "" && this.searchName.length >= 3) {
-        return !this.hasPlayerName(game);
+        // get game players
+        let names = (
+          game.home_player_name +
+          " " +
+          game.away_player_name
+        ).toLowerCase();
+        return names.indexOf(this.searchName.toLowerCase()) > -1;
       }
       return true;
     },
@@ -115,5 +116,9 @@ export default {
 <style>
 .btn-link:hover {
   background: #737373;
+}
+
+.tbl-nopad td {
+  padding: 0;
 }
 </style>
