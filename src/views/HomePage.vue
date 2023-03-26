@@ -23,7 +23,9 @@
       </div>
     </template>
     <template v-else>
-      <PlayoffsSchedule :tournament="this.tournament" />
+      <div>
+        <PlayoffsGames :tournament="this.tournament" />
+      </div>
     </template>
   </div>
 </template>
@@ -34,12 +36,12 @@ import TournamentResults from "@/components/tournament/TournamentResults.vue";
 import TournamentSchedule from "@/components/tournament/TournamentSchedule.vue";
 import TournamentPanel from "@/components/tournament/TournamentPanel.vue";
 import _ from "underscore";
-import PlayoffsSchedule from "@/components/tournament/PlayoffsSchedule.vue";
+import PlayoffsGames from "@/components/tournament/PlayoffsGames.vue";
 
 export default {
   name: "IndexPage",
   components: {
-    PlayoffsSchedule,
+    PlayoffsGames,
     TournamentPanel,
     TournamentResults,
     TournamentSchedule,

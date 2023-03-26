@@ -49,9 +49,18 @@
                   >
                 </span>
                 <span v-if="tournament.is_finished === 1">
-                  <router-link :to="'/tournament/' + tournament.id + '/results'"
-                    >results</router-link
-                  >
+                  <div v-if="!tournament.is_playoffs">
+                    <router-link
+                      :to="'/tournament/' + tournament.id + '/results'"
+                      >results</router-link
+                    >
+                  </div>
+                  <div v-else>
+                    <router-link
+                      :to="'/tournament/' + tournament.id + '/results_playoffs'"
+                      >results</router-link
+                    >
+                  </div>
                 </span>
               </td>
             </tr>

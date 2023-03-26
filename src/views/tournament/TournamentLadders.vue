@@ -108,20 +108,17 @@ export default {
       division: null,
       playoffs: false,
       ladders: [],
-      intervalId: 0,
+      interval: null,
     };
   },
   mounted() {
     this.getData();
-    this.intervalId = setInterval(
-      function () {
-        this.getData();
-      }.bind(this),
-      10000
-    );
+    this.interval = setInterval(() => {
+      this.getData();
+    }, 10000);
   },
   unmounted() {
-    clearInterval(this.intervalId);
+    clearInterval(this.interval);
   },
   methods: {
     getData() {

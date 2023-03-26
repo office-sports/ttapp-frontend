@@ -11,6 +11,8 @@ import Ladders from "@/views/tournament/TournamentLadders.vue";
 import GameScoring from "@/views/game/GameScoring.vue";
 import GameResult from "@/views/game/GameResult.vue";
 import GameSpectate from "@/views/game/GameSpectate.vue";
+import TournamentManagement from "@/views/tournament/TournamentManagement.vue";
+import TournamentFullResultsPlayoffs from "@/views/tournament/TournamentFullResultsPlayoffs.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +33,11 @@ const router = createRouter({
       path: "/tournament/:id/results",
       name: "TournamentFullResults",
       component: TournamentFullResults,
+    },
+    {
+      path: "/tournament/:id/results_playoffs",
+      name: "TournamentFullResultsPlayoffs",
+      component: TournamentFullResultsPlayoffs,
     },
     {
       path: "/tournaments",
@@ -62,6 +69,11 @@ const router = createRouter({
       path: "/game/:id/spectate",
       name: "GameSpectate",
       component: GameSpectate,
+    },
+    {
+      path: "/tournament/:id/manage",
+      name: "TournamentManagement",
+      component: TournamentManagement,
     },
   ],
 });

@@ -54,6 +54,50 @@
             <td class="txtc">{{ player.points }}</td>
           </tr>
         </table>
+        <div class="padt20" v-if="!this.tournament.is_finished">
+          <div>
+            <span @click="this.toggleGroup(group.group_id)" class="lbl-recap">
+              <i
+                class="fas fa-arrow-alt-circle-down"
+                v-if="this.isGroupToggled(group.group_id)"
+              ></i>
+              <i class="fas fa-arrow-alt-circle-right" v-else></i>
+              Recap of last finished game week
+            </span>
+          </div>
+          <div v-show="this.isGroupToggled(group.group_id)">
+            <div class="padt10">
+              <template
+                v-for="(msg, ind) in this.formatMessage(
+                  this.recaps[group.group_id].stats_message
+                )"
+                v-bind:key="ind"
+              >
+                <template v-if="Array.isArray(msg)">
+                  <template v-for="(m, i) in msg" v-bind:key="i">
+                    <span class="col-winner list-comma">{{ m }}</span>
+                  </template>
+                </template>
+                <span v-else>{{ msg }}</span>
+              </template>
+            </div>
+            <div class="padt10">
+              <template
+                v-for="(msg, ind) in this.formatMessage(
+                  this.recaps[group.group_id].candidates_message
+                )"
+                v-bind:key="ind"
+              >
+                <template v-if="Array.isArray(msg)">
+                  <template v-for="(m, i) in msg" v-bind:key="i">
+                    <span class="col-winner list-comma">{{ m }}</span>
+                  </template>
+                </template>
+                <span v-else>{{ msg }}</span>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -61,6 +105,7 @@
 
 <script>
 import axios from "axios";
+import _ from "underscore";
 
 export default {
   name: "TournamentStandings",
@@ -68,13 +113,58 @@ export default {
     return {
       tournament: null,
       groups: [],
+      recaps: [],
+      securedPos: [],
+      toggleGroups: [],
     };
+  },
+  methods: {
+    toggleGroup(id) {
+      if (
+        this.toggleGroups.indexOf(id) !== undefined &&
+        this.toggleGroups.indexOf(id) >= 0
+      ) {
+        this.toggleGroups.splice(this.toggleGroups.indexOf(id), 1);
+      } else {
+        this.toggleGroups.push(id);
+      }
+    },
+    isGroupToggled(id) {
+      return (
+        this.toggleGroups.indexOf(id) !== undefined &&
+        this.toggleGroups.indexOf(id) >= 0
+      );
+    },
+    formatMessage(msg) {
+      let msgParts = msg.split("|");
+      msgParts = _.map(msgParts, (elem) => {
+        if (elem.startsWith("=")) {
+          let e = elem.replaceAll("=", "");
+          return e.split(",");
+        } else {
+          return elem;
+        }
+      });
+
+      return msgParts;
+    },
   },
   mounted() {
     axios
-      .get("/api/tournaments/" + this.$route.params.id + "/standings")
-      .then((res) => {
-        this.groups = res.data;
+      .all([
+        axios.get("/api/tournaments/" + this.$route.params.id),
+        axios.get("/api/tournaments/" + this.$route.params.id + "/standings"),
+        axios.get("/api/tournaments/" + this.$route.params.id + "/info"),
+      ])
+      .then(
+        axios.spread((t, s, i) => {
+          this.tournament = t.data;
+          this.groups = s.data;
+          this.recaps = _.indexBy(i.data, "id");
+        })
+      )
+      .catch((error) => {
+        console.log(error);
       });
   },
 };
@@ -105,5 +195,18 @@ export default {
 
 .tbl-standings td {
   padding: 1px;
+}
+
+.list-comma + .list-comma:before {
+  content: ", ";
+  color: white;
+}
+
+.lbl-recap {
+  cursor: pointer;
+}
+
+.lbl-recap:hover {
+  color: #808082;
 }
 </style>

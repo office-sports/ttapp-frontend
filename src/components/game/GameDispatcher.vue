@@ -24,7 +24,6 @@ export default {
         if (!!gameData.is_finished === true) {
           // game finished
           if (gameData.has_points) {
-            console.log("Game has points");
             // TODO redirect to detailed summary view
           } else {
             // redirect to regular result view

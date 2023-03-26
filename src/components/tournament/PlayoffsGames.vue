@@ -1,15 +1,44 @@
 <template>
   <template v-if="this.matches.length !== 0">
     <div class="round-container-green">
-      <div class="round-container-green-small flex txt-col-darker">
+      <div
+        class="round-container-green-small flex txt-col-darker flex-full-width"
+      >
         <span class="txt-col-white">
           <i class="fas fa-trophy marr10"></i>
           {{ this.tournament.name }}</span
         >
+        <span class="padr10">
+          <router-link
+            :to="{
+              name: 'Ladders',
+              params: { id: this.tournament.id },
+            }"
+            >View ladder
+          </router-link>
+        </span>
+      </div>
+    </div>
+
+    <div v-if="this.tournament.is_finished && false">
+      <div class="mart20 round-container">
+        <div class="round-container-dark-small shine">
+          Final standings Premier League
+        </div>
+        <div class="padt20">
+          <table class="tbl-fixed txtc" style="font-size: 20pt">
+            <tr>
+              <td class="col-winner"></td>
+              <td class="col-winner"></td>
+              <td class="col-winner"></td>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
 
     <div class="round-container mart20">
+      <div class="round-container-dark-small">Games by order of play</div>
       <div class="pad10">
         <table>
           <template v-for="(match, index) in this.matches" v-bind:key="index">
@@ -32,8 +61,14 @@
               </td>
             </tr>
             <tr>
-              <td>
-                <div class="round-container-light">
+              <td :class="match.is_final_game === 1 ? 'td-final' : ''">
+                <div
+                  :class="
+                    parseInt(this.selectedGame) === match.game_id
+                      ? 'round-container-lighter'
+                      : 'round-container-light'
+                  "
+                >
                   <table>
                     <tr class="tr-playoff-row">
                       <td
@@ -51,13 +86,21 @@
                       >
                         <div class="pong">&nbsp;</div>
                       </td>
-                      <td v-else rowspan="2" class="td-indicator"></td>
+                      <td
+                        v-else
+                        rowspan="2"
+                        :class="
+                          parseInt(this.selectedGame) === match.game_id
+                            ? 'td-indicator-white'
+                            : 'td-indicator'
+                        "
+                      ></td>
                       <td class="padl10 w30">#{{ match.order }}</td>
                       <td class="w_game_name">{{ match.game_name }}</td>
                       <td>
                         <GameVersusTable :match="match" />
                       </td>
-                      <td class="txtl" style="width: 250px">
+                      <td class="txtl" style="width: 280px">
                         <span v-if="match.winner_id !== 0">
                           {{ match.home_score_total }} -
                           {{ match.away_score_total }}
@@ -74,7 +117,7 @@
                           </template>
                         </span>
                       </td>
-                      <td class="txtc w80">
+                      <td class="txtc w-playoff-options">
                         <div
                           v-if="match.announced === 0 && match.winner_id === 0"
                         >
@@ -92,7 +135,7 @@
                         </div>
                         <div class="txt-col-darker" v-else>finished</div>
                       </td>
-                      <td class="txtr padr10 w80">
+                      <td class="txtr padr10 w-playoff-options">
                         <div
                           v-if="match.announced === 0 && match.winner_id === 0"
                         >
@@ -161,7 +204,8 @@ export default {
       liveMatchId: 0,
       matches: [],
       socketHandler: {},
-      intervalId: 0,
+      interval: null,
+      selectedGame: 0,
     };
   },
   methods: {
@@ -214,20 +258,93 @@ export default {
           });
         });
     },
+    getScheduledGames() {
+      let games = _.filter(this.matches, function (elem) {
+        return (
+          elem.winner_id === 0 &&
+          elem.home_player_id !== 0 &&
+          elem.away_player_id !== 0
+        );
+      });
+      return _.keys(_.indexBy(games, "game_id"));
+    },
+    selectUp() {
+      let ids = this.getScheduledGames();
+
+      if (ids.length === 0) {
+        return;
+      }
+
+      // if there is no game selected yet, take first one
+      if (this.selectedGame === 0) {
+        this.selectedGame = ids[0];
+        return;
+      }
+
+      let idx = _.indexOf(ids, this.selectedGame);
+
+      // if the first one is selected, do nothing
+      if (idx !== 0) {
+        this.selectedGame = ids[idx - 1];
+      }
+    },
+    selectDown() {
+      let ids = this.getScheduledGames();
+
+      if (ids.length === 0) {
+        return;
+      }
+
+      // if there is no game selected yet, take first one
+      if (this.selectedGame === 0) {
+        this.selectedGame = ids[0];
+        return;
+      }
+
+      let idx = _.indexOf(ids, this.selectedGame);
+      // if the first one is selected, do nothing
+      if (idx !== ids.length - 1) {
+        this.selectedGame = ids[idx + 1];
+      }
+    },
+    keyPressHandler(e) {
+      if (this.tournament.is_finished) {
+        e.preventDefault();
+        return;
+      }
+
+      switch (e.keyCode) {
+        case 56:
+          this.selectUp();
+          break;
+        case 53:
+          this.selectDown();
+          break;
+        case 13:
+          if (this.tournament.is_finished === 0 && this.selectedGame !== 0) {
+            this.$router.push({
+              name: "GameScoring",
+              params: { id: this.selectedGame },
+            });
+          }
+          break;
+      }
+    },
   },
   mounted() {
     this.getData();
-    this.intervalId = setInterval(
-      function () {
-        this.getData();
-      }.bind(this),
-      10000
-    );
+    this.interval = setInterval(() => {
+      this.getData();
+    }, 10000);
     this.socketHandler = new SocketHandler();
     this.socketHandler.setAppSocket();
   },
   unmounted() {
-    clearInterval(this.intervalId);
+    clearInterval(this.interval);
+    window.removeEventListener("keypress", this.keyPressHandler);
+  },
+  created() {
+    window.addEventListener("keypress", this.keyPressHandler);
   },
 };
 </script>
@@ -247,14 +364,31 @@ table tr td {
 .td-indicator {
   width: 10px;
   border-radius: 5px;
+  background: #4e4e4e;
+}
+
+.td-final .td-indicator {
+  width: 10px;
+  border-radius: 5px;
+  background: #1e1e26;
+}
+
+.td-final .round-container-light {
+  background: #324d2a;
+}
+
+.td-indicator-white {
+  width: 10px;
+  border-radius: 5px;
+  background: #fff;
 }
 
 .w_game_name {
-  width: 200px;
+  width: 150px;
 }
 
-.w80 {
-  width: 80px;
+.w-playoff-options {
+  width: 70px;
 }
 
 .indicator-anim {
