@@ -32,11 +32,35 @@
             class="group-container txt-col-darker"
           >
             <td>
-              <div :class="['level', 'level-c' + player.pos_color]">
-                <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
-                <router-link :to="'/player/' + player.player_id + '/profile'"
-                  >{{ player.player_name }}
-                </router-link>
+              <div
+                :class="['level', 'level-c' + player.pos_color]"
+                class="flex-full-width"
+              >
+                <span class="level-span">
+                  <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
+                  <router-link :to="'/player/' + player.player_id + '/profile'"
+                    >{{ player.player_name }}
+                  </router-link>
+                </span>
+                <span class="marr5 txt-col-darkest">
+                  <span
+                    class="lbl-pos"
+                    v-if="this.positions[player.player_id] < 0"
+                  >
+                    {{ this.positions[player.player_id] }}
+                    <i class="fas fa-arrow-alt-circle-down"></i>
+                  </span>
+                  <span
+                    class="lbl-pos"
+                    v-else-if="this.positions[player.player_id] > 0"
+                  >
+                    +{{ this.positions[player.player_id] }}
+                    <i class="fas fa-arrow-alt-circle-up"></i>
+                  </span>
+                  <!--                  <span v-else>-->
+                  <!--                    <i class="fas fa-dot-circle"></i>-->
+                  <!--                  </span>-->
+                </span>
               </div>
             </td>
             <td class="txtc">{{ player.played }}</td>
@@ -116,6 +140,7 @@ export default {
       recaps: [],
       securedPos: [],
       toggleGroups: [],
+      positions: [],
     };
   },
   methods: {
@@ -161,6 +186,12 @@ export default {
           this.tournament = t.data;
           this.groups = s.data;
           this.recaps = _.indexBy(i.data, "id");
+
+          _.each(this.recaps, (elem) => {
+            _.each(elem.player_info, (pi) => {
+              this.positions[pi.id] = -1 * pi.position_movement;
+            });
+          });
         })
       )
       .catch((error) => {
@@ -176,11 +207,11 @@ export default {
   padding: 2px 0;
 }
 
-.level > a {
+.level-span > a {
   color: black;
 }
 
-.level > a:hover {
+.level-span > a:hover {
   color: #0e3c46;
 }
 
@@ -208,5 +239,15 @@ export default {
 
 .lbl-recap:hover {
   color: #808082;
+}
+
+.lbl-pos {
+  width: 38px;
+  background: #1e1e26;
+  padding: 0 5px;
+  border-radius: 20px;
+  display: block;
+  color: white;
+  text-align: end;
 }
 </style>
