@@ -12,7 +12,7 @@
         <table class="tbl-fixed">
           <tr>
             <td class="w200"></td>
-            <!--            <td class="txtc txt-col-darker">ELO</td>-->
+            <td class="txtc txt-col-darker">ELO</td>
             <td class="txtc txt-col-darker">SCORE</td>
             <td
               class="txtc txt-col-darker"
@@ -27,13 +27,13 @@
             <td :class="isWinner(game.homePlayerId) ? 'col-winner' : ''">
               {{ game.homePlayerName }}
             </td>
-            <!--            <td class="txtc">-->
-            <!--              <span v-if="game.newHomeElo > 0">-->
-            <!--                {{ game.newHomeElo }}-->
-            <!--                (<span v-if="game.homeEloDiff > 0">+</span-->
-            <!--                >{{ game.homeEloDiff }})-->
-            <!--              </span>-->
-            <!--            </td>-->
+            <td class="txtc">
+              <span v-if="game.newHomeElo > 0">
+                {{ game.newHomeElo }}
+                (<span v-if="game.homeEloDiff > 0">+</span
+                >{{ game.homeEloDiff }})
+              </span>
+            </td>
             <td
               class="txtc"
               :class="isWinner(game.homePlayerId) ? 'col-winner' : ''"
@@ -68,10 +68,10 @@
             <td :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''">
               {{ game.awayPlayerName }}
             </td>
-            <!--            <td class="txtc">-->
-            <!--              {{ game.newAwayElo }}-->
-            <!--              (<span v-if="game.awayEloDiff > 0">+</span>{{ game.awayEloDiff }})-->
-            <!--            </td>-->
+            <td class="txtc">
+              {{ game.newAwayElo }}
+              (<span v-if="game.awayEloDiff > 0">+</span>{{ game.awayEloDiff }})
+            </td>
             <td
               class="txtc"
               :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''"

@@ -90,36 +90,37 @@
             </span>
           </div>
           <div>
-            <!--          <div v-show="this.isGroupToggled(group.group_id)">-->
-            <div class="padt10">
-              <template
-                v-for="(msg, ind) in this.formatMessage(
-                  this.recaps[group.group_id].stats_message
-                )"
-                v-bind:key="ind"
-              >
-                <span v-if="Array.isArray(msg)" class="list-comma">
-                  <template v-for="(m, i) in msg" v-bind:key="i">
-                    <span class="txt-col-green item-comma">{{ m }}</span>
-                  </template>
-                </span>
-                <span v-else>{{ msg }}</span>
-              </template>
-            </div>
-            <div class="padt10 list-comma">
-              <template
-                v-for="(msg, ind) in this.formatMessage(
-                  this.recaps[group.group_id].candidates_message
-                )"
-                v-bind:key="ind"
-              >
-                <span v-if="Array.isArray(msg)" class="list-comma">
-                  <template v-for="(m, i) in msg" v-bind:key="i">
-                    <span class="txt-col-green item-comma">{{ m }}</span>
-                  </template>
-                </span>
-                <span v-else>{{ msg }}</span>
-              </template>
+            <div v-show="this.isGroupToggled(group.group_id)">
+              <div class="padt10">
+                <template
+                  v-for="(msg, ind) in this.formatMessage(
+                    this.recaps[group.group_id].stats_message
+                  )"
+                  v-bind:key="ind"
+                >
+                  <span v-if="Array.isArray(msg)" class="list-comma">
+                    <template v-for="(m, i) in msg" v-bind:key="i">
+                      <span class="txt-col-green item-comma">{{ m }}</span>
+                    </template>
+                  </span>
+                  <span v-else>{{ msg }}</span>
+                </template>
+              </div>
+              <div class="padt10 list-comma">
+                <template
+                  v-for="(msg, ind) in this.formatMessage(
+                    this.recaps[group.group_id].candidates_message
+                  )"
+                  v-bind:key="ind"
+                >
+                  <span v-if="Array.isArray(msg)" class="list-comma">
+                    <template v-for="(m, i) in msg" v-bind:key="i">
+                      <span class="txt-col-green item-comma">{{ m }}</span>
+                    </template>
+                  </span>
+                  <span v-else>{{ msg }}</span>
+                </template>
+              </div>
             </div>
           </div>
         </div>
