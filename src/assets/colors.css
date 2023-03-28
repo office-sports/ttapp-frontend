@@ -6,6 +6,10 @@
     color: var(--color-darker);
 }
 
+.txt-col-recap-player {
+    color: #8c8c8c;
+}
+
 .txt-col-darkest {
     color: #4a4a4a;
 }

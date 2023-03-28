@@ -14,6 +14,12 @@ export class Game {
   isFinished: boolean;
   hasPoints: boolean;
   groupName: string;
+  homeElo: number;
+  awayElo: number;
+  newHomeElo: number;
+  newAwayElo: number;
+  homeEloDiff: number;
+  awayEloDiff: number;
   scores: [];
 
   public constructor(data: any) {
@@ -33,5 +39,11 @@ export class Game {
     this.hasPoints = !!data.has_points;
     this.isFinished = !!data.is_finished;
     this.groupName = data.group_name;
+    this.homeElo = data.home_elo;
+    this.awayElo = data.away_elo;
+    this.newHomeElo = data.new_home_elo;
+    this.newAwayElo = data.new_away_elo;
+    this.homeEloDiff = data.home_elo_diff;
+    this.awayEloDiff = data.away_elo_diff;
   }
 }

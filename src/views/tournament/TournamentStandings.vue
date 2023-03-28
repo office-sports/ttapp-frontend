@@ -89,7 +89,8 @@
               Recap of last finished game week
             </span>
           </div>
-          <div v-show="this.isGroupToggled(group.group_id)">
+          <div>
+            <!--          <div v-show="this.isGroupToggled(group.group_id)">-->
             <div class="padt10">
               <template
                 v-for="(msg, ind) in this.formatMessage(
@@ -97,26 +98,26 @@
                 )"
                 v-bind:key="ind"
               >
-                <template v-if="Array.isArray(msg)">
+                <span v-if="Array.isArray(msg)" class="list-comma">
                   <template v-for="(m, i) in msg" v-bind:key="i">
-                    <span class="col-winner list-comma">{{ m }}</span>
+                    <span class="txt-col-green item-comma">{{ m }}</span>
                   </template>
-                </template>
+                </span>
                 <span v-else>{{ msg }}</span>
               </template>
             </div>
-            <div class="padt10">
+            <div class="padt10 list-comma">
               <template
                 v-for="(msg, ind) in this.formatMessage(
                   this.recaps[group.group_id].candidates_message
                 )"
                 v-bind:key="ind"
               >
-                <template v-if="Array.isArray(msg)">
+                <span v-if="Array.isArray(msg)" class="list-comma">
                   <template v-for="(m, i) in msg" v-bind:key="i">
-                    <span class="col-winner list-comma">{{ m }}</span>
+                    <span class="txt-col-green item-comma">{{ m }}</span>
                   </template>
-                </template>
+                </span>
                 <span v-else>{{ msg }}</span>
               </template>
             </div>
@@ -228,9 +229,14 @@ export default {
   padding: 1px;
 }
 
-.list-comma + .list-comma:before {
-  content: ", ";
+.item-comma:not(:first-child)::before {
   color: white;
+  content: ", ";
+}
+
+.item-comma:last-child::before {
+  color: white;
+  content: " and ";
 }
 
 .lbl-recap {
