@@ -15,6 +15,11 @@
             <table>
               <tr>
                 <td class="w200 txtc">
+                  <span class="num-big col-winner">
+                    {{ player.elo }}
+                  </span>
+                </td>
+                <td class="w200 txtc">
                   <span class="num-big">
                     {{ player.win_percentage.toFixed(2) }}%
                   </span>
@@ -32,6 +37,9 @@
               </tr>
               <tr>
                 <td class="txt-col-player">
+                  <div class="txt-bold txtc">ELO</div>
+                </td>
+                <td class="txt-col-player">
                   <div class="txt-bold txtc">Win percentage</div>
                 </td>
                 <td class="txt-col-player">
@@ -42,6 +50,17 @@
                 </td>
               </tr>
               <tr>
+                <td class="txtc v-bottom pad0">
+                  last change:
+                  <span v-if="this.eloChange < 0">
+                    {{ this.eloChange }}
+                    <i class="fas fa-arrow-alt-circle-down"></i>
+                  </span>
+                  <span class="lbl-pos" v-else-if="this.eloChange > 0">
+                    +{{ this.eloChange }}
+                    <i class="fas fa-arrow-alt-circle-up"></i>
+                  </span>
+                </td>
                 <td class="txtc">
                   <div class="accuracy-bar-wrapper mart10">
                     <span
@@ -99,13 +118,11 @@
     <div class="round-container-dark-small flex txt-col-darker">
       <span>Games played:</span>
       <span class="marl10 txt-col-white">{{ player.games_played }}</span>
-      <span class="marl20">ELO:</span>
-      <span class="marl10 txt-col-white">{{ player.elo }}</span>
     </div>
     <div class="pad10 mart10">
       <table>
         <tr>
-          <td class="w200 padr20">
+          <td class="w200 padr20 v-top">
             <div class="btn-link" @click="setActiveTab(1)">ELO progression</div>
             <div class="btn-link mart10" @click="setActiveTab(2)">
               Games history
@@ -250,9 +267,6 @@ import results from "@/components/tournament/TournamentResults.vue";
 export default {
   name: "PlayerProfile",
   methods: {
-    results() {
-      return results;
-    },
     setActiveTab(data) {
       this.activeTab = data;
     },
@@ -268,6 +282,9 @@ export default {
       winPercentage: 0,
       drawPercentage: 0,
       lossPercentage: 0,
+      results: [],
+      schedule: [],
+      eloChange: 0,
       strokeDashArrayWins: "0 100",
       strokeDashArrayDraws: "0 100",
       strokeDashArrayLosses: "0 100",
@@ -350,8 +367,18 @@ export default {
             ["order", "ELO history"],
             ...player.data.elo_history,
           ];
+
           this.results = results.data;
           this.schedule = schedule.data;
+
+          let playerId = this.player.id;
+          if (this.results.length > 0) {
+            if (this.results[0].home_player_id === playerId) {
+              this.eloChange = this.results[0].home_elo_diff;
+            } else {
+              this.eloChange = this.results[0].away_elo_diff;
+            }
+          }
         })
       )
       .catch((error) => {

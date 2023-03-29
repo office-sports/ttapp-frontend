@@ -45,6 +45,14 @@ table {
     vertical-align: middle;
 }
 
+.v-top {
+    vertical-align: top;
+}
+
+.v-bottom {
+    vertical-align: bottom;
+}
+
 .player-name-container {
     cursor: pointer;
     padding: 3px 10px;

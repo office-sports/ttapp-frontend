@@ -240,6 +240,10 @@ export default {
   content: " and ";
 }
 
+.item-comma:first-child:last-child::before {
+  content: "";
+}
+
 .lbl-recap {
   cursor: pointer;
 }
