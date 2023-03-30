@@ -12,6 +12,7 @@ export class Game {
   awayScoreTotal: number;
   winnerId: number;
   isFinished: boolean;
+  isWalkover: boolean;
   hasPoints: boolean;
   groupName: string;
   homeElo: number;
@@ -20,10 +21,12 @@ export class Game {
   newAwayElo: number;
   homeEloDiff: number;
   awayEloDiff: number;
+  tournamentId: number;
   scores: [];
 
   public constructor(data: any) {
     this.id = data.match_id;
+    this.tournamentId = data.tournament_id;
     this.homePlayerId = data.home_player_id;
     this.awayPlayerId = data.away_player_id;
     this.homePlayerName = data.home_player_name;
@@ -38,6 +41,7 @@ export class Game {
     this.scores = data.scores;
     this.hasPoints = !!data.has_points;
     this.isFinished = !!data.is_finished;
+    this.isWalkover = !!data.is_walkover;
     this.groupName = data.group_name;
     this.homeElo = data.home_elo;
     this.awayElo = data.away_elo;

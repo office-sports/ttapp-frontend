@@ -60,6 +60,7 @@
                     +{{ this.eloChange }}
                     <i class="fas fa-arrow-alt-circle-up"></i>
                   </span>
+                  <span v-else>{{ this.eloChange }}</span>
                 </td>
                 <td class="txtc">
                   <div class="accuracy-bar-wrapper mart10">

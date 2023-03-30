@@ -115,10 +115,39 @@
         <input type="hidden" name="match_id" :value="this.gh.game.id" />
         <table class="marb25">
           <tr>
-            <td colspan="3" class="txtc col-white">
+            <td colspan="3" class="txtc col-white padb20">
               Manual scores entry. Remember to use points score, e.g. 11 - 5, 3
               - 11, 13 - 11, not total set scores for game.<br />
-              Important: this will overwrite existing live scoring.
+              Important: this will overwrite existing live scoring. Walkover?
+              Click
+              <span class="lnk-walkover" @click="this.toggleWalkover()"
+                >here</span
+              >.
+            </td>
+          </tr>
+          <tr v-show="this.walkover" class="round-container-dark-small">
+            <td class="txtr padr20 w45pc">
+              <input
+                type="radio"
+                id="home"
+                v-bind:value="this.gh.game.homePlayerId"
+                v-model="picked"
+              />
+              <label class="padl10" for="home"
+                >winner: {{ this.gh.game.homePlayerName }}</label
+              >
+            </td>
+            <td class="txtc w10pc">W.O.</td>
+            <td class="txtl padl20 w45pc">
+              <label class="padr10" for="away"
+                >winner: {{ this.gh.game.awayPlayerName }}</label
+              >
+              <input
+                type="radio"
+                id="away"
+                v-bind:value="this.gh.game.awayPlayerId"
+                v-model="picked"
+              />
             </td>
           </tr>
           <tr v-if="this.errors">
@@ -129,11 +158,12 @@
             </td>
           </tr>
           <tr
+            v-show="!this.walkover"
             v-for="i in range(1, this.gh.game.maxSets)"
             v-bind:key="i"
             class="span-score"
           >
-            <td class="txtr padt20" style="width: 45%">
+            <td class="txtr w45pc">
               <input
                 autocomplete="off"
                 :name="'home_set_' + i"
@@ -141,8 +171,8 @@
                 @keypress="isNumber($event)"
               />
             </td>
-            <td class="txtc padt20" style="width: 10%">SET {{ i }}</td>
-            <td class="txtl padt20" style="width: 45%">
+            <td class="txtc w10pc">SET {{ i }}</td>
+            <td class="txtl w45pc">
               <input
                 autocomplete="off"
                 :name="'away_set_' + i"
@@ -217,6 +247,7 @@ export default {
   },
   data() {
     return {
+      walkover: false,
       keyPressDelta: 200,
       thisKeypressTime: 0,
       lastKeypressTime: 0,
@@ -226,9 +257,13 @@ export default {
       errors: [],
       gh: {},
       spectators: 0,
+      picked: 0,
     };
   },
   methods: {
+    toggleWalkover() {
+      this.walkover = !this.walkover;
+    },
     turnOnManualScoring() {
       if (this.manualScoringEnabled) {
         return;
@@ -248,10 +283,28 @@ export default {
           console.log("Error when announcing game " + error);
         });
     },
+    createWalkoverPayload() {
+      const payload = {};
+      payload["game_id"] = this.gh.game.id;
+      payload["is_walkover"] = 1;
+      let hKey, aKey, hVal, aVal;
+      for (let i = 1; i <= this.gh.game.winsRequired; i++) {
+        hKey = "s" + i + "hp";
+        aKey = "s" + i + "ap";
+
+        hVal = this.picked === this.gh.game.homePlayerId ? 11 : 0;
+        aVal = this.picked === this.gh.game.awayPlayerId ? 11 : 0;
+        payload[hKey] = hVal;
+        payload[aKey] = aVal;
+      }
+
+      return payload;
+    },
     createPayload(event) {
       const payload = {};
       let homeElement, awayElement, hKey, aKey, hVal, aVal;
       payload["game_id"] = parseInt(event.target.elements["match_id"].value);
+      payload["is_walkover"] = 0;
       for (let i = 1; i <= 7; i++) {
         homeElement = event.target.elements["home_set_" + i];
         awayElement = event.target.elements["away_set_" + i];
@@ -272,6 +325,24 @@ export default {
       }
 
       return payload;
+    },
+    validateWalkover() {
+      this.errors = [];
+      let isValid = true;
+      if (this.picked === 0) {
+        this.errors.push("Select walkover winner.");
+        return false;
+      }
+
+      if (
+        this.picked !== this.gh.game.homePlayerId &&
+        this.picked !== this.gh.game.awayPlayerId
+      ) {
+        this.errors.push("Incorrect winner id.");
+        return false;
+      }
+
+      return isValid;
     },
     validatePayload(payload) {
       this.errors = [];
@@ -334,9 +405,18 @@ export default {
       return isValid;
     },
     postResults(event) {
-      let payload = this.createPayload(event);
-      let isValidPayload = this.validatePayload(payload);
-      if (isValidPayload === true) {
+      let payload = {};
+      if (this.walkover === true) {
+        if (!this.validateWalkover()) {
+          return false;
+        }
+        payload = this.createWalkoverPayload();
+      } else {
+        payload = this.createPayload(event);
+      }
+
+      let isValid = this.validatePayload(payload);
+      if (isValid === true) {
         const json = JSON.stringify(payload);
         axios
           .post("/api/games/save", json)
@@ -534,5 +614,15 @@ input {
   color: white;
   background: rgba(31, 31, 31, 0.9);
   padding-top: 60px;
+}
+
+.lnk-walkover {
+  cursor: pointer;
+  color: white;
+}
+
+.lnk-walkover:hover {
+  cursor: pointer;
+  color: #9f9f9f;
 }
 </style>
