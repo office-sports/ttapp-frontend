@@ -91,7 +91,6 @@ export default {
     axios
       .get("/api/tournaments/" + this.$route.params.id + "/games")
       .then((res) => {
-        console.log(res.data);
         if (res.data.length > 0) {
           this.matches = res.data;
         }
