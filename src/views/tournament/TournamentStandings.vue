@@ -41,6 +41,8 @@
           :positions="this.positions"
           :tournament="this.tournament"
           :recaps="this.recaps"
+          :locked-pos="this.lockedPos"
+          :locked-playoffs="this.lockedPlayoffs"
         />
       </div>
       <div class="pad10" v-if="this.isGroupPerformanceToggled(group.group_id)">
@@ -66,6 +68,8 @@ export default {
       performances: [],
       recaps: [],
       securedPos: [],
+      lockedPos: [],
+      lockedPlayoffs: [],
       togglePerformanceGroups: [],
       positions: [],
     };
@@ -109,6 +113,21 @@ export default {
           _.each(this.recaps, (elem) => {
             _.each(elem.player_info, (pi) => {
               this.positions[pi.id] = -1 * pi.position_movement;
+              if (pi.position_min === pi.position_max) {
+                if (this.lockedPos[elem.id] === undefined) {
+                  this.lockedPos[elem.id] = [pi.id];
+                } else {
+                  this.lockedPos[elem.id].push(pi.id);
+                }
+              }
+
+              if (pi.position_min <= elem.group_promotions) {
+                if (this.lockedPlayoffs[elem.id] === undefined) {
+                  this.lockedPlayoffs[elem.id] = [pi.id];
+                } else {
+                  this.lockedPlayoffs[elem.id].push(pi.id);
+                }
+              }
             });
           });
         })

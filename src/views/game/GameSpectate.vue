@@ -105,6 +105,7 @@
         <div id="midtable" class="grd">&nbsp;</div>
         <div id="ltable">&nbsp;</div>
         <div id="rtable">&nbsp;</div>
+        <div id="sidetable">&nbsp;</div>
         <table class="table-users">
           <tr>
             <td>
@@ -408,6 +409,34 @@ export default {
   position: relative;
 }
 
+#sidetable {
+  width: 655px;
+  height: 15px;
+  background: white;
+  top: 53px;
+  position: absolute;
+  animation: animSide 5s forwards;
+}
+
+@keyframes animSide {
+  0% {
+    left: 4px;
+    width: 600px;
+    top: 203px;
+    height: 0px;
+  }
+  50% {
+    width: 661px;
+    left: -26px;
+  }
+  100% {
+    left: -24px;
+    width: 655px;
+    top: 53px;
+    height: 15px;
+  }
+}
+
 .serve-paddle {
   color: #636363;
   font-size: 14pt;
@@ -504,26 +533,5 @@ table td {
 
 .table-users td {
   width: 50%;
-}
-
-#home-player {
-  z-index: 0;
-  position: absolute;
-  top: -130px;
-  left: -135px;
-}
-
-#away-player {
-  z-index: 0;
-  position: absolute;
-  top: -130px;
-  left: 625px;
-}
-
-.paddle-right {
-  font-size: 40pt;
-  rotate: -35deg;
-  left: -235px;
-  top: -20px;
 }
 </style>

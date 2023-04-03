@@ -151,16 +151,6 @@ export default {
   color: #808082;
 }
 
-.lbl-pos {
-  width: 38px;
-  background: #1e1e26;
-  padding: 0 5px;
-  border-radius: 20px;
-  display: block;
-  color: white;
-  text-align: end;
-}
-
 .accuracy-bar {
   display: block;
   border-radius: 10px 10px 10px 10px;
