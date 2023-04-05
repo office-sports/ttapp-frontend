@@ -19,8 +19,6 @@ io.on("connection", function (socket) {
 
   socket.join(game);
 
-  console.log(io.sockets.adapter.rooms);
-
   var total =
     io.sockets.adapter.rooms.get(game) !== undefined
       ? io.sockets.adapter.rooms.get(game).size

@@ -62,6 +62,7 @@ export class LiveGameHandler {
           } else {
             this.game = new Game(game.data);
             this.serve = new Serve(serve.data);
+            this.sendMessage();
           }
         })
       )

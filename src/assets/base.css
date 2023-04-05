@@ -28,6 +28,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.obs-body {
+    background-color: white;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;

@@ -1,0 +1,54 @@
+.obs-body {
+    all: revert;
+    transition: color 0.5s, background-color 0.5s;
+    line-height: 1.6;
+    font-size: 15px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    color: var(--color-white);
+    font-family: 'Quicksand', sans-serif;
+    background-color: #8a8a8a;
+}
+
+.obs-table {
+    max-width: 600px;
+}
+
+.obs-tbl-scores {
+    display: flex;
+    justify-content: end;
+}
+
+.obs-set-won {
+    background: green;
+    color: white;
+    border-radius: 5px;
+    margin-right: 5px
+}
+
+.obs-set-lost {
+    color: white;
+    border-radius: 5px;
+    margin-right: 5px
+}
+
+.obs-score-current {
+    background: white;
+    color: black;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 30px;
+    margin: 0 auto
+}
+
+.obs-score-total {
+    background: black;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 30px;
+    margin: 0 auto
+}
