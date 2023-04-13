@@ -30,27 +30,27 @@
                 >{{ player.player_name }}
               </router-link>
             </span>
-            <!--            <span-->
-            <!--              class="padr10 txt-col-darkest"-->
-            <!--              v-if="this.lockedPos || this.lockedPlayoffs"-->
-            <!--            >-->
-            <!--              <span-->
-            <!--                v-if="-->
-            <!--                  this.lockedPos[group.group_id] &&-->
-            <!--                  this.lockedPos[group.group_id].includes(player.player_id)-->
-            <!--                "-->
-            <!--              >-->
-            <!--                <i class="fas fa-lock"></i>-->
-            <!--              </span>-->
-            <!--              <span-->
-            <!--                v-else-if="-->
-            <!--                  this.lockedPlayoffs[group.group_id] &&-->
-            <!--                  this.lockedPlayoffs[group.group_id].includes(player.player_id)-->
-            <!--                "-->
-            <!--              >-->
-            <!--                <i class="fas fa-lock-open"></i>-->
-            <!--              </span>-->
-            <!--            </span>-->
+            <span
+              class="padr10 txt-col-darkest"
+              v-if="this.lockedPos || this.lockedPlayoffs"
+            >
+              <span
+                v-if="
+                  this.lockedPos[group.group_id] &&
+                  this.lockedPos[group.group_id].includes(player.player_id)
+                "
+              >
+                <i class="fas fa-lock"></i>
+              </span>
+              <span
+                v-else-if="
+                  this.lockedPlayoffs[group.group_id] &&
+                  this.lockedPlayoffs[group.group_id].includes(player.player_id)
+                "
+              >
+                <i class="fas fa-lock-open"></i>
+              </span>
+            </span>
           </div>
         </td>
         <td class="txtr w50" v-if="!this.tournament.is_finished">
@@ -97,10 +97,10 @@
     </table>
   </div>
   <div class="padt10" v-if="!this.tournament.is_finished">
-    <!--    <div class="txt-col-darker">-->
-    <!--      <i class="fas fa-lock"></i> Secured current position in playoffs-->
-    <!--      <i class="marl10 fas fa-lock-open"></i> Playoffs secured, position TBD-->
-    <!--    </div>-->
+    <div class="txt-col-darker">
+      <i class="fas fa-lock"></i> Secured current position in playoffs
+      <i class="marl10 fas fa-lock-open"></i> Playoffs secured, position TBD
+    </div>
     <div class="padt10">
       <span @click="this.toggleGroup(group.group_id)" class="lbl-recap">
         <i
