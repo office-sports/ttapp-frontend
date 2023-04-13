@@ -98,7 +98,7 @@
   </div>
   <div class="padt10" v-if="!this.tournament.is_finished">
     <div class="txt-col-darker">
-      <i class="fas fa-lock"></i> Secured current position in playoffs
+      <i class="fas fa-lock"></i> Final position
       <i class="marl10 fas fa-lock-open"></i> Playoffs secured, position TBD
     </div>
     <div class="padt10">
