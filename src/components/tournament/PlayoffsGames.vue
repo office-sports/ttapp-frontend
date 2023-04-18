@@ -140,7 +140,12 @@
                       </td>
                       <td class="txtr padr10 w-playoff-options">
                         <div
-                          v-if="match.announced === 0 && match.winner_id === 0"
+                          v-if="
+                            match.announced === 0 &&
+                            match.winner_id === 0 &&
+                            match.home_player_id !== 0 &&
+                            match.away_player_id !== 0
+                          "
                         >
                           <router-link
                             :to="{

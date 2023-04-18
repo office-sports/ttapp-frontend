@@ -12,9 +12,15 @@
               : ''
           "
         >
-          <router-link :to="'/player/' + match.home_player_id + '/profile'"
+          <router-link
+            v-if="match.home_player_id !== 0"
+            :to="'/player/' + match.home_player_id + '/profile'"
             >{{ match.home_player_name }}
           </router-link>
+          <span v-else class="txt-col-white">
+            (<span class="txt-col-darker">{{ match.home_player_name }}</span
+            >) <i class="far fa-question-circle"></i>
+          </span>
         </span>
       </td>
       <td class="w-vs txtc txt-col-darker">vs</td>
@@ -29,10 +35,18 @@
               : ''
           "
         >
-          <router-link :to="'/player/' + match.away_player_id + '/profile'"
+          <router-link
+            v-if="match.away_player_id !== 0"
+            :to="'/player/' + match.away_player_id + '/profile'"
             >{{ match.away_player_name }}
-          </router-link></span
-        >
+          </router-link>
+          <span v-else class="txt-col-white">
+            <i class="far fa-question-circle"></i> (<span
+              class="txt-col-darker"
+              >{{ match.away_player_name }}</span
+            >)
+          </span>
+        </span>
       </td>
     </tr>
   </table>
