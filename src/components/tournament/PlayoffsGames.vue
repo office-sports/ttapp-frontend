@@ -115,6 +115,9 @@
                               {{ score.home }}:{{ score.away }}</span
                             >
                           </template>
+                          <span v-if="match.is_walkover === 1" class="padl10"
+                            ><i class="fas fa-flag"></i
+                          ></span>
                         </span>
                       </td>
                       <td class="txtc w-playoff-options">
