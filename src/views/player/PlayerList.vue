@@ -1,10 +1,14 @@
 <template>
   <div class="round-container">
-    <div class="round-container-dark-small flex txt-col-darker">
+    <div class="round-container-dark-small flex txt-col-darker flex-full-width">
       <span class="txt-col-white">Player list</span>
+      <span @click="this.toggleShowInactive()" class="cur-pointer">
+        <span v-if="!this.showInactive">show inactive players</span>
+        <span v-else>hide inactive players</span>
+      </span>
     </div>
     <div>
-      <div v-if="players.length > 0" class="pad10">
+      <div v-if="visiblePlayers.length > 0" class="pad10">
         <table class="tbl-fixtures">
           <tr class="table-th">
             <td>&nbsp;</td>
@@ -21,9 +25,17 @@
               winning %
             </td>
           </tr>
-          <template v-for="(player, index) in this.players" v-bind:key="index">
-            <tr class="tr-row">
-              <td class="txt-col-darker">{{ index + 1 }}</td>
+          <template
+            v-for="(player, index) in this.visiblePlayers"
+            v-bind:key="index"
+          >
+            <tr
+              class="tr-row"
+              v-if="(this.showInactive && !player.active) || player.active"
+            >
+              <td class="txt-col-darker">
+                {{ index + 1 }}
+              </td>
               <td>
                 <router-link :to="'/player/' + player.id + '/profile'"
                   >{{ player.name }}
@@ -85,6 +97,7 @@ import _ from "underscore";
 export default {
   data() {
     return {
+      visiblePlayers: [],
       players: [],
       sorts: {
         elo: "asc",
@@ -100,9 +113,9 @@ export default {
   methods: {
     sortColumn(v) {
       this.sorts.v = this.sorts.v === "asc" ? "desc" : "asc";
-      this.players = _.sortBy(this.players, v);
+      this.visiblePlayers = _.sortBy(this.visiblePlayers, v);
       if (this.sorts.v === "desc") {
-        this.players.reverse();
+        this.visiblePlayers.reverse();
       }
     },
     filterPlayers() {
@@ -110,11 +123,25 @@ export default {
         return parseInt(p.office_id) === parseInt(this.officeId);
       });
     },
+    filterVisiblePlayers() {
+      this.visiblePlayers = _.filter(this.players, (p) => {
+        if (this.showInactive === false) {
+          return p.active === 1;
+        } else {
+          return p.active === 0 || p.active === 1;
+        }
+      });
+    },
+    toggleShowInactive() {
+      this.showInactive = !this.showInactive;
+      this.filterVisiblePlayers();
+    },
   },
   mounted() {
     axios.get("/api/players").then((res) => {
       this.players = res.data;
       this.filterPlayers();
+      this.filterVisiblePlayers();
     });
   },
 };
