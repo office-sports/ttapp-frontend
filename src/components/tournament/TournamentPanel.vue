@@ -19,7 +19,10 @@
           <div>finished games</div>
         </td>
         <td class="txtc">
-          <div class="num-big txt-col-green">
+          <div class="num-big txt-col-green" v-if="tournament.scheduled === 0">
+            0
+          </div>
+          <div class="num-big txt-col-green" v-else>
             {{
               ((tournament.finished * 100) / tournament.scheduled).toFixed(1)
             }}%
