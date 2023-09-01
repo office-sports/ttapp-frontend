@@ -34,7 +34,7 @@
         <td class="txtl">{{ player.last_elo }} **</td>
         <td class="txtc">{{ player.unfinished }}</td>
         <td class="txtc flex">
-          <div class="padl20 flex">
+          <div class="padl20 flex" v-if="player.form">
             <span
               class="span-form"
               v-for="(form, idx) in player.form.slice(0, 6)"
