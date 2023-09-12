@@ -34,6 +34,9 @@
                     {{ player.loss_percentage.toFixed(2) }}%
                   </span>
                 </td>
+                <td class="w200 txtc">
+                  <span class="num-big"> {{ player.pps.toFixed(2) }} </span>
+                </td>
               </tr>
               <tr>
                 <td class="txt-col-player">
@@ -47,6 +50,9 @@
                 </td>
                 <td class="txt-col-player">
                   <div class="txt-bold txtc">Loss percentage</div>
+                </td>
+                <td class="txt-col-player">
+                  <div class="txt-bold txtc">Avg. points per set</div>
                 </td>
               </tr>
               <tr>
@@ -283,6 +289,7 @@ export default {
       winPercentage: 0,
       drawPercentage: 0,
       lossPercentage: 0,
+      pps: 0,
       results: [],
       schedule: [],
       eloChange: 0,
@@ -364,6 +371,7 @@ export default {
             player.data.loss_percentage + " " + player.data.not_loss_percentage;
           this.lossPercentage = player.data.loss_percentage;
           this.playerPicUrl = player.data.profile_pic_url;
+          this.pps = player.data.pps;
           this.lineChartData = [
             ["order", "ELO history"],
             ...player.data.elo_history,

@@ -24,6 +24,7 @@
             <td class="cur-pointer txtc" @click="sortColumn('win_percentage')">
               winning %
             </td>
+            <td class="cur-pointer txtc" @click="sortColumn('pps')">PPS</td>
           </tr>
           <template
             v-for="(player, index) in this.visiblePlayers"
@@ -81,7 +82,10 @@
               <td class="txtc">
                 {{ player.wins }} / {{ player.draws }} / {{ player.losses }}
               </td>
-              <td class="txtc">{{ player.win_percentage.toFixed(2) }}</td>
+              <td class="txtc">
+                {{ player.win_percentage.toFixed(2) }}
+              </td>
+              <td class="txtc txt-col-darker">{{ player.pps.toFixed(2) }}</td>
             </tr>
           </template>
         </table>
@@ -105,6 +109,7 @@ export default {
         name: "asc",
         games_played: "asc",
         win_percentage: "asc",
+        pps: "asc",
       },
       showInactive: false,
       officeId: localStorage.getItem("officeId") ?? "1",
@@ -145,67 +150,4 @@ export default {
     });
   },
 };
-// import axios from "axios";
-// import _ from "lodash";
-//
-// export default {
-//   data() {
-//     return {
-
-//       players: [],
-
-//       officeId: localStorage.getItem("officeId") ?? 1,
-//     };
-//   },
-
-//   methods: {
-//     toggleShowInactive() {
-//       this.showInactive = !this.showInactive;
-//     },
-//     eloChangeSort() {
-//       if (this.eloChangeOrder === "desc") {
-//         this.eloChangeOrder = "asc";
-//       } else {
-//         this.eloChangeOrder = "desc";
-//       }
-//       this.players = _.orderBy(this.players, "elo_change", this.eloChangeOrder);
-//     },
-//     eloSort() {
-//       if (this.eloOrder === "desc") {
-//         this.eloOrder = "asc";
-//       } else {
-//         this.eloOrder = "desc";
-//       }
-//       this.players = _.orderBy(this.players, "elo", this.eloOrder);
-//     },
-//     nameSort() {
-//       if (this.nameOrder === "desc") {
-//         this.nameOrder = "asc";
-//       } else {
-//         this.nameOrder = "desc";
-//       }
-//       this.players = _.orderBy(this.players, "name", this.nameOrder);
-//     },
-//     gameSort() {
-//       if (this.gamesPlayedOrder === "desc") {
-//         this.gamesPlayedOrder = "asc";
-//       } else {
-//         this.gamesPlayedOrder = "desc";
-//       }
-//       this.players = _.orderBy(
-//         this.players,
-//         "gamesPlayed",
-//         this.gamesPlayedOrder
-//       );
-//     },
-//     winSort() {
-//       if (this.winOrder === "desc") {
-//         this.winOrder = "asc";
-//       } else {
-//         this.winOrder = "desc";
-//       }
-//       this.players = _.orderBy(this.players, "win_percentage", this.winOrder);
-//     },
-//   },
-// };
 </script>
