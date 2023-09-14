@@ -38,7 +38,6 @@
           <div>points scored</div>
         </td>
         <td class="txtr">
-          <div class="txt-col-darker">quick links:</div>
           <div>
             <router-link :to="'/tournament/0/results'"
               >all results <i class="far fa-play-circle"></i
@@ -53,6 +52,12 @@
             <router-link
               :to="'/tournament/' + this.tournament.id + '/standings'"
               >standings <i class="far fa-play-circle"></i
+            ></router-link>
+          </div>
+          <div>
+            <router-link
+              :to="'/tournament/' + this.tournament.id + '/statistics'"
+              >statistics <i class="far fa-play-circle"></i
             ></router-link>
           </div>
         </td>
