@@ -5,13 +5,16 @@
       this.statistics.name
     }}</span>
   </div>
-  <div class="padt20 padl10 padr10 flex" v-if="this.statistics">
+  <div
+    class="padt20 padl10 padr10 flex"
+    v-if="this.statistics && this.tournament"
+  >
     <div class="padr20">
       <table class="tbl-compact">
         <tr>
           <td>Participants</td>
           <td class="padl20 col-winner">
-            {{ this.statistics.participants }}
+            {{ this.tournament.participants }}
           </td>
         </tr>
         <tr>
@@ -23,13 +26,13 @@
         <tr>
           <td>Games scheduled</td>
           <td class="padl20 col-winner">
-            {{ this.statistics.scheduled }}
+            {{ this.tournament.scheduled }}
           </td>
         </tr>
         <tr>
           <td>Games played</td>
           <td class="padl20 col-winner">
-            {{ this.statistics.played }}
+            {{ this.tournament.finished }}
           </td>
         </tr>
         <tr>
@@ -218,6 +221,7 @@ export default {
     return {
       statistics: [],
       playersStatistics: [],
+      tournament: null,
     };
   },
   mounted() {
@@ -227,13 +231,15 @@ export default {
         axios.get(
           "/api/tournaments/" + this.tournamentId + "/players_statistics"
         ),
+        axios.get("/api/tournaments/" + this.tournamentId),
       ])
       .then(
-        axios.spread((t, p) => {
+        axios.spread((t, p, trn) => {
           this.statistics = _.find(t.data, (elem) => {
             return parseInt(elem.id) === parseInt(this.tournamentId);
           });
           this.playersStatistics = p.data;
+          this.tournament = trn.data;
         })
       )
       .catch((error) => {
