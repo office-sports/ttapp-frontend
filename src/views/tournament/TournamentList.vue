@@ -12,7 +12,7 @@
             <td class="txtc">participants</td>
             <td class="txtc">games played</td>
             <td class="txtc">games scheduled</td>
-            <td class="txtc" colspan="2">options</td>
+            <td class="txtc" colspan="3">options</td>
           </tr>
           <template
             v-for="(tournament, index) in this.filteredTournaments"
@@ -37,7 +37,7 @@
                   >
                 </span>
               </td>
-              <td class="txtl">
+              <td class="txtc">
                 <span
                   v-if="
                     tournament.is_finished === 0 && tournament.is_playoffs === 0
@@ -62,6 +62,12 @@
                     >
                   </div>
                 </span>
+              </td>
+              <td class="txtl">
+                <router-link
+                  :to="'/tournament/' + tournament.id + '/statistics'"
+                  >statistics
+                </router-link>
               </td>
             </tr>
           </template>
