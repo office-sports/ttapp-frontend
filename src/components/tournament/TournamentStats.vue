@@ -66,7 +66,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.most_points_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
@@ -87,7 +87,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.least_points_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
@@ -108,7 +108,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.most_elo_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
@@ -127,7 +127,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.most_elo_lost_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
@@ -146,7 +146,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.most_points_game_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
@@ -167,7 +167,7 @@
                 name: 'GameResult',
                 params: { id: this.playersStatistics.least_points_game_gid },
               }"
-              ><i class="txt-col-white padl10 far fa-play-circle"></i
+              ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
           <td class="padl20 col-winner">
