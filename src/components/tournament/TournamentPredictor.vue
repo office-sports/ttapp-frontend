@@ -1,0 +1,485 @@
+<template>
+  <div>
+    <table class="tbl-fixtures tbl-standings">
+      <tr>
+        <td class="txtl w400">name</td>
+        <td class="txtc">played</td>
+        <td class="txtc">w / d / l</td>
+        <td class="txtc">sets</td>
+        <td class="txtc">+/-</td>
+        <th class="txtc">rallies</th>
+        <td class="txtc">+/-</td>
+        <td class="txtc">points</td>
+      </tr>
+      <tr
+        v-for="(player, index) in alteredGroup.players"
+        v-bind:key="player.playerId"
+        class="group-container txt-col-darker"
+      >
+        <td>
+          <div
+            :class="['level', 'level-c' + player.pos_color]"
+            class="flex-full-width"
+          >
+            <span class="level-span">
+              <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
+              <router-link :to="'/player/' + player.player_id + '/profile'"
+                >{{ player.player_name }}
+              </router-link>
+            </span>
+            <span
+              class="padr10 txt-col-darkest"
+              v-if="this.lockedPos || this.lockedPlayoffs"
+            >
+              <span
+                v-if="
+                  this.lockedPos[group.group_id] &&
+                  this.lockedPos[group.group_id].includes(player.player_id)
+                "
+              >
+                <i class="fas fa-lock"></i>
+              </span>
+              <span
+                v-else-if="
+                  this.lockedPlayoffs[group.group_id] &&
+                  this.lockedPlayoffs[group.group_id].includes(player.player_id)
+                "
+              >
+                <i class="fas fa-lock-open"></i>
+              </span>
+            </span>
+          </div>
+        </td>
+        <td class="txtc">{{ player.played }}</td>
+        <td class="txtc">
+          {{ player.wins }} - {{ player.draws }} - {{ player.losses }}
+        </td>
+        <td class="txtc">{{ player.sets_for }} - {{ player.sets_against }}</td>
+        <td class="txtc">{{ player.sets_diff }}</td>
+        <td class="txtc">
+          {{ player.rallies_for }} - {{ player.rallies_against }}
+        </td>
+        <td class="txtc">{{ player.rallies_diff ?? 0 }}</td>
+        <td class="txtc">{{ player.points }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="mart20">
+    <div class="round-container-dark-small flex txt-col-darker">
+      <span class="marl10" v-if="matches.length > 0">Predictions</span>
+    </div>
+  </div>
+
+  <div v-if="matches.length > 0" class="pad10">
+    <table class="tbl-fixtures">
+      <tr class="table-th">
+        <td>played</td>
+        <td class="txtc">&nbsp;</td>
+        <td class="txtl">set scores</td>
+      </tr>
+      <template v-for="(match, index) in this.matches" v-bind:key="index">
+        <tr class="tr-row">
+          <td class="txt-col-darker">{{ match.date_played }}</td>
+          <td>
+            <GameVersusTable :match="match" />
+          </td>
+          <td>
+            <div>
+              <span v-for="i in match.mode" v-bind:key="i" class="padr20">
+                <input
+                  @keypress="isNumber($event)"
+                  :disabled="false"
+                  type="text"
+                  :value="0"
+                  class="textInputPredictor"
+                  :id="'game-' + match.match_id + '-h' + i"
+                  :ref="'game-' + match.match_id + '-h' + i" />
+                :
+                <input
+                  @keypress="isNumber($event)"
+                  :disabled="false"
+                  type="text"
+                  :value="0"
+                  class="textInputPredictor"
+                  :id="'game-' + match.match_id + '-a' + i"
+                  :ref="'game-' + match.match_id + '-a' + i"
+              /></span>
+            </div>
+            <div>
+              <span
+                :ref="'game-' + match.match_id + '-error'"
+                class="txt-col-red"
+              >
+              </span>
+            </div>
+          </td>
+          <td class="txtr">
+            <div
+              class="btn-link"
+              @click="this.checkLock(match.match_id)"
+              :ref="'lock-' + match.match_id"
+            >
+              lock
+            </div>
+          </td>
+        </tr>
+      </template>
+    </table>
+  </div>
+</template>
+<script>
+import _ from "underscore";
+import axios from "axios";
+import GameVersusTable from "@/components/tournament/GameVersusTable.vue";
+
+export default {
+  components: { GameVersusTable },
+  props: [
+    "group",
+    "positions",
+    "tournament",
+    "recaps",
+    "lockedPos",
+    "lockedPlayoffs",
+  ],
+  data() {
+    return {
+      toggleGroups: [],
+      matches: [],
+      lockedMatches: [],
+      alteredPlayerData: [],
+      predictionGroup: [],
+      alteredGroup: this.group,
+      positionColors: [],
+      hasErrors: false,
+    };
+  },
+  methods: {
+    isNumber: function (evt) {
+      evt = evt ? evt : window.event;
+      let charCode = evt.which ? evt.which : evt.keyCode;
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode !== 46
+      ) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    isMatchLocked(gameId) {
+      return this.lockedMatches.includes(gameId);
+    },
+    recolor() {
+      for (let i = 0; i < this.alteredGroup.players.length; i++) {
+        this.alteredGroup.players[i].pos_color = this.positionColors[i];
+      }
+    },
+    unprocessLock(gameId) {
+      let game = _.findWhere(this.matches, { match_id: gameId });
+      let gameMode = game.mode;
+      let requiredWins = Math.ceil(gameMode / 2);
+      let homePoints = 0,
+        awayPoints = 0,
+        setHomePoints = 0,
+        setAwayPoints = 0;
+      let homeSets = 0,
+        awaySets = 0;
+
+      for (let i = 1; i <= gameMode; i++) {
+        if (homeSets === requiredWins || awaySets === requiredWins) {
+          break;
+        }
+        setHomePoints = this.$refs["game-" + gameId + "-h" + i][0].value;
+        setAwayPoints = this.$refs["game-" + gameId + "-a" + i][0].value;
+        homePoints += parseInt(setHomePoints);
+        awayPoints += parseInt(setAwayPoints);
+
+        // Check who won and increase the value
+        if (parseInt(setHomePoints) > parseInt(setAwayPoints)) {
+          homeSets++;
+        } else {
+          awaySets++;
+        }
+      }
+
+      // Find home and away player
+      let homePlayer = _.findWhere(this.alteredGroup.players, {
+        player_id: game.home_player_id,
+      });
+      let awayPlayer = _.findWhere(this.alteredGroup.players, {
+        player_id: game.away_player_id,
+      });
+
+      this.updatePlayerData(
+        homePlayer,
+        homePoints,
+        awayPoints,
+        homeSets,
+        awaySets,
+        -1
+      );
+      this.updatePlayerData(
+        awayPlayer,
+        awayPoints,
+        homePoints,
+        awaySets,
+        homeSets,
+        -1
+      );
+    },
+    processLock(gameId) {
+      let game = _.findWhere(this.matches, { match_id: gameId });
+      let gameMode = game.mode;
+      let requiredWins = Math.ceil(gameMode / 2);
+      let homePoints = 0,
+        awayPoints = 0,
+        setHomePoints = 0,
+        setAwayPoints = 0;
+      let homeSets = 0,
+        awaySets = 0;
+
+      for (let i = 1; i <= gameMode; i++) {
+        // check if required wins is correct
+        if (homeSets === requiredWins || awaySets === requiredWins) {
+          this.hasErrors = false;
+          this.$refs["game-" + gameId + "-error"][0].innerHTML = "";
+          break;
+        }
+        setHomePoints = this.$refs["game-" + gameId + "-h" + i][0].value;
+        setAwayPoints = this.$refs["game-" + gameId + "-a" + i][0].value;
+        homePoints += parseInt(setHomePoints);
+        awayPoints += parseInt(setAwayPoints);
+
+        // check if the score is set
+        if (
+          (parseInt(setHomePoints) < 11 && parseInt(setAwayPoints) < 11) ||
+          Math.abs(parseInt(setHomePoints) - parseInt(setAwayPoints)) < 2
+        ) {
+          this.$refs["game-" + gameId + "-error"][0].innerHTML =
+            "Incorrect set " +
+            i +
+            " score " +
+            this.$refs["game-" + gameId + "-h" + i][0].value +
+            ":" +
+            this.$refs["game-" + gameId + "-a" + i][0].value;
+          this.hasErrors = true;
+          break;
+        }
+
+        // Check who won and increase the value
+        if (parseInt(setHomePoints) > parseInt(setAwayPoints)) {
+          homeSets++;
+        } else {
+          awaySets++;
+        }
+      }
+
+      if (!this.hasErrors === true) {
+        // We have correct game scores,
+
+        // Find home and away player
+        let homePlayer = _.findWhere(this.alteredGroup.players, {
+          player_id: game.home_player_id,
+        });
+        let awayPlayer = _.findWhere(this.alteredGroup.players, {
+          player_id: game.away_player_id,
+        });
+
+        this.updatePlayerData(
+          homePlayer,
+          homePoints,
+          awayPoints,
+          homeSets,
+          awaySets,
+          1
+        );
+        this.updatePlayerData(
+          awayPlayer,
+          awayPoints,
+          homePoints,
+          awaySets,
+          homeSets,
+          1
+        );
+      }
+    },
+    toggleRowLock(gameId, lock) {
+      let game = _.findWhere(this.matches, { match_id: gameId });
+      let gameMode = game.mode;
+
+      this.$refs["lock-" + gameId][0].innerHTML = lock ? "unlock" : "lock";
+      for (let i = 1; i <= gameMode; i++) {
+        if (lock === true) {
+          this.$refs["game-" + gameId + "-h" + i][0].disabled = true;
+          this.$refs["game-" + gameId + "-a" + i][0].disabled = true;
+        } else {
+          this.$refs["game-" + gameId + "-h" + i][0].disabled = false;
+          this.$refs["game-" + gameId + "-a" + i][0].disabled = false;
+        }
+      }
+    },
+    checkLock(gameId) {
+      if (this.isMatchLocked(gameId)) {
+        // unlock the button, remove from locked array
+        const index = this.lockedMatches.indexOf(gameId);
+        this.lockedMatches.splice(index, 1);
+
+        this.unprocessLock(gameId);
+        this.toggleRowLock(gameId, false);
+      } else {
+        this.processLock(gameId);
+        if (!this.hasErrors) {
+          this.lockedMatches.push(gameId);
+          this.toggleRowLock(gameId, true);
+        }
+      }
+      if (!this.hasErrors) {
+        this.alteredGroup.players = _(this.alteredGroup.players)
+          .chain()
+          .sortBy(function (player) {
+            return parseInt(player.rallies_diff);
+          })
+          .sortBy(function (player) {
+            return parseInt(player.sets_diff);
+          })
+          .sortBy(function (player) {
+            return parseInt(player.points);
+          })
+          .reverse()
+          .value();
+
+        this.recolor();
+      }
+    },
+    updatePlayerData(
+      player,
+      pointsFor,
+      pointsAgainst,
+      setsFor,
+      setsAgainst,
+      value
+    ) {
+      player.played += value;
+      // rallies
+      player.rallies_for =
+        player.rallies_for == null
+          ? pointsFor
+          : player.rallies_for + value * pointsFor;
+      player.rallies_against =
+        player.rallies_against == null
+          ? pointsAgainst
+          : player.rallies_against + value * pointsAgainst;
+      player.rallies_diff = player.rallies_for - player.rallies_against;
+      // sets
+      player.sets_for =
+        player.sets_for == null ? setsFor : player.sets_for + value * setsFor;
+      player.sets_against =
+        player.sets_against == null
+          ? setsAgainst
+          : player.sets_against + value * setsAgainst;
+      player.sets_diff = player.sets_for - player.sets_against;
+      // w/d/l
+      if (setsFor > setsAgainst) {
+        player.wins += value;
+        player.points += value * 2;
+      } else if (setsFor < setsAgainst) {
+        player.losses += value;
+      } else {
+        player.draws += value;
+        player.points += value;
+      }
+    },
+  },
+  mounted() {
+    axios
+      .get(
+        "/api/tournaments/" +
+          this.tournament.id +
+          "/group/schedule/" +
+          this.group.group_id
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          this.matches = res.data;
+        }
+      });
+    this.positionColors = _.pluck(this.alteredGroup.players, "pos_color");
+  },
+};
+</script>
+
+<style scoped lang="less">
+.level {
+  border-radius: 5px;
+  padding: 2px 0;
+}
+
+.level-span > a {
+  color: black;
+}
+
+.level-span > a:hover {
+  color: #0e3c46;
+}
+
+.group-container > td:first-child {
+  border-radius: 7px;
+  border: 0px solid #1e1e26;
+}
+
+.tbl-standings > tr:first-child {
+  color: white;
+}
+
+.tbl-standings td {
+  padding: 1px;
+}
+
+.item-comma:not(:first-child)::before {
+  color: white;
+  content: ", ";
+}
+
+.item-comma:last-child::before {
+  color: white;
+  content: " and ";
+}
+
+.item-comma:first-child:last-child::before {
+  content: "";
+}
+
+.lbl-recap {
+  cursor: pointer;
+}
+
+.lbl-recap:hover {
+  color: #808082;
+}
+
+.lbl-pos {
+  background: #1e1e26;
+  padding: 0 5px;
+  border-radius: 20px;
+  display: block;
+  color: white;
+}
+
+.textInputPredictor {
+  border: 1px solid rgba(84, 84, 84, 0.65);
+  border-radius: 4px;
+  padding: 5px 8px;
+  background: var(--col-dark);
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  width: 15px;
+}
+
+.textInputPredictor:disabled {
+  background-color: #3c3f41;
+}
+</style>

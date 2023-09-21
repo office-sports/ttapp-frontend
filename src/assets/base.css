@@ -272,6 +272,10 @@ a:hover {
     content: ", ";
 }
 
+.sets-score-predictor {
+    
+}
+
 .round-container {
     background: var(--color-container);
     border-radius: 20px;
