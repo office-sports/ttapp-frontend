@@ -15,6 +15,7 @@ import TournamentManagement from "@/views/tournament/TournamentManagement.vue";
 import TournamentFullResultsPlayoffs from "@/views/tournament/TournamentFullResultsPlayoffs.vue";
 import GameObs from "@/views/game/GameObs.vue";
 import TournamentStatistics from "@/views/tournament/TournamentStatistics.vue";
+import TournamentGroupPredictor from "@/views/tournament/TournamentGroupPredictor.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: "/tournament/:id/standings",
       name: "TournamentStandings",
       component: TournamentStandings,
+    },
+    {
+      path: "/tournament/:id/predictor/:group",
+      name: "TournamentGroupPredictor",
+      component: TournamentGroupPredictor,
     },
     { path: "/tournament/:id/ladders", name: "Ladders", component: Ladders },
     {

@@ -78,4 +78,15 @@ export default {
   border: 1px solid rgba(200, 200, 200, 1);
   outline: rgba(200, 200, 200, 1);
 }
+
+.textInputPredictor {
+  border: 1px solid rgba(84, 84, 84, 0.65);
+  border-radius: 4px;
+  padding: 5px 8px;
+  background: var(--col-dark);
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  width: 15px;
+}
 </style>
