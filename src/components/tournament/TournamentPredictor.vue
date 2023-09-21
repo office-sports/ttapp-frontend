@@ -88,6 +88,8 @@
             <div>
               <span v-for="i in match.mode" v-bind:key="i" class="padr20">
                 <input
+                  @keypress="isNumber($event)"
+                  :disabled="false"
                   type="text"
                   :value="0"
                   class="textInputPredictor"
@@ -95,6 +97,8 @@
                   :ref="'game-' + match.match_id + '-h' + i" />
                 :
                 <input
+                  @keypress="isNumber($event)"
+                  :disabled="false"
                   type="text"
                   :value="0"
                   class="textInputPredictor"
@@ -111,7 +115,11 @@
             </div>
           </td>
           <td class="txtr">
-            <div class="btn-link" @click="this.checkLock(match.match_id)">
+            <div
+              class="btn-link"
+              @click="this.checkLock(match.match_id)"
+              :ref="'lock-' + match.match_id"
+            >
               lock
             </div>
           </td>
@@ -143,11 +151,33 @@ export default {
       alteredPlayerData: [],
       predictionGroup: [],
       alteredGroup: this.group,
+      positionColors: [],
+      hasErrors: false,
     };
   },
   methods: {
-    checkLock(gameId) {
-      let hasErrors = false;
+    isNumber: function (evt) {
+      evt = evt ? evt : window.event;
+      let charCode = evt.which ? evt.which : evt.keyCode;
+      if (
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        charCode !== 46
+      ) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+    isMatchLocked(gameId) {
+      return this.lockedMatches.includes(gameId);
+    },
+    recolor() {
+      for (let i = 0; i < this.alteredGroup.players.length; i++) {
+        this.alteredGroup.players[i].pos_color = this.positionColors[i];
+      }
+    },
+    unprocessLock(gameId) {
       let game = _.findWhere(this.matches, { match_id: gameId });
       let gameMode = game.mode;
       let requiredWins = Math.ceil(gameMode / 2);
@@ -159,19 +189,72 @@ export default {
         awaySets = 0;
 
       for (let i = 1; i <= gameMode; i++) {
+        if (homeSets === requiredWins || awaySets === requiredWins) {
+          break;
+        }
         setHomePoints = this.$refs["game-" + gameId + "-h" + i][0].value;
         setAwayPoints = this.$refs["game-" + gameId + "-a" + i][0].value;
         homePoints += parseInt(setHomePoints);
         awayPoints += parseInt(setAwayPoints);
 
+        // Check who won and increase the value
+        if (parseInt(setHomePoints) > parseInt(setAwayPoints)) {
+          homeSets++;
+        } else {
+          awaySets++;
+        }
+      }
+
+      // Find home and away player
+      let homePlayer = _.findWhere(this.alteredGroup.players, {
+        player_id: game.home_player_id,
+      });
+      let awayPlayer = _.findWhere(this.alteredGroup.players, {
+        player_id: game.away_player_id,
+      });
+
+      this.updatePlayerData(
+        homePlayer,
+        homePoints,
+        awayPoints,
+        homeSets,
+        awaySets,
+        -1
+      );
+      this.updatePlayerData(
+        awayPlayer,
+        awayPoints,
+        homePoints,
+        awaySets,
+        homeSets,
+        -1
+      );
+    },
+    processLock(gameId) {
+      let game = _.findWhere(this.matches, { match_id: gameId });
+      let gameMode = game.mode;
+      let requiredWins = Math.ceil(gameMode / 2);
+      let homePoints = 0,
+        awayPoints = 0,
+        setHomePoints = 0,
+        setAwayPoints = 0;
+      let homeSets = 0,
+        awaySets = 0;
+
+      for (let i = 1; i <= gameMode; i++) {
         // check if required wins is correct
         if (homeSets === requiredWins || awaySets === requiredWins) {
+          this.hasErrors = false;
+          this.$refs["game-" + gameId + "-error"][0].innerHTML = "";
           break;
         }
+        setHomePoints = this.$refs["game-" + gameId + "-h" + i][0].value;
+        setAwayPoints = this.$refs["game-" + gameId + "-a" + i][0].value;
+        homePoints += parseInt(setHomePoints);
+        awayPoints += parseInt(setAwayPoints);
 
         // check if the score is set
         if (
-          (parseInt(setHomePoints) === 0 && parseInt(setAwayPoints) === 0) || // shoukd be moved
           (parseInt(setHomePoints) < 11 && parseInt(setAwayPoints) < 11) ||
           Math.abs(parseInt(setHomePoints) - parseInt(setAwayPoints)) < 2
         ) {
@@ -182,36 +265,132 @@ export default {
             this.$refs["game-" + gameId + "-h" + i][0].value +
             ":" +
             this.$refs["game-" + gameId + "-a" + i][0].value;
-          hasErrors = true;
+          this.hasErrors = true;
           break;
+        }
+
+        // Check who won and increase the value
+        if (parseInt(setHomePoints) > parseInt(setAwayPoints)) {
+          homeSets++;
+        } else {
+          awaySets++;
         }
       }
 
-      console.log(hasErrors);
-      if (hasErrors === true) {
-        return;
+      if (!this.hasErrors === true) {
+        // We have correct game scores,
+
+        // Find home and away player
+        let homePlayer = _.findWhere(this.alteredGroup.players, {
+          player_id: game.home_player_id,
+        });
+        let awayPlayer = _.findWhere(this.alteredGroup.players, {
+          player_id: game.away_player_id,
+        });
+
+        this.updatePlayerData(
+          homePlayer,
+          homePoints,
+          awayPoints,
+          homeSets,
+          awaySets,
+          1
+        );
+        this.updatePlayerData(
+          awayPlayer,
+          awayPoints,
+          homePoints,
+          awaySets,
+          homeSets,
+          1
+        );
       }
+    },
+    toggleRowLock(gameId, lock) {
+      let game = _.findWhere(this.matches, { match_id: gameId });
+      let gameMode = game.mode;
 
-      // We have correct game scores,
+      this.$refs["lock-" + gameId][0].innerHTML = lock ? "unlock" : "lock";
+      for (let i = 1; i <= gameMode; i++) {
+        if (lock === true) {
+          this.$refs["game-" + gameId + "-h" + i][0].disabled = true;
+          this.$refs["game-" + gameId + "-a" + i][0].disabled = true;
+        } else {
+          this.$refs["game-" + gameId + "-h" + i][0].disabled = false;
+          this.$refs["game-" + gameId + "-a" + i][0].disabled = false;
+        }
+      }
+    },
+    checkLock(gameId) {
+      if (this.isMatchLocked(gameId)) {
+        // unlock the button, remove from locked array
+        const index = this.lockedMatches.indexOf(gameId);
+        this.lockedMatches.splice(index, 1);
 
-      // Find home player
-      let homePlayer = _.findWhere(this.alteredGroup.players, {
-        player_id: game.home_player_id,
-      });
+        this.unprocessLock(gameId);
+        this.toggleRowLock(gameId, false);
+      } else {
+        this.processLock(gameId);
+        if (!this.hasErrors) {
+          this.lockedMatches.push(gameId);
+          this.toggleRowLock(gameId, true);
+        }
+      }
+      if (!this.hasErrors) {
+        this.alteredGroup.players = _(this.alteredGroup.players)
+          .chain()
+          .sortBy(function (player) {
+            return parseInt(player.rallies_diff);
+          })
+          .sortBy(function (player) {
+            return parseInt(player.sets_diff);
+          })
+          .sortBy(function (player) {
+            return parseInt(player.points);
+          })
+          .reverse()
+          .value();
 
-      homePlayer.played++;
-      homePlayer.rallies_for =
-        homePlayer.rallies_for == null
-          ? homePoints
-          : homePlayer.rallies_for + homePoints;
-      homePlayer.rallies_against =
-        homePlayer.rallies_against == null
-          ? awayPoints
-          : homePlayer.rallies_against + awayPoints;
-      homePlayer.rallies_diff =
-        homePlayer.rallies_for - homePlayer.rallies_against;
-
-      //this.alteredGroup.players[0].draws = 100;
+        this.recolor();
+      }
+    },
+    updatePlayerData(
+      player,
+      pointsFor,
+      pointsAgainst,
+      setsFor,
+      setsAgainst,
+      value
+    ) {
+      player.played += value;
+      // rallies
+      player.rallies_for =
+        player.rallies_for == null
+          ? pointsFor
+          : player.rallies_for + value * pointsFor;
+      player.rallies_against =
+        player.rallies_against == null
+          ? pointsAgainst
+          : player.rallies_against + value * pointsAgainst;
+      player.rallies_diff = player.rallies_for - player.rallies_against;
+      // sets
+      player.sets_for =
+        player.sets_for == null ? setsFor : player.sets_for + value * setsFor;
+      player.sets_against =
+        player.sets_against == null
+          ? setsAgainst
+          : player.sets_against + value * setsAgainst;
+      player.sets_diff = player.sets_for - player.sets_against;
+      // w/d/l
+      if (setsFor > setsAgainst) {
+        player.wins += value;
+        player.points += value * 2;
+      } else if (setsFor < setsAgainst) {
+        player.losses += value;
+      } else {
+        player.draws += value;
+        player.points += value;
+      }
     },
   },
   mounted() {
@@ -227,7 +406,7 @@ export default {
           this.matches = res.data;
         }
       });
-    console.log(this.alteredGroup);
+    this.positionColors = _.pluck(this.alteredGroup.players, "pos_color");
   },
 };
 </script>
@@ -287,5 +466,20 @@ export default {
   border-radius: 20px;
   display: block;
   color: white;
+}
+
+.textInputPredictor {
+  border: 1px solid rgba(84, 84, 84, 0.65);
+  border-radius: 4px;
+  padding: 5px 8px;
+  background: var(--col-dark);
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  width: 15px;
+}
+
+.textInputPredictor:disabled {
+  background-color: #3c3f41;
 }
 </style>

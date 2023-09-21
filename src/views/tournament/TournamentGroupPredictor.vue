@@ -14,6 +14,7 @@
         class="round-container-dark-small flex txt-col-darker flex-full-width"
       >
         <span class="txt-col-darker">{{ group.group_name }}</span>
+        <span class="lbl-pos">BETA</span>
       </div>
       <div class="pad10">
         <TournamentPredictor
@@ -129,6 +130,17 @@ export default {
   display: block;
   color: white;
   text-align: end;
+}
+
+.lbl-pos {
+  width: 50px;
+  background: #ffde00;
+  padding: 0 5px;
+  border-radius: 20px;
+  display: block;
+  color: black;
+  text-align: center;
+  font-weight: 600;
 }
 
 .lnk {
