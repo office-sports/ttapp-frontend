@@ -15,7 +15,7 @@ import TopMenu from "./components/menus/TopMenu.vue";
     <div class="clear"></div>
 
     <div class="content-wrapper">
-      <RouterView />
+      <RouterView :key="$route.fullPath" />
     </div>
   </div>
 </template>

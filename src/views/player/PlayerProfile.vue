@@ -137,6 +137,9 @@
             <div class="btn-link mart10" @click="setActiveTab(3)">
               Upcoming games
             </div>
+            <div class="btn-link mart10" @click="setActiveTab(4)">
+              Opponents
+            </div>
           </td>
           <td>
             <div v-show="this.activeTab === 1">
@@ -259,6 +262,75 @@
                 </tr>
               </table>
             </div>
+            <div v-show="this.activeTab === 4">
+              <div style="font-size: 20px">OPPONENTS</div>
+              <table v-if="this.opponents" class="tbl-fixed mart20">
+                <tr>
+                  <td class="w200">Opponent</td>
+                  <td class="txtc">Games vs</td>
+                  <td class="txtc">Wins</td>
+                  <td class="txtc">Draws</td>
+                  <td class="txtc">Losses</td>
+                  <td class="txtc">WO player</td>
+                  <td class="txtc">WO opponent</td>
+                </tr>
+                <tr
+                  v-for="opponent in opponents"
+                  v-bind:key="opponent.opponent_id"
+                  class="tr-row"
+                >
+                  <td class="txtl">
+                    <!--                    <span @click="this.switchPlayer(opponent.opponent_id)">{{-->
+                    <!--                      opponent.opponent_name-->
+                    <!--                    }}</span>-->
+                    <router-link
+                      :to="'/player/' + opponent.opponent_id + '/profile'"
+                    >
+                      {{ opponent.opponent_name }}
+                    </router-link>
+                  </td>
+                  <td class="txtc txt-col-green">{{ opponent.games }}</td>
+                  <td
+                    :class="opponent.wins === 0 ? 'txt-col-darkest' : ''"
+                    class="txtc"
+                  >
+                    {{ opponent.wins }}
+                  </td>
+                  <td
+                    :class="opponent.draws === 0 ? 'txt-col-darkest' : ''"
+                    class="txtc"
+                  >
+                    {{ opponent.draws }}
+                  </td>
+                  <td
+                    :class="opponent.losses === 0 ? 'txt-col-darkest' : ''"
+                    class="txtc"
+                  >
+                    {{ opponent.losses }}
+                  </td>
+                  <td class="txtc">
+                    <span
+                      :class="
+                        opponent.player_walkovers === 0 ? 'txt-col-darkest' : ''
+                      "
+                    >
+                      {{ opponent.player_walkovers }}
+                    </span>
+                  </td>
+                  <td class="txtc">
+                    <span
+                      :class="
+                        opponent.opponent_walkovers === 0
+                          ? 'txt-col-darkest'
+                          : ''
+                      "
+                    >
+                      {{ opponent.opponent_walkovers }}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </td>
         </tr>
       </table>
@@ -281,6 +353,7 @@ export default {
   components: { GChart },
   data() {
     return {
+      opponents: [],
       accuracyBarWidth: 150,
       accuracyValues: [],
       activeTab: 1,
@@ -357,9 +430,10 @@ export default {
         axios.get("/api/players/" + this.$route.params.id),
         axios.get("/api/players/" + this.$route.params.id + "/results"),
         axios.get("/api/players/" + this.$route.params.id + "/schedule"),
+        axios.get("/api/players/" + this.$route.params.id + "/opponents"),
       ])
       .then(
-        axios.spread((player, results, schedule) => {
+        axios.spread((player, results, schedule, opponents) => {
           this.player = player.data;
           this.strokeDashArrayWins =
             player.data.win_percentage + " " + player.data.not_win_percentage;
@@ -379,6 +453,7 @@ export default {
 
           this.results = results.data;
           this.schedule = schedule.data;
+          this.opponents = opponents.data;
 
           let playerId = this.player.id;
           if (this.results.length > 0) {
