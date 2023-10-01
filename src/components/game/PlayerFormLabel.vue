@@ -1,12 +1,12 @@
 <template>
-  <span v-if="this.outcome === 'W'" class="lbl lbl-win">
-    {{ this.outcome }}
+  <span v-if="this.getOutcome === 'W'" class="lbl lbl-win">
+    {{ this.getOutcome }}
   </span>
-  <span v-else-if="this.outcome === 'D'" class="lbl lbl-draw">
-    {{ this.outcome }}
+  <span v-else-if="this.getOutcome === 'D'" class="lbl lbl-draw">
+    {{ this.getOutcome }}
   </span>
-  <span v-else-if="this.outcome === 'L'" class="lbl lbl-lose">
-    {{ this.outcome }}
+  <span v-else-if="this.getOutcome === 'L'" class="lbl lbl-lose">
+    {{ this.getOutcome }}
   </span>
 </template>
 
@@ -28,6 +28,20 @@ export default {
     } else {
       this.outcome = "L";
     }
+  },
+  computed: {
+    // computed property that auto-updates when the prop changes
+    getOutcome() {
+      if (this.winnerId === -1) {
+        return "";
+      } else if (parseInt(this.winnerId) === 0) {
+        return "D";
+      } else if (parseInt(this.playerId) === this.winnerId) {
+        return "W";
+      } else {
+        return "L";
+      }
+    },
   },
 };
 </script>
