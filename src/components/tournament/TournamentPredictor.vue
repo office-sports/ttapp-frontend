@@ -74,13 +74,42 @@
   <div v-if="matches.length > 0" class="pad10">
     <table class="tbl-fixtures">
       <tr class="table-th">
-        <td>played</td>
+        <td>&nbsp;</td>
+        <td class="txtc">players</td>
         <td class="txtc">&nbsp;</td>
-        <td class="txtl">set scores</td>
+        <td class="txtc">set scores</td>
       </tr>
       <template v-for="(match, index) in this.matches" v-bind:key="index">
         <tr class="tr-row">
-          <td class="txt-col-darker">{{ match.date_played }}</td>
+          <td>
+            <span
+              v-if="!this.isMatchLocked(match.match_id)"
+              :ref="'lock-home-' + match.match_id"
+              @click="this.setHomeWin(match)"
+              class="btn-link"
+              >H</span
+            >
+            <span
+              v-else
+              :ref="'lock-home-' + match.match_id"
+              class="btn-unlinked"
+              >H</span
+            >
+            &nbsp;
+            <span
+              v-if="!this.isMatchLocked(match.match_id)"
+              :ref="'lock-away-' + match.match_id"
+              @click="this.setAwayWin(match)"
+              class="btn-link"
+              >A</span
+            >
+            <span
+              v-else
+              :ref="'lock-away-' + match.match_id"
+              class="btn-unlinked"
+              >A</span
+            >
+          </td>
           <td>
             <GameVersusTable :match="match" />
           </td>
@@ -156,6 +185,36 @@ export default {
     };
   },
   methods: {
+    setHomeWin(match) {
+      let matchId = match.match_id;
+      let requiredWins = Math.ceil(match.mode / 2);
+
+      if (!this.isMatchLocked(matchId)) {
+        for (let i = 1; i <= requiredWins; i++) {
+          this.$refs["game-" + matchId + "-h" + i][0].value = "11";
+          this.$refs["game-" + matchId + "-a" + i][0].value = "0";
+        }
+      }
+      this.checkLock(matchId);
+
+      let game = _.findWhere(this.matches, { match_id: matchId });
+      game.winner_id = match.home_player_id;
+    },
+    setAwayWin(match) {
+      let matchId = match.match_id;
+      let requiredWins = Math.ceil(match.mode / 2);
+
+      if (!this.isMatchLocked(matchId)) {
+        for (let i = 1; i <= requiredWins; i++) {
+          this.$refs["game-" + matchId + "-a" + i][0].value = "11";
+          this.$refs["game-" + matchId + "-h" + i][0].value = "0";
+        }
+      }
+      this.checkLock(matchId);
+
+      let game = _.findWhere(this.matches, { match_id: matchId });
+      game.winner_id = match.away_player_id;
+    },
     isNumber: function (evt) {
       evt = evt ? evt : window.event;
       let charCode = evt.which ? evt.which : evt.keyCode;
@@ -229,6 +288,8 @@ export default {
         homeSets,
         -1
       );
+
+      game.winner_id = 0;
     },
     processLock(gameId) {
       let game = _.findWhere(this.matches, { match_id: gameId });

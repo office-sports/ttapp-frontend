@@ -99,6 +99,32 @@ table {
     text-align: center;
 }
 
+.btn-unlinked {
+    cursor: default;
+    padding: 3px 10px;
+    background: var(--col-dark);
+    border-radius: 5px;
+    color: white;
+    height: 23px;
+    line-height: 23px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.btn-selected {
+    cursor: default;
+    padding: 3px 10px;
+    background: var(--color-green);
+    border-radius: 5px;
+    color: white;
+    height: 23px;
+    line-height: 23px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
 .w50pc {
     width: 50%;
 }
@@ -273,7 +299,7 @@ a:hover {
 }
 
 .sets-score-predictor {
-    
+
 }
 
 .round-container {

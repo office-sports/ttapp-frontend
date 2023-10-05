@@ -160,56 +160,101 @@
                   <td colspan="3">score</td>
                   <td class="txtr">set scores</td>
                 </tr>
-                <tr
-                  v-for="result in results"
+                <template
+                  v-for="(result, index) in results"
                   v-bind:key="result.id"
                   class="tr-row"
                 >
-                  <td class="txt-col-darker">
-                    {{ result.date_played }}
-                  </td>
-                  <td>
-                    <span
-                      v-bind:class="
-                        result.winner_id === result.home_player_id
-                          ? 'col-winner'
-                          : ''
-                      "
-                    >
-                      {{ result.home_player_name }}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      v-bind:class="
-                        result.winner_id == result.away_player_id
-                          ? 'col-winner'
-                          : ''
-                      "
-                    >
-                      {{ result.away_player_name }}
-                    </span>
-                  </td>
-                  <td>
-                    {{ result.home_score_total }}
-                  </td>
-                  <td>-</td>
-                  <td>
-                    {{ result.away_score_total }}
-                  </td>
-                  <td class="txtr">
-                    <span v-if="result.is_walkover == '1'"> walkover </span>
-                    <span v-else>
+                  <tr v-if="index === 0">
+                    <td colspan="7">
+                      <div class="round-container-light">
+                        {{ this.tournaments[result.tournament_id].name }},
+                        <span
+                          class="txt-col-recap-player"
+                          v-if="
+                            this.tournaments[result.tournament_id]
+                              .is_playoffs === 1
+                          "
+                        >
+                          {{ result.group_name }} Playoffs</span
+                        >
+                        <span v-else class="txt-col-recap-player"
+                          >{{ result.group_name }} Group</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    v-else-if="
+                      result.tournament_id !==
+                      this.results[index - 1].tournament_id
+                    "
+                  >
+                    <td colspan="7">
+                      <div class="round-container-light">
+                        {{ this.tournaments[result.tournament_id].name }},
+                        <span
+                          class="txt-col-recap-player"
+                          v-if="
+                            this.tournaments[result.tournament_id]
+                              .is_playoffs === 1
+                          "
+                        >
+                          {{ result.group_name }} Playoffs</span
+                        >
+                        <span v-else class="txt-col-recap-player"
+                          >{{ result.group_name }} Group</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="txt-col-darker">
+                      {{ result.date_played }}
+                    </td>
+                    <td>
                       <span
-                        v-for="score in result.scores"
-                        v-bind:key="score.set"
-                        class="sets-score txt-col-darker"
+                        v-bind:class="
+                          result.winner_id === result.home_player_id
+                            ? 'col-winner'
+                            : ''
+                        "
                       >
-                        {{ score.home }} - {{ score.away }}
+                        {{ result.home_player_name }}
                       </span>
-                    </span>
-                  </td>
-                </tr>
+                    </td>
+                    <td>
+                      <span
+                        v-bind:class="
+                          result.winner_id == result.away_player_id
+                            ? 'col-winner'
+                            : ''
+                        "
+                      >
+                        {{ result.away_player_name }}
+                      </span>
+                    </td>
+                    <td>
+                      {{ result.home_score_total }}
+                    </td>
+                    <td>-</td>
+                    <td>
+                      {{ result.away_score_total }}
+                    </td>
+                    <td class="txtr">
+                      <span v-if="result.is_walkover == '1'"> walkover </span>
+                      <span v-else>
+                        <span
+                          v-for="score in result.scores"
+                          v-bind:key="score.set"
+                          class="sets-score txt-col-darker"
+                        >
+                          {{ score.home }} - {{ score.away }}
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                </template>
               </table>
             </div>
             <div v-show="this.activeTab === 3">
@@ -339,6 +384,7 @@
 </template>
 
 <script>
+import _, { forEach } from "underscore";
 import axios from "axios";
 import { GChart } from "vue-google-charts";
 import results from "@/components/tournament/TournamentResults.vue";
@@ -353,6 +399,7 @@ export default {
   components: { GChart },
   data() {
     return {
+      tournaments: [],
       opponents: [],
       accuracyBarWidth: 150,
       accuracyValues: [],
@@ -363,6 +410,7 @@ export default {
       drawPercentage: 0,
       lossPercentage: 0,
       pps: 0,
+      resultsByGroup: [],
       results: [],
       schedule: [],
       eloChange: 0,
@@ -431,9 +479,10 @@ export default {
         axios.get("/api/players/" + this.$route.params.id + "/results"),
         axios.get("/api/players/" + this.$route.params.id + "/schedule"),
         axios.get("/api/players/" + this.$route.params.id + "/opponents"),
+        axios.get("/api//tournaments"),
       ])
       .then(
-        axios.spread((player, results, schedule, opponents) => {
+        axios.spread((player, results, schedule, opponents, tournaments) => {
           this.player = player.data;
           this.strokeDashArrayWins =
             player.data.win_percentage + " " + player.data.not_win_percentage;
@@ -454,6 +503,10 @@ export default {
           this.results = results.data;
           this.schedule = schedule.data;
           this.opponents = opponents.data;
+
+          this.tournaments = _.indexBy(tournaments.data, function (e) {
+            return e.id;
+          });
 
           let playerId = this.player.id;
           if (this.results.length > 0) {
