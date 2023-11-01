@@ -5,60 +5,70 @@
       this.statistics.name
     }}</span>
   </div>
-  <div
-    class="padt20 padl10 padr10 flex"
-    v-if="this.statistics && this.tournament"
-  >
-    <div class="padr20">
-      <table class="tbl-compact">
+  <div class="padt20 padl10 padr10" v-if="this.statistics && this.tournament">
+    <div>
+      <table>
         <tr>
-          <td>Participants</td>
-          <td class="padl20 col-winner">
-            {{ this.tournament.participants }}
+          <td>
+            Participants
+            <span class="col-winner txtl padl10">
+              {{ this.tournament.participants }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Divisions</td>
-          <td class="padl20 col-winner">
-            {{ this.statistics.divisions }}
+          <td>
+            Divisions
+            <span class="col-winner padl10">
+              {{ this.statistics.divisions }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Games scheduled</td>
-          <td class="padl20 col-winner">
-            {{ this.tournament.scheduled }}
+          <td>
+            Games scheduled
+            <span class="col-winner padl10">
+              {{ this.tournament.scheduled }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Games played</td>
-          <td class="padl20 col-winner">
-            {{ this.tournament.finished }}
+          <td>
+            Games played
+            <span class="col-winner padl10">
+              {{ this.tournament.finished }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Sets played</td>
-          <td class="padl20 col-winner">
-            {{ this.statistics.sets_played }}
+          <td>
+            Sets played
+            <span class="col-winner padl10">
+              {{ this.statistics.sets_played }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Points scored</td>
-          <td class="padl20 col-winner">
-            {{ this.statistics.points_scored }}
+          <td>
+            Points scored
+            <span class="col-winner padl10">
+              {{ this.statistics.points_scored }}
+            </span>
           </td>
-        </tr>
-        <tr>
-          <td>Avg. points per set</td>
-          <td class="padl20 col-winner">
-            {{ parseFloat(this.statistics.avg_points_per_match).toFixed(2) }}
+          <td>
+            Avg. points per game
+            <span class="col-winner padl10">
+              {{ parseFloat(this.statistics.avg_points_per_match).toFixed(2) }}
+            </span>
           </td>
         </tr>
       </table>
     </div>
-    <div class="txtl padl20">
-      <table class="tbl-compact">
+    <div>
+      <hr class="line" />
+    </div>
+    <div class="w100pc">
+      <table>
         <tr>
           <td>Most points scored (single game)</td>
+          <td>
+            <span class="txt-col-recap-player">{{
+              this.playersStatistics.most_points_in_game_player_name
+            }}</span>
+          </td>
+          <td class="col-winner txtr padr20">
+            {{ this.playersStatistics.most_points_in_game }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.most_points_gid"
@@ -69,17 +79,17 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.most_points_in_game }}
-            <span class="txt-col-recap-player padl10"
-              >({{
-                this.playersStatistics.most_points_in_game_player_name
-              }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Least points lost (single game)</td>
+          <td>
+            <span class="txt-col-recap-player">{{
+              this.playersStatistics.least_points_lost_in_game_player_name
+            }}</span>
+          </td>
+          <td class="col-winner txtr padr20">
+            {{ this.playersStatistics.least_points_lost_in_game }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.least_points_gid"
@@ -90,17 +100,17 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.least_points_lost_in_game }}
-            <span class="txt-col-recap-player padl10"
-              >({{
-                this.playersStatistics.least_points_lost_in_game_player_name
-              }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Biggest ELO increase (single game)</td>
+          <td>
+            <span class="txt-col-recap-player">{{
+              this.playersStatistics.most_elo_gain_player_name
+            }}</span>
+          </td>
+          <td class="col-winner txtr padr20">
+            {{ this.playersStatistics.most_elo_gain }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.most_elo_gid"
@@ -111,15 +121,17 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.most_elo_gain }}
-            <span class="txt-col-recap-player padl10"
-              >({{ this.playersStatistics.most_elo_gain_player_name }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Biggest ELO drop (single game)</td>
+          <td>
+            <span class="txt-col-recap-player">{{
+              this.playersStatistics.most_elo_lost_player_name
+            }}</span>
+          </td>
+          <td class="col-winner padr20 txtr">
+            {{ this.playersStatistics.most_elo_lost }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.most_elo_lost_gid"
@@ -130,15 +142,19 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.most_elo_lost }}
-            <span class="txt-col-recap-player padl10"
-              >({{ this.playersStatistics.most_elo_lost_player_name }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Game with most points</td>
+          <td>
+            <span class="txt-col-recap-player"
+              >{{ this.playersStatistics.most_points_game_home_name }}
+              <span class="txt-col-darkest">vs</span>
+              {{ this.playersStatistics.most_points_game_away_name }}</span
+            >
+          </td>
+          <td class="col-winner padr20 txtr">
+            {{ this.playersStatistics.most_points_game }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.most_points_game_gid"
@@ -149,17 +165,19 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.most_points_game }}
-            <span class="txt-col-recap-player padl10"
-              >({{ this.playersStatistics.most_points_game_home_name }}
-              <span class="txt-col-darkest">vs</span>
-              {{ this.playersStatistics.most_points_game_away_name }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Game with least points</td>
+          <td>
+            <span class="txt-col-recap-player"
+              >{{ this.playersStatistics.least_points_game_home_name }}
+              <span class="txt-col-darkest">vs</span>
+              {{ this.playersStatistics.least_points_game_away_name }}</span
+            >
+          </td>
+          <td class="col-winner txtr padr20">
+            {{ this.playersStatistics.least_points_game }}
+          </td>
           <td class="w30">
             <router-link
               v-if="this.playersStatistics.least_points_game_gid"
@@ -170,22 +188,12 @@
               ><i class="padl10 far fa-play-circle"></i
             ></router-link>
           </td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.least_points_game }}
-            <span class="txt-col-recap-player padl10"
-              >({{ this.playersStatistics.least_points_game_home_name }}
-              <span class="txt-col-darkest">vs</span>
-              {{ this.playersStatistics.least_points_game_away_name }})</span
-            >
-          </td>
         </tr>
         <tr>
           <td>Longest set winning streak</td>
-          <td class="w30"></td>
-          <td class="padl20 col-winner">
-            {{ this.playersStatistics.max_set_streak }}
+          <td>
             <span
-              class="padl20 txt-col-darker"
+              class="txt-col-darker"
               v-if="this.playersStatistics.max_set_streak_players"
             >
               <span
@@ -204,8 +212,14 @@
               </span>
             </span>
           </td>
+          <td class="col-winner txtr padr20">
+            {{ this.playersStatistics.max_set_streak }}
+          </td>
         </tr>
       </table>
+    </div>
+    <div>
+      <hr class="line" />
     </div>
   </div>
 </template>
@@ -252,5 +266,10 @@ export default {
 <style>
 .btn-link:hover {
   background: #737373;
+}
+
+.line {
+  border: none;
+  border-bottom: 1px solid #343434;
 }
 </style>

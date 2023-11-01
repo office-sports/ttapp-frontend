@@ -1,96 +1,66 @@
 <template>
-  <div class="round-container marb20">
-    <div class="round-container-dark-small flex txt-col-darker">
-      <span class="txt-col-white">All time best W / L ratio</span>
-    </div>
-    <div class="flex-full-width padt20">
-      <div v-for="(p, idx) in this.leadersWLRatio" v-bind:key="idx">
-        <table>
-          <tr>
-            <td>
-              <div class="cutoutPicSmall">
-                <img :src="p.profile_pic_url" class="pic" />
-              </div>
-              <CircleNumber>
-                <template #value>
-                  {{ idx + 1 }}
-                </template>
-              </CircleNumber>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc col-winner num-big">
-              {{ (p.g_won / p.g_lost).toFixed(2) }}
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc">{{ p.player_name }}</td>
-          </tr>
-        </table>
-      </div>
+  <div class="round-container-green">
+    <div
+      class="round-container-green-small flex txt-col-darker flex-full-width"
+    >
+      <span class="txt-col-white"> Hall of fame</span>
     </div>
   </div>
-  <div class="round-container marb20">
-    <div class="round-container-dark-small flex txt-col-darker">
-      <span class="txt-col-white">Most points scored</span>
-    </div>
-    <div class="flex-full-width padt20">
-      <div v-for="(p, idx) in this.leadersPoints" v-bind:key="idx">
-        <table>
-          <tr>
-            <td>
-              <div class="cutoutPicSmall">
-                <img :src="p.profile_pic_url" class="pic" />
-              </div>
-              <CircleNumber>
-                <template #value>
-                  {{ idx + 1 }}
-                </template>
-              </CircleNumber>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc col-winner num-big">
-              {{ p.p_won }}
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc">{{ p.player_name }}</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="round-container marb20">
-    <div class="round-container-dark-small flex txt-col-darker">
-      <span class="txt-col-white">Most sets won</span>
-    </div>
-    <div class="flex-full-width padt20">
-      <div v-for="(p, idx) in this.leadersSets" v-bind:key="idx">
-        <table>
-          <tr>
-            <td>
-              <div class="cutoutPicSmall">
-                <img :src="p.profile_pic_url" class="pic" />
-              </div>
-              <CircleNumber>
-                <template #value>
-                  {{ idx + 1 }}
-                </template>
-              </CircleNumber>
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc col-winner num-big">
-              {{ p.s_won }}
-            </td>
-          </tr>
-          <tr>
-            <td class="txtc">{{ p.player_name }}</td>
-          </tr>
-        </table>
-      </div>
-    </div>
+  <div class="round-container marb20 mart20">
+    <table class="tbl-fixed">
+      <tr>
+        <td>
+          <div class="round-container-dark-small txt-col-darker">
+            <span class="txt-col-white">All time best W / L ratio</span>
+          </div>
+          <div>
+            <table class="marl10">
+              <tr v-for="(p, idx) in this.leadersWLRatio" v-bind:key="idx">
+                <td>{{ idx + 1 }}.</td>
+                <td class="txtl">{{ p.player_name }}</td>
+                <td class="txtr col-winner padr20">
+                  {{ (p.g_won / p.g_lost).toFixed(2) }}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+        <td class="w15">&nbsp;</td>
+        <td>
+          <div class="round-container-dark-small flex txt-col-darker">
+            <span class="txt-col-white">Most points scored</span>
+          </div>
+          <div>
+            <table class="marl10">
+              <tr v-for="(p, idx) in this.leadersPoints" v-bind:key="idx">
+                <td>{{ idx + 1 }}.</td>
+                <td class="txtl">{{ p.player_name }}</td>
+                <td class="txtr col-winner padr20">
+                  {{ p.p_won }}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+        <td class="w15">&nbsp;</td>
+        <td>
+          <div class="round-container-dark-small flex txt-col-darker">
+            <span class="txt-col-white">Most sets won</span>
+          </div>
+          <div>
+            <table class="marl10">
+              <tr v-for="(p, idx) in this.leadersPoints" v-bind:key="idx">
+                <td>{{ idx + 1 }}.</td>
+                <td class="txtl">{{ p.player_name }}</td>
+                <td class="txtr col-winner padr20">
+                  {{ p.s_won }}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
