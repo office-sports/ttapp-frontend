@@ -7,6 +7,7 @@
       <RouterLink to="/tournaments">tournaments</RouterLink>
       <RouterLink to="/players">players</RouterLink>
       <RouterLink to="/leaders">leaders</RouterLink>
+      <!--      <RouterLink to="/badges">badges</RouterLink>-->
     </nav>
   </div>
   <div class="float-r padt20">
