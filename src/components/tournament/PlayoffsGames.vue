@@ -4,7 +4,7 @@
       <div
         class="round-container-green-small flex txt-col-darker flex-full-width"
       >
-        <span class="txt-col-white">
+        <span class="text-white">
           <i class="fas fa-trophy marr10"></i>
           {{ this.tournament.name }}</span
         >
@@ -26,12 +26,14 @@
           Final standings Premier League
         </div>
         <div class="padt20">
-          <table class="tbl-fixed txtc" style="font-size: 20pt">
-            <tr>
-              <td class="col-winner"></td>
-              <td class="col-winner"></td>
-              <td class="col-winner"></td>
-            </tr>
+          <table class="tbl-fixed text-center" style="font-size: 20pt">
+            <tbody>
+              <tr>
+                <td class="col-winner"></td>
+                <td class="col-winner"></td>
+                <td class="col-winner"></td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -41,156 +43,165 @@
       <div class="round-container-dark-small">Games by order of play</div>
       <div class="pad10">
         <table>
-          <template v-for="(match, index) in this.matches" v-bind:key="index">
-            <tr v-if="index === 0">
-              <td>
-                <div class="round-container-dgreen">
-                  {{ match.group_name }}
-                </div>
-              </td>
-            </tr>
-            <tr
-              v-else-if="
-                match.group_name !== this.matches[index - 1].group_name
-              "
-            >
-              <td>
-                <div class="round-container-dgreen">
-                  {{ match.group_name }}
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td :class="match.is_final_game === 1 ? 'td-final' : ''">
-                <div
-                  :class="
-                    parseInt(this.selectedGame) === match.game_id
-                      ? 'round-container-lighter'
-                      : 'round-container-light'
-                  "
-                >
-                  <table>
-                    <tr class="tr-playoff-row">
-                      <td
-                        v-if="match.winner_id !== 0"
-                        rowspan="2"
-                        class="td-winner-indicator"
-                      ></td>
-                      <td
-                        v-else-if="
-                          isLive(match) &&
-                          parseInt(match.game_id) === parseInt(this.liveMatchId)
-                        "
-                        rowspan="2"
-                        class="indicator-anim"
-                      >
-                        <div class="pong">&nbsp;</div>
-                      </td>
-                      <td
-                        v-else
-                        rowspan="2"
-                        :class="
-                          parseInt(this.selectedGame) === match.game_id
-                            ? 'td-indicator-white'
-                            : 'td-indicator'
-                        "
-                      ></td>
-                      <td class="padl10 w30">#{{ match.order }}</td>
-                      <td class="w_game_name">{{ match.game_name }}</td>
-                      <td>
-                        <GameVersusTable :match="match" />
-                      </td>
-                      <td class="txtl" style="width: 280px">
-                        <span v-if="match.winner_id !== 0">
-                          {{ match.home_score_total }} -
-                          {{ match.away_score_total }}
-                        </span>
-                        <span class="padl20">
-                          <template v-if="match.winner_id !== 0">
-                            <span
-                              v-for="score in match.scores"
-                              v-bind:key="score.set"
-                              class="sets-score"
+          <tbody>
+            <template v-for="(match, index) in this.matches" v-bind:key="index">
+              <tr v-if="index === 0">
+                <td>
+                  <div class="round-container-dgreen">
+                    {{ match.group_name }}
+                  </div>
+                </td>
+              </tr>
+              <tr
+                v-else-if="
+                  match.group_name !== this.matches[index - 1].group_name
+                "
+              >
+                <td>
+                  <div class="round-container-dgreen">
+                    {{ match.group_name }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td :class="match.is_final_game === 1 ? 'td-final' : ''">
+                  <div
+                    :class="
+                      parseInt(this.selectedGame) === match.game_id
+                        ? 'round-container-lighter'
+                        : 'round-container-light'
+                    "
+                  >
+                    <table>
+                      <tbody>
+                        <tr class="tr-playoff-row">
+                          <td
+                            v-if="match.winner_id !== 0"
+                            rowspan="2"
+                            class="td-winner-indicator"
+                          ></td>
+                          <td
+                            v-else-if="
+                              isLive(match) &&
+                              parseInt(match.game_id) ===
+                                parseInt(this.liveMatchId)
+                            "
+                            rowspan="2"
+                            class="indicator-anim"
+                          >
+                            <div class="pong">&nbsp;</div>
+                          </td>
+                          <td
+                            v-else
+                            rowspan="2"
+                            :class="
+                              parseInt(this.selectedGame) === match.game_id
+                                ? 'td-indicator-white'
+                                : 'td-indicator'
+                            "
+                          ></td>
+                          <td class="padl10 w30">#{{ match.order }}</td>
+                          <td class="w_game_name">{{ match.game_name }}</td>
+                          <td>
+                            <GameVersusTable :match="match" />
+                          </td>
+                          <td class="text-left" style="width: 280px">
+                            <span v-if="match.winner_id !== 0">
+                              {{ match.home_score_total }} -
+                              {{ match.away_score_total }}
+                            </span>
+                            <span class="padl20">
+                              <template v-if="match.winner_id !== 0">
+                                <span
+                                  v-for="score in match.scores"
+                                  v-bind:key="score.set"
+                                  class="sets-score"
+                                >
+                                  {{ score.home }}:{{ score.away }}</span
+                                >
+                              </template>
+                              <span
+                                v-if="match.is_walkover === 1"
+                                class="padl10"
+                                ><i class="fas fa-flag"></i
+                              ></span>
+                            </span>
+                          </td>
+                          <td class="text-center w-playoff-options">
+                            <div
+                              v-if="
+                                match.announced === 0 && match.winner_id === 0
+                              "
                             >
-                              {{ score.home }}:{{ score.away }}</span
+                              scheduled
+                            </div>
+                            <div
+                              v-else-if="
+                                isLive(match) &&
+                                parseInt(match.game_id) ===
+                                  parseInt(this.liveMatchId)
+                              "
+                              class="col-winner"
                             >
-                          </template>
-                          <span v-if="match.is_walkover === 1" class="padl10"
-                            ><i class="fas fa-flag"></i
-                          ></span>
-                        </span>
-                      </td>
-                      <td class="txtc w-playoff-options">
-                        <div
-                          v-if="match.announced === 0 && match.winner_id === 0"
-                        >
-                          scheduled
-                        </div>
-                        <div
-                          v-else-if="
-                            isLive(match) &&
-                            parseInt(match.game_id) ===
-                              parseInt(this.liveMatchId)
-                          "
-                          class="col-winner"
-                        >
-                          live
-                        </div>
-                        <div class="txt-col-darker" v-else>finished</div>
-                      </td>
-                      <td class="txtr padr10 w-playoff-options">
-                        <div
-                          v-if="
-                            match.announced === 0 &&
-                            match.winner_id === 0 &&
-                            match.home_player_id !== 0 &&
-                            match.away_player_id !== 0
-                          "
-                        >
-                          <router-link
-                            :to="{
-                              name: 'GameScoring',
-                              params: { id: match.game_id },
-                            }"
-                            >play
-                          </router-link>
-                        </div>
-                        <div
-                          v-if="
-                            isLive(match) &&
-                            parseInt(match.game_id) ===
-                              parseInt(this.liveMatchId)
-                          "
-                        >
-                          <router-link
-                            :to="{
-                              name: 'GameSpectate',
-                              params: { id: match.game_id },
-                            }"
-                            >spectate
-                          </router-link>
-                        </div>
-                        <div v-if="match.winner_id !== 0">
-                          <router-link
-                            :to="{
-                              name: 'GameResult',
-                              params: { id: match.game_id },
-                            }"
-                            >result
-                          </router-link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="6" class="padl10 txt-col-darker">
-                        Outcome: {{ match.level }}
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </td>
-            </tr>
-          </template>
+                              live
+                            </div>
+                            <div class="txt-col-darker" v-else>finished</div>
+                          </td>
+                          <td class="text-right padr10 w-playoff-options">
+                            <div
+                              v-if="
+                                match.announced === 0 &&
+                                match.winner_id === 0 &&
+                                match.home_player_id !== 0 &&
+                                match.away_player_id !== 0
+                              "
+                            >
+                              <router-link
+                                :to="{
+                                  name: 'GameScoring',
+                                  params: { id: match.game_id },
+                                }"
+                                >play
+                              </router-link>
+                            </div>
+                            <div
+                              v-if="
+                                isLive(match) &&
+                                parseInt(match.game_id) ===
+                                  parseInt(this.liveMatchId)
+                              "
+                            >
+                              <router-link
+                                :to="{
+                                  name: 'GameSpectate',
+                                  params: { id: match.game_id },
+                                }"
+                                >spectate
+                              </router-link>
+                            </div>
+                            <div v-if="match.winner_id !== 0">
+                              <router-link
+                                :to="{
+                                  name: 'GameResult',
+                                  params: { id: match.game_id },
+                                }"
+                                >result
+                              </router-link>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="6" class="padl10 txt-col-darker">
+                            Outcome: {{ match.level }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
         </table>
       </div>
     </div>

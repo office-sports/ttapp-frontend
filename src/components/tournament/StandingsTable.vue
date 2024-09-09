@@ -1,105 +1,115 @@
 <template>
   <div>
     <table class="tbl-fixtures tbl-standings">
-      <tr>
-        <td class="txtl w400">name</td>
-        <td class="txtc" colspan="2" v-if="!this.tournament.is_finished">
-          change
-        </td>
-        <td class="txtc">played</td>
-        <td class="txtc">w / d / l</td>
-        <td class="txtc">sets</td>
-        <td class="txtc">+/-</td>
-        <th class="txtc">rallies</th>
-        <td class="txtc">+/-</td>
-        <td class="txtc">points</td>
-      </tr>
-      <tr
-        v-for="(player, index) in group.players"
-        v-bind:key="player.playerId"
-        class="group-container txt-col-darker"
-      >
-        <td>
-          <div
-            :class="['level', 'level-c' + player.pos_color]"
-            class="flex-full-width"
+      <tbody>
+        <tr>
+          <td class="text-left w400">name</td>
+          <td
+            class="text-center"
+            colspan="2"
+            v-if="!this.tournament.is_finished"
           >
-            <span class="level-span">
-              <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
-              <router-link :to="'/player/' + player.player_id + '/profile'"
-                >{{ player.player_name }}
-              </router-link>
+            change
+          </td>
+          <td class="text-center">played</td>
+          <td class="text-center">w / d / l</td>
+          <td class="text-center">sets</td>
+          <td class="text-center">+/-</td>
+          <th class="text-center">rallies</th>
+          <td class="text-center">+/-</td>
+          <td class="text-center">points</td>
+        </tr>
+        <tr
+          v-for="(player, index) in group.players"
+          v-bind:key="player.playerId"
+          class="group-container txt-col-darker"
+        >
+          <td>
+            <div
+              :class="['level', 'level-c' + player.pos_color]"
+              class="flex-full-width"
+            >
+              <span class="level-span">
+                <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
+                <router-link :to="'/player/' + player.player_id + '/profile'"
+                  >{{ player.player_name }}
+                </router-link>
+              </span>
+              <span
+                class="padr10 txt-col-darkest"
+                v-if="this.lockedPos || this.lockedPlayoffs"
+              >
+                <span
+                  v-if="
+                    this.lockedPos[group.group_id] &&
+                    this.lockedPos[group.group_id].includes(player.player_id)
+                  "
+                >
+                  <i class="fas fa-lock"></i>
+                </span>
+                <span
+                  v-else-if="
+                    this.lockedPlayoffs[group.group_id] &&
+                    this.lockedPlayoffs[group.group_id].includes(
+                      player.player_id
+                    )
+                  "
+                >
+                  <i class="fas fa-lock-open"></i>
+                </span>
+              </span>
+            </div>
+          </td>
+          <td class="text-right w50" v-if="!this.tournament.is_finished">
+            <span class="lbl-pos" v-if="this.positions[player.player_id] < 0">
+              {{ this.positions[player.player_id] }}
             </span>
             <span
-              class="padr10 txt-col-darkest"
-              v-if="this.lockedPos || this.lockedPlayoffs"
+              class="lbl-pos"
+              v-else-if="this.positions[player.player_id] > 0"
             >
-              <span
-                v-if="
-                  this.lockedPos[group.group_id] &&
-                  this.lockedPos[group.group_id].includes(player.player_id)
-                "
-              >
-                <i class="fas fa-lock"></i>
-              </span>
-              <span
-                v-else-if="
-                  this.lockedPlayoffs[group.group_id] &&
-                  this.lockedPlayoffs[group.group_id].includes(player.player_id)
-                "
-              >
-                <i class="fas fa-lock-open"></i>
-              </span>
+              +{{ this.positions[player.player_id] }}
             </span>
-          </div>
-        </td>
-        <td class="txtr w50" v-if="!this.tournament.is_finished">
-          <span class="lbl-pos" v-if="this.positions[player.player_id] < 0">
-            {{ this.positions[player.player_id] }}
-          </span>
-          <span
-            class="lbl-pos"
-            v-else-if="this.positions[player.player_id] > 0"
-          >
-            +{{ this.positions[player.player_id] }}
-          </span>
-          <span v-else>&nbsp;</span>
-        </td>
-        <td class="txtl" v-if="!this.tournament.is_finished">
-          <span class="lbl-pos" v-if="this.positions[player.player_id] < 0">
-            <i class="fas fa-arrow-alt-circle-down"></i>
-          </span>
-          <span
-            class="lbl-pos"
-            v-else-if="this.positions[player.player_id] > 0"
-          >
-            <i class="fas fa-arrow-alt-circle-up"></i>
-          </span>
-          <span
-            class="lbl-pos"
-            v-else-if="this.positions[player.player_id] === 0"
-          >
-            <i class="fas fa-stop-circle"></i>
-          </span>
-        </td>
-        <td class="txtc">{{ player.played }}</td>
-        <td class="txtc">
-          {{ player.wins }} - {{ player.draws }} - {{ player.losses }}
-        </td>
-        <td class="txtc">{{ player.sets_for }} - {{ player.sets_against }}</td>
-        <td class="txtc">{{ player.sets_diff }}</td>
-        <td class="txtc">
-          {{ player.rallies_for }} - {{ player.rallies_against }}
-        </td>
-        <td class="txtc">{{ player.rallies_diff ?? 0 }}</td>
-        <td class="txtc">{{ player.points }}</td>
-      </tr>
+            <span v-else>&nbsp;</span>
+          </td>
+          <td class="text-left" v-if="!this.tournament.is_finished">
+            <span class="lbl-pos" v-if="this.positions[player.player_id] < 0">
+              <i class="fas fa-arrow-alt-circle-down"></i>
+            </span>
+            <span
+              class="lbl-pos"
+              v-else-if="this.positions[player.player_id] > 0"
+            >
+              <i class="fas fa-arrow-alt-circle-up"></i>
+            </span>
+            <span
+              class="lbl-pos"
+              v-else-if="this.positions[player.player_id] === 0"
+            >
+              <i class="fas fa-stop-circle"></i>
+            </span>
+          </td>
+          <td class="text-center">{{ player.played }}</td>
+          <td class="text-center">
+            {{ player.wins }} - {{ player.draws }} - {{ player.losses }}
+          </td>
+          <td class="text-center">
+            {{ player.sets_for }} - {{ player.sets_against }}
+          </td>
+          <td class="text-center">{{ player.sets_diff }}</td>
+          <td class="text-center">
+            {{ player.rallies_for }} - {{ player.rallies_against }}
+          </td>
+          <td class="text-center">{{ player.rallies_diff ?? 0 }}</td>
+          <td class="text-center">{{ player.points }}</td>
+        </tr>
+      </tbody>
     </table>
   </div>
   <div class="padt10" v-if="!this.tournament.is_finished">
     <div class="txt-col-darker">
       <i class="fas fa-lock"></i> Final position
-      <i class="marl10 fas fa-lock-open"></i> Playoffs secured, position TBD
+      <i class="ml-2.5 fas fa-lock-open"></i> Playoffs secured, position TBD
     </div>
     <div class="padt10">
       <span @click="this.toggleGroup(group.group_id)" class="lbl-recap">

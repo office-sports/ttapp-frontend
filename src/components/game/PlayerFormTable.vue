@@ -1,60 +1,66 @@
 <template>
   <table class="tbl-border tbl-compact">
-    <tr>
-      <td colspan="2">&nbsp;</td>
-      <td :colspan="this.currentTournamentHome">
-        <div class="span-line">&nbsp;</div>
-      </td>
-      <td :colspan="this.maxCount * 2 - this.currentTournamentHome">&nbsp;</td>
-    </tr>
-    <tr>
-      <td class="w200">{{ this.game.homePlayerName }}</td>
-      <td class="txtr">
-        <i class="fas fa-long-arrow-alt-left"></i>
-      </td>
-      <template v-for="(g, i) in this.homeResults" v-bind:key="i">
-        <td class="pad5 txtc">
-          <PlayerFormLabel
-            :player-id="game.homePlayerId"
-            :winner-id="g.winner_id"
-          />
+    <tbody>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+        <td :colspan="this.currentTournamentHome">
+          <div class="span-line">&nbsp;</div>
         </td>
-        <td>
-          <i class="fas fa-minus" v-if="i < this.hCount - 1"></i>
+        <td :colspan="this.maxCount * 2 - this.currentTournamentHome">
+          &nbsp;
         </td>
-      </template>
-    </tr>
-    <tr class="form-row">
-      <td class="w200">{{ this.game.awayPlayerName }}</td>
-      <td class="txtr">
-        <i class="fas fa-long-arrow-alt-left"></i>
-      </td>
-      <template v-for="(g, i) in this.awayResults" v-bind:key="i">
-        <td class="pad5 txtc">
-          <PlayerFormLabel
-            :player-id="game.awayPlayerId"
-            :winner-id="g.winner_id"
-          />
+      </tr>
+      <tr>
+        <td class="w200">{{ this.game.homePlayerName }}</td>
+        <td class="text-right">
+          <i class="fas fa-long-arrow-alt-left"></i>
         </td>
-        <td>
-          <i class="fas fa-minus" v-if="i < this.aCount - 1"></i>
+        <template v-for="(g, i) in this.homeResults" v-bind:key="i">
+          <td class="pad5 text-center">
+            <PlayerFormLabel
+              :player-id="game.homePlayerId"
+              :winner-id="g.winner_id"
+            />
+          </td>
+          <td>
+            <i class="fas fa-minus" v-if="i < this.hCount - 1"></i>
+          </td>
+        </template>
+      </tr>
+      <tr class="form-row">
+        <td class="w200">{{ this.game.awayPlayerName }}</td>
+        <td class="text-right">
+          <i class="fas fa-long-arrow-alt-left"></i>
         </td>
-      </template>
-    </tr>
-    <tr>
-      <td colspan="2">&nbsp;</td>
-      <td :colspan="this.currentTournamentAway">
-        <div class="span-line">&nbsp;</div>
-      </td>
-      <td :colspan="this.maxCount * 2 - this.currentTournamentAway">&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <i class="fas fa-circle circle"></i>
-        current tournament
-      </td>
-      <td :colspan="this.maxCount * 2" class="legend"></td>
-    </tr>
+        <template v-for="(g, i) in this.awayResults" v-bind:key="i">
+          <td class="pad5 text-center">
+            <PlayerFormLabel
+              :player-id="game.awayPlayerId"
+              :winner-id="g.winner_id"
+            />
+          </td>
+          <td>
+            <i class="fas fa-minus" v-if="i < this.aCount - 1"></i>
+          </td>
+        </template>
+      </tr>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+        <td :colspan="this.currentTournamentAway">
+          <div class="span-line">&nbsp;</div>
+        </td>
+        <td :colspan="this.maxCount * 2 - this.currentTournamentAway">
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <i class="fas fa-circle circle"></i>
+          current tournament
+        </td>
+        <td :colspan="this.maxCount * 2" class="legend"></td>
+      </tr>
+    </tbody>
   </table>
 </template>
 

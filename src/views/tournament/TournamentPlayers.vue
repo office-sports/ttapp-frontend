@@ -1,103 +1,116 @@
 <template>
   <div class="round-container">
     <div class="round-container-dark-small flex txt-col-darker flex-full-width">
-      <span class="txt-col-white">Tournament players list</span>
+      <span class="text-white">Tournament players list</span>
     </div>
     <div>
       <div v-if="this.players.length > 0" class="pad10">
         <table class="tbl-fixtures">
-          <tr class="table-th">
-            <td class="cur-pointer" @click="sortColumn('player_name')">name</td>
-            <td class="cur-pointer" @click="sortColumn('group_name')">
-              league
-            </td>
-            <td class="cur-pointer" @click="sortColumn('starting_elo')">
-              elo.start
-            </td>
-            <td class="cur-pointer txtc" @click="sortColumn('last_elo')">
-              elo.last
-            </td>
-            <td class="cur-pointer txtc" @click="sortColumn('elo_change')">
-              elo.change
-            </td>
-            <td class="txtc">W / D / L</td>
-            <td class="txtl">
-              <div class="padl20">
-                <i class="fas fa-long-arrow-alt-left"></i> form (last 6 games)
-              </div>
-            </td>
-            <td class="txtc">played</td>
-            <td class="txtc">tbd</td>
-          </tr>
-          <template v-for="(player, index) in this.players" v-bind:key="index">
-            <tr class="tr-row">
-              <td>
-                <router-link :to="'/player/' + player.player_id + '/profile'"
-                  >{{ player.player_name }}
-                </router-link>
+          <tbody>
+            <tr class="table-th">
+              <td class="cur-pointer" @click="sortColumn('player_name')">
+                name
               </td>
-              <td class="txt-col-darker">
-                {{ player.group_name }}
+              <td class="cur-pointer" @click="sortColumn('group_name')">
+                league
               </td>
-              <td class="txtc">
-                {{ player.starting_elo }}
+              <td class="cur-pointer" @click="sortColumn('starting_elo')">
+                elo.start
               </td>
-              <td class="txtc">
-                {{ player.last_elo }}
+              <td
+                class="cur-pointer text-center"
+                @click="sortColumn('last_elo')"
+              >
+                elo.last
               </td>
-              <td class="txtc">
-                {{ player.last_elo - player.starting_elo }}
-                <span class="marl10">
-                  <span
-                    class="txt-col-red"
-                    v-if="player.last_elo - player.starting_elo <= -100"
-                  >
-                    <i class="fas fa-angle-double-down"></i>
-                  </span>
-                  <span
-                    class="txt-col-red"
-                    v-else-if="player.last_elo - player.starting_elo < 0"
-                  >
-                    <i class="fas fa-angle-down"></i>
-                  </span>
-                  <span
-                    class="txt-col-green"
-                    v-else-if="player.last_elo - player.starting_elo > 100"
-                  >
-                    <i class="fas fa-angle-double-up"></i>
-                  </span>
-                  <span
-                    class="txt-col-green"
-                    v-else-if="player.last_elo - player.starting_elo > 0"
-                  >
-                    <i class="fas fa-angle-up"></i>
-                  </span>
-                  <span v-else>
-                    <i class="fas fa-caret-left txt-col-darkest"></i>
-                  </span>
-                </span>
+              <td
+                class="cur-pointer text-center"
+                @click="sortColumn('elo_change')"
+              >
+                elo.change
               </td>
-              <td class="txtc">
-                {{ player.won }} / {{ player.draw }} / {{ player.lost }}
-              </td>
-              <td class="txtc flex">
-                <div class="padl20 flex" v-if="player.form">
-                  <span
-                    class="span-form"
-                    v-for="(f, idx) in player.form.slice(0, 6)"
-                    v-bind:key="idx"
-                  >
-                    <PlayerFormLabel
-                      :playerId="player.player_id"
-                      :winnerId="f"
-                    />
-                  </span>
+              <td class="text-center">W / D / L</td>
+              <td class="text-left">
+                <div class="padl20">
+                  <i class="fas fa-long-arrow-alt-left"></i> form (last 6 games)
                 </div>
               </td>
-              <td class="txtc">{{ player.finished }}</td>
-              <td class="txtc">{{ player.unfinished }}</td>
+              <td class="text-center">played</td>
+              <td class="text-center">tbd</td>
             </tr>
-          </template>
+            <template
+              v-for="(player, index) in this.players"
+              v-bind:key="index"
+            >
+              <tr class="tr-row">
+                <td>
+                  <router-link :to="'/player/' + player.player_id + '/profile'"
+                    >{{ player.player_name }}
+                  </router-link>
+                </td>
+                <td class="txt-col-darker">
+                  {{ player.group_name }}
+                </td>
+                <td class="text-center">
+                  {{ player.starting_elo }}
+                </td>
+                <td class="text-center">
+                  {{ player.last_elo }}
+                </td>
+                <td class="text-center">
+                  {{ player.last_elo - player.starting_elo }}
+                  <span class="ml-2.5">
+                    <span
+                      class="text-red-600"
+                      v-if="player.last_elo - player.starting_elo <= -100"
+                    >
+                      <i class="fas fa-angle-double-down"></i>
+                    </span>
+                    <span
+                      class="text-red-600"
+                      v-else-if="player.last_elo - player.starting_elo < 0"
+                    >
+                      <i class="fas fa-angle-down"></i>
+                    </span>
+                    <span
+                      class="txt-col-green"
+                      v-else-if="player.last_elo - player.starting_elo > 100"
+                    >
+                      <i class="fas fa-angle-double-up"></i>
+                    </span>
+                    <span
+                      class="txt-col-green"
+                      v-else-if="player.last_elo - player.starting_elo > 0"
+                    >
+                      <i class="fas fa-angle-up"></i>
+                    </span>
+                    <span v-else>
+                      <i class="fas fa-caret-left txt-col-darkest"></i>
+                    </span>
+                  </span>
+                </td>
+                <td class="text-center">
+                  {{ player.won }} / {{ player.draw }} / {{ player.lost }}
+                </td>
+                <td class="text-center flex">
+                  <div class="padl20 flex" v-if="player.form">
+                    <span
+                      class="span-form"
+                      v-for="(f, idx) in player.form.slice(0, 6)"
+                      v-bind:key="idx"
+                    >
+                      <PlayerFormLabel
+                        :playerId="player.player_id"
+                        :winnerId="f"
+                      />
+                    </span>
+                  </div>
+                </td>
+                <td class="text-center">{{ player.finished }}</td>
+                <td class="text-center">{{ player.unfinished }}</td>
+              </tr>
+            </template>
+          </tbody>
         </table>
       </div>
     </div>

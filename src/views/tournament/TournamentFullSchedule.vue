@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import TournamentSchedule from "@/components/tournament/TournamentSchedule.vue";
 
 export default {

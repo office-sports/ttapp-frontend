@@ -1,21 +1,24 @@
 <template>
-  <div class="round-container marb20" v-if="!this.tournament">
+  <div class="rounded-2xl p-5 bg-container mb-5" v-if="!this.tournament">
     <div class="round-container-dark-small flex txt-col-darker">
-      <span class="txt-col-white">No live tournaments</span>
+      <span class="text-white">No live tournaments</span>
     </div>
   </div>
   <div v-else>
     <template v-if="!tournament.is_playoffs">
-      <div class="round-container marb20" v-if="this.tournament">
+      <div class="rounded-2xl p-5 bg-container mb-5" v-if="this.tournament">
         <TournamentPanel :tournament="this.tournament" />
       </div>
-      <div class="round-container" v-if="this.tournament">
+      <div class="rounded-2xl p-5 bg-container" v-if="this.tournament">
         <TournamentResults
           :result-count="10"
           :tournament-id="this.tournament.id"
         />
       </div>
-      <div class="round-container mart20 marb20" v-if="this.tournament">
+      <div
+        class="rounded-2xl p-5 bg-container mt-5 mb-5"
+        v-if="this.tournament"
+      >
         <TournamentSchedule
           :fixture-count="10"
           :tournament-id="this.tournament.id"
@@ -57,7 +60,7 @@ export default {
     axios
       .all([axios.get("/api/tournaments/live")])
       .then(
-        axios.spread((t, g) => {
+        axios.spread((t) => {
           // findWhere returns FIRST tournament
           this.tournament = _.findWhere(t.data, {
             office_id: parseInt(this.officeId),

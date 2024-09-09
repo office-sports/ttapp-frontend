@@ -1,13 +1,22 @@
 <template>
-  <span v-if="this.getOutcome === 'W'" class="lbl lbl-win">
+  <div
+    v-if="this.getOutcome === 'W'"
+    class="bg-lbl_win text-white rounded-md min-w-6 font-extrabold"
+  >
     {{ this.getOutcome }}
-  </span>
-  <span v-else-if="this.getOutcome === 'D'" class="lbl lbl-draw">
+  </div>
+  <div
+    v-else-if="this.getOutcome === 'D'"
+    class="bg-lbl_lose text-white rounded-md min-w-6 font-extrabold"
+  >
     {{ this.getOutcome }}
-  </span>
-  <span v-else-if="this.getOutcome === 'L'" class="lbl lbl-lose">
+  </div>
+  <div
+    v-else-if="this.getOutcome === 'L'"
+    class="bg-lbl_lose text-white rounded-md min-w-6 font-extrabold"
+  >
     {{ this.getOutcome }}
-  </span>
+  </div>
 </template>
 
 <script>
@@ -45,29 +54,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.lbl {
-  display: block;
-  color: black;
-  padding: 2px 6px;
-  border-radius: 6px;
-  width: 15px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.lbl-win {
-  background: #64a63c;
-  color: white;
-}
-
-.lbl-lose {
-  background: #3c3f41;
-  color: white;
-}
-
-.lbl-draw {
-  background: #949494;
-}
-</style>

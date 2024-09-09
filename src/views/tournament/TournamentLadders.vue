@@ -11,85 +11,91 @@
     </div>
     <div>
       <table class="tbl-fixed mart10" id="tbl-ladder">
-        <tr>
-          <td v-for="i in stages" v-bind:key="i" class="pad10">
-            <div>
-              <div v-for="match in ladder.ladder_group" v-bind:key="match.id">
-                <div v-if="match.stage === i" class="match-container marb20">
-                  <table class="ladder-table">
-                    <tr>
-                      <td rowspan="3" class="match-order">
-                        <span class="fa-stack">
-                          <i class="fas fa-circle fa-stack-2x stack-shield"></i>
-                          <i class="fas fa-stack-2x stack-star match-num">{{
-                            match.order
-                          }}</i>
-                        </span>
-                      </td>
-                      <td
-                        class="match-name padl20"
-                        colspan="2"
-                        v-if="match.winner_id == 0"
-                      >
-                        <span>{{ match.game_name }}</span>
-                      </td>
-                      <td class="match-name-done" colspan="2" v-else>
-                        <span>{{ match.game_name }}</span>
-                        <span v-if="match.is_walkover" class="float-r">
-                          <i class="fas fa-flag"></i>
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        v-bind:class="
-                          match.winner_id != 0 &&
-                          match.winner_id == match.home_player_id
-                            ? 'txt-col-green match-player'
-                            : 'match-player'
-                        "
-                      >
-                        <span
-                          style="color: #aaa"
-                          v-if="match.home_player_id == 0"
-                          >{{ match.home_player_name }}</span
-                        >
-                        <span v-else>{{ match.home_player_name }}</span>
-                      </td>
-                      <td class="txtr match-player">
-                        <span v-if="match.winner_id != 0">
-                          {{ match.home_score_total }}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        v-bind:class="
-                          match.winner_id != 0 &&
-                          match.winner_id == match.away_player_id
-                            ? 'txt-col-green match-player'
-                            : 'match-player'
-                        "
-                      >
-                        <span
-                          style="color: #aaa"
-                          v-if="match.away_player_id == 0"
-                          >{{ match.away_player_name }}</span
-                        >
-                        <span v-else>{{ match.away_player_name }}</span>
-                      </td>
-                      <td class="txtr match-player">
-                        <span v-if="match.winner_id != 0">
-                          {{ match.away_score_total }}
-                        </span>
-                      </td>
-                    </tr>
-                  </table>
+        <tbody>
+          <tr>
+            <td v-for="i in stages" v-bind:key="i" class="pad10">
+              <div>
+                <div v-for="match in ladder.ladder_group" v-bind:key="match.id">
+                  <div v-if="match.stage === i" class="match-container marb20">
+                    <table class="ladder-table">
+                      <tbody>
+                        <tr>
+                          <td rowspan="3" class="match-order">
+                            <span class="fa-stack">
+                              <i
+                                class="fas fa-circle fa-stack-2x stack-shield"
+                              ></i>
+                              <i class="fas fa-stack-2x stack-star match-num">{{
+                                match.order
+                              }}</i>
+                            </span>
+                          </td>
+                          <td
+                            class="match-name padl20"
+                            colspan="2"
+                            v-if="match.winner_id == 0"
+                          >
+                            <span>{{ match.game_name }}</span>
+                          </td>
+                          <td class="match-name-done" colspan="2" v-else>
+                            <span>{{ match.game_name }}</span>
+                            <span v-if="match.is_walkover" class="float-r">
+                              <i class="fas fa-flag"></i>
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            v-bind:class="
+                              match.winner_id != 0 &&
+                              match.winner_id == match.home_player_id
+                                ? 'txt-col-green match-player'
+                                : 'match-player'
+                            "
+                          >
+                            <span
+                              style="color: #aaa"
+                              v-if="match.home_player_id == 0"
+                              >{{ match.home_player_name }}</span
+                            >
+                            <span v-else>{{ match.home_player_name }}</span>
+                          </td>
+                          <td class="text-right match-player">
+                            <span v-if="match.winner_id != 0">
+                              {{ match.home_score_total }}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            v-bind:class="
+                              match.winner_id != 0 &&
+                              match.winner_id == match.away_player_id
+                                ? 'txt-col-green match-player'
+                                : 'match-player'
+                            "
+                          >
+                            <span
+                              style="color: #aaa"
+                              v-if="match.away_player_id == 0"
+                              >{{ match.away_player_name }}</span
+                            >
+                            <span v-else>{{ match.away_player_name }}</span>
+                          </td>
+                          <td class="text-right match-player">
+                            <span v-if="match.winner_id != 0">
+                              {{ match.away_score_total }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
-        </tr>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </template>

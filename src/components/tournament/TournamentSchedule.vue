@@ -1,64 +1,73 @@
 <template>
   <div class="round-container-dark-small flex txt-col-darker flex-full-width">
     <table class="tbl-nopad">
-      <tr>
-        <td class="padl10">
-          <span v-if="fixtureCount === 0" class="txt-col-white">
-            Full tournament schedule
-          </span>
-          <span v-else class="txt-col-white">Tournament schedule</span>
-          <span class="marl10" v-if="fixtureCount > 0"
-            >(next {{ fixtureCount }})</span
-          >
-        </td>
-        <td class="txtr padr10" style="padding: 0">
-          <template v-if="fixtureCount === 0">
-            <form @submit.prevent="nameSearch" style="display: inline-block">
-              <input
-                v-model="searchName"
-                placeholder="name"
-                type="text"
-                class="textInput txtl"
-              />
-            </form>
-            <span
-              class="padl10"
-              v-if="this.searchName !== '' && this.searchName.length >= 3"
-            >
-              <i @click="this.clearSearchName" class="far fa-times-circle"></i>
+      <tbody>
+        <tr>
+          <td class="pl-2.5">
+            <span v-if="fixtureCount === 0" class="text-white">
+              Full tournament schedule
             </span>
-          </template>
-        </td>
-      </tr>
+            <span v-else class="text-white">Tournament schedule</span>
+            <span class="ml-2.5" v-if="fixtureCount > 0"
+              >(next {{ fixtureCount }})</span
+            >
+          </td>
+          <td class="text-right padr10" style="padding: 0">
+            <template v-if="fixtureCount === 0">
+              <form @submit.prevent="nameSearch" style="display: inline-block">
+                <input
+                  v-model="searchName"
+                  placeholder="name"
+                  type="text"
+                  class="textInput text-left"
+                />
+              </form>
+              <span
+                class="padl10"
+                v-if="this.searchName !== '' && this.searchName.length >= 3"
+              >
+                <i
+                  @click="this.clearSearchName"
+                  class="far fa-times-circle"
+                ></i>
+              </span>
+            </template>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
   <div v-if="matches.length > 0" class="pad10">
     <table class="tbl-fixtures">
-      <tr class="table-th">
-        <td>date of match</td>
-        <td>group name</td>
-        <td>&nbsp;</td>
-      </tr>
-      <template v-for="(match, index) in this.matches" v-bind:key="index">
-        <tr class="tr-row" v-show="isShown(match)">
-          <td class="txt-col-darker">{{ match.date_of_match }}</td>
-          <td>{{ match.group_name }}</td>
-          <td>
-            <GameVersusTable :match="match" />
-          </td>
-          <td>
-            <router-link
-              :to="{ name: 'GameScoring', params: { id: match.match_id } }"
-              ><i class="far fa-play-circle"></i
-            ></router-link>
-          </td>
+      <tbody>
+        <tr class="table-th">
+          <td>date of match</td>
+          <td>group name</td>
+          <td>&nbsp;</td>
         </tr>
-      </template>
+        <template v-for="(match, index) in this.matches" v-bind:key="index">
+          <tr class="tr-row" v-show="isShown(match)">
+            <td class="txt-col-darker">{{ match.date_of_match }}</td>
+            <td>{{ match.group_name }}</td>
+            <td>
+              <GameVersusTable :match="match" />
+            </td>
+            <td>
+              <router-link
+                :to="{ name: 'GameScoring', params: { id: match.match_id } }"
+                ><i class="far fa-play-circle"></i
+              ></router-link>
+            </td>
+          </tr>
+        </template>
+      </tbody>
     </table>
-    <div class="mart20" v-if="fixtureCount > 0">
+    <div class="mt-5" v-if="fixtureCount > 0">
       <router-link :to="'/tournament/' + this.tournamentId + '/schedule'">
-        <div class="btn-link">show all</div>
+        <div class="cursor-pointer rounded-md bg-gray-700 text-center py-1">
+          show all
+        </div>
       </router-link>
     </div>
   </div>

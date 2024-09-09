@@ -21,6 +21,7 @@ import TopMenu from "./components/menus/TopMenu.vue";
 </template>
 
 <style>
+@import "assets/main.css";
 @import "assets/base.css";
 @import "assets/base-obs.css";
 @import "assets/spaces.css";

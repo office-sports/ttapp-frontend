@@ -1,159 +1,173 @@
 <template>
   <div>
     <table class="tbl-fixtures tbl-standings">
-      <tr>
-        <td class="txtl w400">name</td>
-        <td class="txtc">played</td>
-        <td class="txtc">w / d / l</td>
-        <td class="txtc">sets</td>
-        <td class="txtc">+/-</td>
-        <th class="txtc">rallies</th>
-        <td class="txtc">+/-</td>
-        <td class="txtc">points</td>
-      </tr>
-      <tr
-        v-for="(player, index) in alteredGroup.players"
-        v-bind:key="player.playerId"
-        class="group-container txt-col-darker"
-      >
-        <td>
-          <div
-            :class="['level', 'level-c' + player.pos_color]"
-            class="flex-full-width"
-          >
-            <span class="level-span">
-              <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
-              <router-link :to="'/player/' + player.player_id + '/profile'"
-                >{{ player.player_name }}
-              </router-link>
-            </span>
-            <span
-              class="padr10 txt-col-darkest"
-              v-if="this.lockedPos || this.lockedPlayoffs"
+      <tbody>
+        <tr>
+          <td class="text-left w400">name</td>
+          <td class="text-center">played</td>
+          <td class="text-center">w / d / l</td>
+          <td class="text-center">sets</td>
+          <td class="text-center">+/-</td>
+          <th class="text-center">rallies</th>
+          <td class="text-center">+/-</td>
+          <td class="text-center">points</td>
+        </tr>
+        <tr
+          v-for="(player, index) in alteredGroup.players"
+          v-bind:key="player.playerId"
+          class="group-container txt-col-darker"
+        >
+          <td>
+            <div
+              :class="['level', 'level-c' + player.pos_color]"
+              class="flex-full-width"
             >
-              <span
-                v-if="
-                  this.lockedPos[group.group_id] &&
-                  this.lockedPos[group.group_id].includes(player.player_id)
-                "
-              >
-                <i class="fas fa-lock"></i>
+              <span class="level-span">
+                <span class="txt-col-darkest padl10">{{ index + 1 }}. </span>
+                <router-link :to="'/player/' + player.player_id + '/profile'"
+                  >{{ player.player_name }}
+                </router-link>
               </span>
               <span
-                v-else-if="
-                  this.lockedPlayoffs[group.group_id] &&
-                  this.lockedPlayoffs[group.group_id].includes(player.player_id)
-                "
+                class="padr10 txt-col-darkest"
+                v-if="this.lockedPos || this.lockedPlayoffs"
               >
-                <i class="fas fa-lock-open"></i>
+                <span
+                  v-if="
+                    this.lockedPos[group.group_id] &&
+                    this.lockedPos[group.group_id].includes(player.player_id)
+                  "
+                >
+                  <i class="fas fa-lock"></i>
+                </span>
+                <span
+                  v-else-if="
+                    this.lockedPlayoffs[group.group_id] &&
+                    this.lockedPlayoffs[group.group_id].includes(
+                      player.player_id
+                    )
+                  "
+                >
+                  <i class="fas fa-lock-open"></i>
+                </span>
               </span>
-            </span>
-          </div>
-        </td>
-        <td class="txtc">{{ player.played }}</td>
-        <td class="txtc">
-          {{ player.wins }} - {{ player.draws }} - {{ player.losses }}
-        </td>
-        <td class="txtc">{{ player.sets_for }} - {{ player.sets_against }}</td>
-        <td class="txtc">{{ player.sets_diff }}</td>
-        <td class="txtc">
-          {{ player.rallies_for }} - {{ player.rallies_against }}
-        </td>
-        <td class="txtc">{{ player.rallies_diff ?? 0 }}</td>
-        <td class="txtc">{{ player.points }}</td>
-      </tr>
+            </div>
+          </td>
+          <td class="text-center">{{ player.played }}</td>
+          <td class="text-center">
+            {{ player.wins }} - {{ player.draws }} - {{ player.losses }}
+          </td>
+          <td class="text-center">
+            {{ player.sets_for }} - {{ player.sets_against }}
+          </td>
+          <td class="text-center">{{ player.sets_diff }}</td>
+          <td class="text-center">
+            {{ player.rallies_for }} - {{ player.rallies_against }}
+          </td>
+          <td class="text-center">{{ player.rallies_diff ?? 0 }}</td>
+          <td class="text-center">{{ player.points }}</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
   <div class="mart20">
     <div class="round-container-dark-small flex txt-col-darker">
-      <span class="marl10" v-if="matches.length > 0">Predictions</span>
+      <span class="ml-2.5" v-if="matches.length > 0">Predictions</span>
     </div>
   </div>
 
   <div v-if="matches.length > 0" class="pad10">
     <table class="tbl-fixtures">
-      <tr class="table-th">
-        <td>&nbsp;</td>
-        <td class="txtc">players</td>
-        <td class="txtc">&nbsp;</td>
-        <td class="txtc">set scores</td>
-      </tr>
-      <template v-for="(match, index) in this.matches" v-bind:key="index">
-        <tr class="tr-row">
-          <td>
-            <span
-              v-if="!this.isMatchLocked(match.match_id)"
-              :ref="'lock-home-' + match.match_id"
-              @click="this.setHomeWin(match)"
-              class="btn-link"
-              >H</span
-            >
-            <span
-              v-else
-              :ref="'lock-home-' + match.match_id"
-              class="btn-unlinked"
-              >H</span
-            >
-            &nbsp;
-            <span
-              v-if="!this.isMatchLocked(match.match_id)"
-              :ref="'lock-away-' + match.match_id"
-              @click="this.setAwayWin(match)"
-              class="btn-link"
-              >A</span
-            >
-            <span
-              v-else
-              :ref="'lock-away-' + match.match_id"
-              class="btn-unlinked"
-              >A</span
-            >
-          </td>
-          <td>
-            <GameVersusTable :match="match" />
-          </td>
-          <td>
-            <div>
-              <span v-for="i in match.mode" v-bind:key="i" class="padr20">
-                <input
-                  @keypress="isNumber($event)"
-                  :disabled="false"
-                  type="text"
-                  :value="0"
-                  class="textInputPredictor"
-                  :id="'game-' + match.match_id + '-h' + i"
-                  :ref="'game-' + match.match_id + '-h' + i" />
-                :
-                <input
-                  @keypress="isNumber($event)"
-                  :disabled="false"
-                  type="text"
-                  :value="0"
-                  class="textInputPredictor"
-                  :id="'game-' + match.match_id + '-a' + i"
-                  :ref="'game-' + match.match_id + '-a' + i"
-              /></span>
-            </div>
-            <div>
-              <span
-                :ref="'game-' + match.match_id + '-error'"
-                class="txt-col-red"
-              >
-              </span>
-            </div>
-          </td>
-          <td class="txtr">
-            <div
-              class="btn-link"
-              @click="this.checkLock(match.match_id)"
-              :ref="'lock-' + match.match_id"
-            >
-              lock
-            </div>
-          </td>
+      <tbody>
+        <tr class="table-th">
+          <td>&nbsp;</td>
+          <td class="text-center">players</td>
+          <td class="text-center">&nbsp;</td>
+          <td class="text-center">set scores</td>
         </tr>
-      </template>
+        <template v-for="(match, index) in this.matches" v-bind:key="index">
+          <tr class="tr-row">
+            <td>
+              <div class="flex items-center space-x-1">
+                <div
+                  v-if="!this.isMatchLocked(match.match_id)"
+                  :ref="'lock-home-' + match.match_id"
+                  @click="this.setHomeWin(match)"
+                  class="cursor-pointer rounded-md bg-gray-700 text-center py-1 min-w-8"
+                >
+                  H
+                </div>
+                <div
+                  v-else
+                  :ref="'lock-home-' + match.match_id"
+                  class="cursor-pointer rounded-md bg-black text-center py-1 min-w-8"
+                >
+                  H
+                </div>
+                &nbsp;
+                <div
+                  v-if="!this.isMatchLocked(match.match_id)"
+                  :ref="'lock-away-' + match.match_id"
+                  @click="this.setAwayWin(match)"
+                  class="cursor-pointer rounded-md bg-gray-700 text-center py-1 min-w-8"
+                >
+                  A
+                </div>
+                <div
+                  v-else
+                  :ref="'lock-away-' + match.match_id"
+                  class="cursor-pointer rounded-md bg-black text-center py-1 min-w-8"
+                >
+                  A
+                </div>
+              </div>
+            </td>
+            <td>
+              <GameVersusTable :match="match" />
+            </td>
+            <td>
+              <div>
+                <span v-for="i in match.mode" v-bind:key="i" class="pr-5">
+                  <input
+                    @keypress="isNumber($event)"
+                    :disabled="false"
+                    type="text"
+                    :value="0"
+                    class="max-w-8 border border-gray-400 rounded-md px-2 text-white bg-black text-sm disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-500"
+                    :id="'game-' + match.match_id + '-h' + i"
+                    :ref="'game-' + match.match_id + '-h' + i" />
+                  :
+                  <input
+                    @keypress="isNumber($event)"
+                    :disabled="false"
+                    type="text"
+                    :value="0"
+                    class="max-w-8 border border-gray-400 rounded-md px-2 text-white bg-black text-sm disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-500"
+                    :id="'game-' + match.match_id + '-a' + i"
+                    :ref="'game-' + match.match_id + '-a' + i"
+                /></span>
+              </div>
+              <div>
+                <span
+                  :ref="'game-' + match.match_id + '-error'"
+                  class="text-red-600"
+                >
+                </span>
+              </div>
+            </td>
+            <td class="text-right">
+              <div
+                class="cursor-pointer rounded-md bg-gray-700 text-center py-1 min-w-8"
+                @click="this.checkLock(match.match_id)"
+                :ref="'lock-' + match.match_id"
+              >
+                lock
+              </div>
+            </td>
+          </tr>
+        </template>
+      </tbody>
     </table>
   </div>
 </template>

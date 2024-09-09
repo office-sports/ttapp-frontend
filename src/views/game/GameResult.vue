@@ -5,111 +5,110 @@
         class="round-container-dark-small flex txt-col-darker flex-full-width"
       >
         <span>
-          <span class="txt-col-white">Game detailed summary</span>
-          <span class="padl10">{{
+          <span class="text-white">Game detailed summary</span>
+          <span class="pl-2.5">{{
             this.gameDetails.summary.tournamentName
           }}</span>
-          <span class="padl10">{{ this.gameDetails.summary.groupName }}</span>
+          <span class="pl-2.5">{{ this.gameDetails.summary.groupName }}</span>
         </span>
-        <span v-if="this.game.isWalkover === true" class="txt-col-white">
-          <span class="padr10">WALKOVER</span>
-          <i class="fas fa-flag txt-col-white"></i>
+        <span v-if="this.game.isWalkover === true" class="text-white">
+          <span class="pr-2.5">WALKOVER</span>
+          <i class="fas fa-flag text-white"></i>
         </span>
       </div>
       <div class="pad10">
         <table class="tbl-fixed">
-          <tr>
-            <td class="w200"></td>
-            <td class="txtc txt-col-darker">ELO</td>
-            <td class="txtc txt-col-darker">SCORE</td>
-            <td
-              class="txtc txt-col-darker"
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-            >
-              SET {{ index + 1 }}
-            </td>
-            <td class="txtc txt-col-darker">POINTS</td>
-          </tr>
-          <tr>
-            <td :class="isWinner(game.homePlayerId) ? 'col-winner' : ''">
-              {{ game.homePlayerName }}
-            </td>
-            <td class="txtc">
-              <span v-if="game.newHomeElo > 0">
-                {{ game.newHomeElo }}
-                (<span v-if="game.homeEloDiff > 0">+</span
-                >{{ game.homeEloDiff }})
-              </span>
-            </td>
-            <td
-              class="txtc"
-              :class="isWinner(game.homePlayerId) ? 'col-winner' : ''"
-            >
-              {{ game.homeScoreTotal }}
-            </td>
-            <td
-              class="txtc"
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-              :class="set.home > set.away ? 'txt-col-green' : ''"
-            >
-              {{ set.home }}
-            </td>
-            <td class="txtc txt-col-darkest">
-              <span
-                :class="
-                  isWinner(game.homePlayerId)
-                    ? 'txt-col-green'
-                    : 'txt-col-white'
-                "
+          <tbody>
+            <tr>
+              <td class="w200"></td>
+              <td class="text-center txt-col-darker">ELO</td>
+              <td class="text-center txt-col-darker">SCORE</td>
+              <td
+                class="text-center txt-col-darker"
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
               >
-                {{ gameDetails.summary.homeTotalPoints }}
-              </span>
-              /
-              <span class="txt-col-darker">
-                {{ gameDetails.summary.homePointsPerc }}%
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''">
-              {{ game.awayPlayerName }}
-            </td>
-            <td class="txtc">
-              {{ game.newAwayElo }}
-              (<span v-if="game.awayEloDiff > 0">+</span>{{ game.awayEloDiff }})
-            </td>
-            <td
-              class="txtc"
-              :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''"
-            >
-              {{ game.awayScoreTotal }}
-            </td>
-            <td
-              class="txtc"
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-              :class="set.home < set.away ? 'txt-col-green' : ''"
-            >
-              {{ set.away }}
-            </td>
-            <td class="txtc txt-col-darkest">
-              <span
-                :class="
-                  isWinner(game.awayPlayerId)
-                    ? 'txt-col-green'
-                    : 'txt-col-white'
-                "
+                SET {{ index + 1 }}
+              </td>
+              <td class="text-center txt-col-darker">POINTS</td>
+            </tr>
+            <tr>
+              <td :class="isWinner(game.homePlayerId) ? 'col-winner' : ''">
+                {{ game.homePlayerName }}
+              </td>
+              <td class="text-center">
+                <span v-if="game.newHomeElo > 0">
+                  {{ game.newHomeElo }}
+                  (<span v-if="game.homeEloDiff > 0">+</span
+                  >{{ game.homeEloDiff }})
+                </span>
+              </td>
+              <td
+                class="text-center"
+                :class="isWinner(game.homePlayerId) ? 'col-winner' : ''"
               >
-                {{ gameDetails.summary.awayTotalPoints }}
-              </span>
-              /
-              <span class="txt-col-darker">
-                {{ gameDetails.summary.awayPointsPerc }}%
-              </span>
-            </td>
-          </tr>
+                {{ game.homeScoreTotal }}
+              </td>
+              <td
+                class="text-center"
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
+                :class="set.home > set.away ? 'txt-col-green' : ''"
+              >
+                {{ set.home }}
+              </td>
+              <td class="text-center txt-col-darkest">
+                <span
+                  :class="
+                    isWinner(game.homePlayerId) ? 'txt-col-green' : 'text-white'
+                  "
+                >
+                  {{ gameDetails.summary.homeTotalPoints }}
+                </span>
+                /
+                <span class="txt-col-darker">
+                  {{ gameDetails.summary.homePointsPerc }}%
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''">
+                {{ game.awayPlayerName }}
+              </td>
+              <td class="text-center">
+                {{ game.newAwayElo }}
+                (<span v-if="game.awayEloDiff > 0">+</span
+                >{{ game.awayEloDiff }})
+              </td>
+              <td
+                class="text-center"
+                :class="isWinner(game.awayPlayerId) ? 'col-winner' : ''"
+              >
+                {{ game.awayScoreTotal }}
+              </td>
+              <td
+                class="text-center"
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
+                :class="set.home < set.away ? 'txt-col-green' : ''"
+              >
+                {{ set.away }}
+              </td>
+              <td class="text-center txt-col-darkest">
+                <span
+                  :class="
+                    isWinner(game.awayPlayerId) ? 'txt-col-green' : 'text-white'
+                  "
+                >
+                  {{ gameDetails.summary.awayTotalPoints }}
+                </span>
+                /
+                <span class="txt-col-darker">
+                  {{ gameDetails.summary.awayPointsPerc }}%
+                </span>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -168,124 +167,126 @@
           <div class="round-container-dark-small">SET {{ index }}</div>
           <div class="pad10">
             <table>
-              <tr>
-                <td rowspan="2" class="w200">&nbsp;</td>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc w-pbp"
-                >
-                  <span
-                    v-if="pbp.current_server == pbp.home_player_id"
-                    class="serve-paddle txtc"
+              <tbody>
+                <tr>
+                  <td rowspan="2" class="w200">&nbsp;</td>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center w-pbp"
                   >
-                    <i class="fas fa-table-tennis"></i>
-                  </span>
-                </td>
-                <td rowspan="2"></td>
-              </tr>
-              <tr>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc txt-col-darker"
-                >
-                  <span>
-                    {{ pbp.home_points_scored }}
-                  </span>
-                </td>
-              </tr>
+                    <span
+                      v-if="pbp.current_server == pbp.home_player_id"
+                      class="serve-paddle text-center"
+                    >
+                      <i class="fas fa-table-tennis"></i>
+                    </span>
+                  </td>
+                  <td rowspan="2"></td>
+                </tr>
+                <tr>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center txt-col-darker"
+                  >
+                    <span>
+                      {{ pbp.home_points_scored }}
+                    </span>
+                  </td>
+                </tr>
 
-              <tr>
-                <td>
-                  <span
-                    :class="
-                      parseInt(set.set_summary.home_points) >
-                      parseInt(set.set_summary.away_points)
-                        ? 'col-winner'
-                        : ''
-                    "
-                  >
-                    {{ game.homePlayerName }}
-                  </span>
-                </td>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc"
-                >
-                  <span class="point">
-                    <i
+                <tr>
+                  <td>
+                    <span
                       :class="
-                        pbp.is_home_point ? 'fas fa-circle' : 'far fa-circle'
+                        parseInt(set.set_summary.home_points) >
+                        parseInt(set.set_summary.away_points)
+                          ? 'col-winner'
+                          : ''
                       "
-                    ></i>
-                  </span>
-                </td>
-                <td class="txtr">
-                  {{ set.set_summary.home_points }}
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <span
-                    :class="
-                      parseInt(set.set_summary.home_points) <
-                      parseInt(set.set_summary.away_points)
-                        ? 'col-winner'
-                        : ''
-                    "
+                    >
+                      {{ game.homePlayerName }}
+                    </span>
+                  </td>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center"
                   >
-                    {{ game.awayPlayerName }}
-                  </span>
-                </td>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc"
-                >
-                  <span class="point">
-                    <i
+                    <span class="point">
+                      <i
+                        :class="
+                          pbp.is_home_point ? 'fas fa-circle' : 'far fa-circle'
+                        "
+                      ></i>
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    {{ set.set_summary.home_points }}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span
                       :class="
-                        pbp.is_away_point ? 'fas fa-circle' : 'far fa-circle'
+                        parseInt(set.set_summary.home_points) <
+                        parseInt(set.set_summary.away_points)
+                          ? 'col-winner'
+                          : ''
                       "
-                    ></i>
-                  </span>
-                </td>
-                <td class="txtr">
-                  {{ set.set_summary.away_points }}
-                </td>
-              </tr>
-
-              <tr>
-                <td rowspan="2"></td>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc txt-col-darker"
-                >
-                  <span>
-                    {{ pbp.away_points_scored }}
-                  </span>
-                </td>
-              </tr>
-
-              <tr>
-                <td
-                  v-for="(pbp, index2) in set.events"
-                  v-bind:key="index2"
-                  class="txtc w-pbp"
-                >
-                  <span
-                    v-if="pbp.current_server == pbp.away_player_id"
-                    class="serve-paddle txtc"
+                    >
+                      {{ game.awayPlayerName }}
+                    </span>
+                  </td>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center"
                   >
-                    <i class="fas fa-table-tennis"></i>
-                  </span>
-                </td>
-                <td rowspan="2"></td>
-              </tr>
+                    <span class="point">
+                      <i
+                        :class="
+                          pbp.is_away_point ? 'fas fa-circle' : 'far fa-circle'
+                        "
+                      ></i>
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    {{ set.set_summary.away_points }}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td rowspan="2"></td>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center txt-col-darker"
+                  >
+                    <span>
+                      {{ pbp.away_points_scored }}
+                    </span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    v-for="(pbp, index2) in set.events"
+                    v-bind:key="index2"
+                    class="text-center w-pbp"
+                  >
+                    <span
+                      v-if="pbp.current_server == pbp.away_player_id"
+                      class="serve-paddle text-center"
+                    >
+                      <i class="fas fa-table-tennis"></i>
+                    </span>
+                  </td>
+                  <td rowspan="2"></td>
+                </tr>
+              </tbody>
             </table>
             <div
               style="
@@ -295,56 +296,58 @@
               "
             >
               <table class="tbl-compact">
-                <tr class="txt-col-darker">
-                  <td>duration</td>
-                  <td>&nbsp;</td>
-                  <td>serve pts / serves / efficiency</td>
-                </tr>
-                <tr>
-                  <td rowspan="2" class="v-mid w200">
-                    {{
-                      String(
-                        Math.floor(
+                <tbody>
+                  <tr class="txt-col-darker">
+                    <td>duration</td>
+                    <td>&nbsp;</td>
+                    <td>serve pts / serves / efficiency</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" class="v-mid w200">
+                      {{
+                        String(
+                          Math.floor(
+                            (set.set_summary.end_timestamp -
+                              set.set_summary.start_timestamp) /
+                              60
+                          )
+                        ).padStart(2, "0")
+                      }}:{{
+                        String(
                           (set.set_summary.end_timestamp -
-                            set.set_summary.start_timestamp) /
+                            set.set_summary.start_timestamp) %
                             60
-                        )
-                      ).padStart(2, "0")
-                    }}:{{
-                      String(
-                        (set.set_summary.end_timestamp -
-                          set.set_summary.start_timestamp) %
-                          60
-                      ).padStart(2, "0")
-                    }}
-                  </td>
-                  <td class="txtl w200">{{ game.homePlayerName }}</td>
-                  <td class="txtc">
-                    {{ set.set_summary.home_serve_points }} /
-                    {{ set.set_summary.home_serves }} /
-                    {{
-                      (
-                        (set.set_summary.home_serve_points /
-                          set.set_summary.home_serves) *
-                        100
-                      ).toFixed(2)
-                    }}%
-                  </td>
-                </tr>
-                <tr>
-                  <td class="txtl">{{ game.awayPlayerName }}</td>
-                  <td class="txtc">
-                    {{ set.set_summary.away_serve_points }} /
-                    {{ set.set_summary.away_serves }} /
-                    {{
-                      (
-                        (set.set_summary.away_serve_points /
-                          set.set_summary.away_serves) *
-                        100
-                      ).toFixed(2)
-                    }}%
-                  </td>
-                </tr>
+                        ).padStart(2, "0")
+                      }}
+                    </td>
+                    <td class="text-left w200">{{ game.homePlayerName }}</td>
+                    <td class="text-center">
+                      {{ set.set_summary.home_serve_points }} /
+                      {{ set.set_summary.home_serves }} /
+                      {{
+                        (
+                          (set.set_summary.home_serve_points /
+                            set.set_summary.home_serves) *
+                          100
+                        ).toFixed(2)
+                      }}%
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-left">{{ game.awayPlayerName }}</td>
+                    <td class="text-center">
+                      {{ set.set_summary.away_serve_points }} /
+                      {{ set.set_summary.away_serves }} /
+                      {{
+                        (
+                          (set.set_summary.away_serve_points /
+                            set.set_summary.away_serves) *
+                          100
+                        ).toFixed(2)
+                      }}%
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>

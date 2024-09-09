@@ -1,8 +1,8 @@
 <template>
   <div v-if="this.gh.game">
-    <div class="round-container marb20">
+    <div class="round-container mb-5">
       <div class="round-container-dark-small flex-full-width txt-col-darker">
-        <div class="txt-col-white">
+        <div class="text-white">
           {{ this.gh.game.groupName }} game, best of
           {{ this.gh.game.maxSets }}
         </div>
@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="flex" v-bind:class="this.gh.isFlipped ? 'con-flipped' : ''">
-      <div class="con txtc">
+      <div class="con text-center">
         <div class="round-container-header">
           {{ this.gh.game.homePlayerName }}
         </div>
@@ -28,12 +28,12 @@
           </div>
         </template>
       </div>
-      <div class="con-mid round-container txtc">
+      <div class="con-mid round-container text-center">
         <div>MATCH MODE</div>
-        <div class="col-winner marb20">BO{{ this.gh.game.maxSets }}</div>
+        <div class="col-winner mb-5">BO{{ this.gh.game.maxSets }}</div>
         <template v-if="this.manualScoringEnabled && this.spectators > 0">
           <div>SPECTATORS</div>
-          <div class="marb20">
+          <div class="mb-5">
             <CircleScore :is-winner="false">
               <template #score>
                 {{ this.spectators }}
@@ -45,12 +45,12 @@
           v-if="this.gh.game.homeScoreTotal + this.gh.game.awayScoreTotal > 0"
         >
           <div>SET SCORES</div>
-          <div class="marb20">
-            <div class="marb20" v-if="this.gh.game.scores"></div>
+          <div class="mb-5">
+            <div class="mb-5" v-if="this.gh.game.scores"></div>
             <div
               v-for="(score, index) in this.gh.game.scores"
               v-bind:key="index"
-              class="rowData mart10 flex-center"
+              class="rowData mt-2.5 flex-center"
               v-bind:class="this.gh.isFlipped ? 'con-flipped' : ''"
             >
               <template
@@ -87,7 +87,7 @@
           </button>
         </div>
       </div>
-      <div class="con txtc">
+      <div class="con text-center">
         <div class="round-container-header">
           {{ this.gh.game.awayPlayerName }}
         </div>
@@ -113,85 +113,89 @@
         @submit.prevent="postResults"
       >
         <input type="hidden" name="match_id" :value="this.gh.game.id" />
-        <table class="marb25">
-          <tr>
-            <td colspan="3" class="txtc col-white padb20">
-              Manual scores entry. Remember to use points score, e.g. 11 - 5, 3
-              - 11, 13 - 11, not total set scores for game.<br />
-              Important: this will overwrite existing live scoring. Walkover?
-              Click
-              <span class="lnk-walkover" @click="this.toggleWalkover()"
-                >here</span
-              >.
-            </td>
-          </tr>
-          <tr v-show="this.walkover" class="round-container-dark-small">
-            <td class="txtr padr20 w45pc">
-              <input
-                type="radio"
-                id="home"
-                v-bind:value="this.gh.game.homePlayerId"
-                v-model="picked"
-              />
-              <label class="padl10" for="home"
-                >winner: {{ this.gh.game.homePlayerName }}</label
-              >
-            </td>
-            <td class="txtc w10pc">W.O.</td>
-            <td class="txtl padl20 w45pc">
-              <label class="padr10" for="away"
-                >winner: {{ this.gh.game.awayPlayerName }}</label
-              >
-              <input
-                type="radio"
-                id="away"
-                v-bind:value="this.gh.game.awayPlayerId"
-                v-model="picked"
-              />
-            </td>
-          </tr>
-          <tr v-if="this.errors">
-            <td colspan="3" class="errors">
-              <div v-for="(error, index) in this.errors" v-bind:key="index">
-                {{ error }}
-              </div>
-            </td>
-          </tr>
-          <tr
-            v-show="!this.walkover"
-            v-for="i in range(1, this.gh.game.maxSets)"
-            v-bind:key="i"
-            class="span-score"
-          >
-            <td class="txtr w45pc">
-              <input
-                autocomplete="off"
-                :name="'home_set_' + i"
-                value=""
-                @keypress="isNumber($event)"
-              />
-            </td>
-            <td class="txtc w10pc">SET {{ i }}</td>
-            <td class="txtl w45pc">
-              <input
-                autocomplete="off"
-                :name="'away_set_' + i"
-                value=""
-                @keypress="isNumber($event)"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td colspan="3" class="txtc padt20">
-              <input class="enter-scores-button" type="submit" value="SAVE" />
-              <button
-                class="cancel-button marl20"
-                @click="this.toggleVisibility()"
-              >
-                CANCEL
-              </button>
-            </td>
-          </tr>
+        <table class="mb-6">
+          <tbody>
+            <tr>
+              <td colspan="3" class="text-center col-white padb20">
+                Manual scores entry. Remember to use points score, e.g. 11 - 5,
+                3 - 11, 13 - 11, not total set scores for game.<br />
+                Important: this will overwrite existing live scoring. Walkover?
+                Click
+                <span class="lnk-walkover" @click="this.toggleWalkover()"
+                  >here</span
+                >.
+              </td>
+            </tr>
+            <tr v-show="this.walkover" class="round-container-dark-small">
+              <td class="text-right padr20 w45pc">
+                <input
+                  type="radio"
+                  id="home"
+                  v-bind:value="this.gh.game.homePlayerId"
+                  v-model="picked"
+                />
+                <label class="pl-2.5" for="home"
+                  >winner: {{ this.gh.game.homePlayerName }}</label
+                >
+              </td>
+              <td class="text-center w10pc">W.O.</td>
+              <td class="text-left pl-5 w45pc">
+                <label class="pr-2.5" for="away"
+                  >winner: {{ this.gh.game.awayPlayerName }}</label
+                >
+                <input
+                  type="radio"
+                  id="away"
+                  v-bind:value="this.gh.game.awayPlayerId"
+                  v-model="picked"
+                />
+              </td>
+            </tr>
+            <tr v-if="this.errors">
+              <td colspan="3" class="errors">
+                <div v-for="(error, index) in this.errors" v-bind:key="index">
+                  {{ error }}
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-show="!this.walkover"
+              v-for="i in range(1, this.gh.game.maxSets)"
+              v-bind:key="i"
+              class="span-score"
+            >
+              <td class="text-right w45pc">
+                <input
+                  class="bg-black"
+                  autocomplete="off"
+                  :name="'home_set_' + i"
+                  value=""
+                  @keypress="isNumber($event)"
+                />
+              </td>
+              <td class="text-center w10pc">SET {{ i }}</td>
+              <td class="text-left w45pc">
+                <input
+                  class="bg-black"
+                  autocomplete="off"
+                  :name="'away_set_' + i"
+                  value=""
+                  @keypress="isNumber($event)"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-center padt20">
+                <input class="enter-scores-button" type="submit" value="SAVE" />
+                <button
+                  class="cancel-button marl20"
+                  @click="this.toggleVisibility()"
+                >
+                  CANCEL
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </form>
     </div>

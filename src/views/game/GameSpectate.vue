@@ -2,7 +2,7 @@
   <template v-if="this.game && this.gameDetails">
     <div class="round-container">
       <div class="round-container-dark-small flex txt-col-darker">
-        <span class="txt-col-white">Game detailed summary</span>
+        <span class="text-white">Game detailed summary</span>
         <span class="padl10">{{
           this.gameDetails.summary.tournamentName
         }}</span>
@@ -10,74 +10,79 @@
       </div>
       <div class="pad10">
         <table class="tbl-fixed">
-          <tr>
-            <td class="w200"></td>
-            <td class="txtc txt-col-darker">SCORE</td>
-            <template
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-            >
-              <td v-if="index + 1 < this.setNumber" class="txtc txt-col-darker">
-                SET {{ index + 1 }}
-              </td>
-            </template>
-          </tr>
-          <tr>
-            <td>
-              {{ game.homePlayerName }}
-            </td>
-            <td class="txtc">
-              {{ this.homeScoreTotal }}
-            </td>
-            <template
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-            >
-              <td
-                v-if="index + 1 < this.setNumber"
-                :class="
-                  parseInt(set.home) > parseInt(set.away)
-                    ? 'txtc txt-col-green'
-                    : 'txtc'
-                "
+          <tbody>
+            <tr>
+              <td class="w200"></td>
+              <td class="text-center txt-col-darker">SCORE</td>
+              <template
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
               >
-                {{ set.home }}
+                <td
+                  v-if="index + 1 < this.setNumber"
+                  class="text-center txt-col-darker"
+                >
+                  SET {{ index + 1 }}
+                </td>
+              </template>
+            </tr>
+            <tr>
+              <td>
+                {{ game.homePlayerName }}
               </td>
-            </template>
-          </tr>
-          <tr>
-            <td>
-              {{ game.awayPlayerName }}
-            </td>
-            <td class="txtc">
-              {{ this.awayScoreTotal }}
-            </td>
-            <template
-              v-for="(set, index) in this.game.scores"
-              v-bind:key="index"
-            >
-              <td
-                v-if="index + 1 < this.setNumber"
-                :class="
-                  parseInt(set.home) < parseInt(set.away)
-                    ? 'txtc txt-col-green'
-                    : 'txtc'
-                "
+              <td class="text-center">
+                {{ this.homeScoreTotal }}
+              </td>
+              <template
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
               >
-                {{ set.away }}
+                <td
+                  v-if="index + 1 < this.setNumber"
+                  :class="
+                    parseInt(set.home) > parseInt(set.away)
+                      ? 'text-center txt-col-green'
+                      : 'text-center'
+                  "
+                >
+                  {{ set.home }}
+                </td>
+              </template>
+            </tr>
+            <tr>
+              <td>
+                {{ game.awayPlayerName }}
               </td>
-            </template>
-          </tr>
+              <td class="text-center">
+                {{ this.awayScoreTotal }}
+              </td>
+              <template
+                v-for="(set, index) in this.game.scores"
+                v-bind:key="index"
+              >
+                <td
+                  v-if="index + 1 < this.setNumber"
+                  :class="
+                    parseInt(set.home) < parseInt(set.away)
+                      ? 'text-center txt-col-green'
+                      : 'text-center'
+                  "
+                >
+                  {{ set.away }}
+                </td>
+              </template>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
-    <div class="round-container mart10">
+    <div class="round-container mt-2.5">
       <div class="round-container-dark-small flex txt-col-darker">
         {{ this.spectators }} SPECTATORS &nbsp;
         <span
           v-for="i in range(1, this.spectators)"
           v-bind:key="i"
-          class="txt-col-white"
+          class="text-white"
         >
           <i class="fas fa-child"></i>&nbsp;
         </span>
@@ -107,36 +112,38 @@
         <div id="rtable">&nbsp;</div>
         <div id="sidetable">&nbsp;</div>
         <table class="table-users">
-          <tr>
-            <td>
-              {{ this.game.homePlayerName }}
-            </td>
-            <td class="txtr">
-              {{ this.game.awayPlayerName }}
-            </td>
-          </tr>
-          <tr>
-            <td class="txtl">
-              <div
-                class="serve-paddles"
-                v-if="this.currentServerId === this.game.homePlayerId"
-              >
-                <span v-for="index in this.numServes" :key="index">
-                  <i class="fas fa-table-tennis"></i>
-                </span>
-              </div>
-            </td>
-            <td class="txtr">
-              <div
-                class="serve-paddles"
-                v-if="this.currentServerId === this.game.awayPlayerId"
-              >
-                <span v-for="index in this.numServes" :key="index">
-                  <i class="fas fa-table-tennis"></i>
-                </span>
-              </div>
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>
+                {{ this.game.homePlayerName }}
+              </td>
+              <td class="text-right">
+                {{ this.game.awayPlayerName }}
+              </td>
+            </tr>
+            <tr>
+              <td class="text-left">
+                <div
+                  class="serve-paddles"
+                  v-if="this.currentServerId === this.game.homePlayerId"
+                >
+                  <span v-for="index in this.numServes" :key="index">
+                    <i class="fas fa-table-tennis"></i>
+                  </span>
+                </div>
+              </td>
+              <td class="text-right">
+                <div
+                  class="serve-paddles"
+                  v-if="this.currentServerId === this.game.awayPlayerId"
+                >
+                  <span v-for="index in this.numServes" :key="index">
+                    <i class="fas fa-table-tennis"></i>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>

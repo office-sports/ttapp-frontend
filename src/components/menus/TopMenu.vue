@@ -1,29 +1,33 @@
 <template>
-  <div class="float-l">
-    <nav>
-      <RouterLink to="/"
-        ><img src="@/assets/images/favicon.ico" class="logo" /> TTAPP
-      </RouterLink>
-      <RouterLink to="/tournaments">tournaments</RouterLink>
-      <RouterLink to="/players">players</RouterLink>
-      <RouterLink to="/leaders">leaders</RouterLink>
-      <!--      <RouterLink to="/badges">badges</RouterLink>-->
-    </nav>
-  </div>
-  <div class="float-r padt20">
-    office
-    <select
-      class="textInput"
-      @change="changeOffice()"
-      v-model="this.officeId"
-      v-if="this.offices"
-    >
-      <template v-for="(office, index) in this.offices">
-        <option :value="office.id" v-if="office" v-bind:key="office.id">
-          {{ office.name }}
-        </option>
-      </template>
-    </select>
+  <div class="w-full flex justify-between">
+    <div class="w-1/2">
+      <nav class="flex items-center space-x-3">
+        <RouterLink to="/">
+          <img src="@/assets/images/favicon.ico" class="logo" alt="LOGO" />
+        </RouterLink>
+        <RouterLink to="/"> TTAPP</RouterLink>
+        <RouterLink to="/tournaments">tournaments</RouterLink>
+        <RouterLink to="/players">players</RouterLink>
+        <RouterLink to="/leaders">leaders</RouterLink>
+        <!-- <RouterLink to="/badges">badges</RouterLink> -->
+      </nav>
+    </div>
+
+    <div class="w-1/2 pt-5 text-right">
+      office
+      <select
+        class="textInput"
+        @change="changeOffice()"
+        v-model="this.officeId"
+        v-if="this.offices"
+      >
+        <template v-for="office in this.offices">
+          <option :value="office.id" v-if="office" v-bind:key="office.id">
+            {{ office.name }}
+          </option>
+        </template>
+      </select>
+    </div>
   </div>
 </template>
 

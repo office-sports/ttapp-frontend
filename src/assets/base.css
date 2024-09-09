@@ -151,18 +151,6 @@ table td {
     margin: 0 auto
 }
 
-.txtr {
-    text-align: right;
-}
-
-.txtl {
-    text-align: left;
-}
-
-.txtc {
-    text-align: center;
-}
-
 .tbl-fixtures > tr:first-child {
     border: none;
     color: #676767;

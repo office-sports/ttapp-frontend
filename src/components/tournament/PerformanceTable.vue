@@ -1,85 +1,88 @@
 <template>
   <div>
     <table class="tbl-fixtures tbl-standings">
-      <tr>
-        <td class="txtl padl10">name</td>
-        <td class="txtc">performance</td>
-        <td class="txtc" colspan="3">elo</td>
-        <td class="txtc">games left</td>
-        <td class="txtl w230">
-          <div class="padl20">
-            <i class="fas fa-long-arrow-alt-left"></i> form (last 6 games)
-          </div>
-        </td>
-        <th class="txtc" colspan="2">points</th>
-      </tr>
-      <tr
-        v-for="(player, index) in this.performance.players"
-        v-bind:key="player.playerId"
-        class="group-container txt-col-darker"
-      >
-        <td>
-          <div class="level flex-full-width">
-            <span class="level-span">
-              <span class="txt-col-darer">{{ index + 1 }}. </span>
-              <router-link :to="'/player/' + player.player_id + '/profile'"
-                >{{ player.player_name }}
-              </router-link>
-            </span>
-          </div>
-        </td>
-        <td class="txtc col-winner">{{ player.performance }}</td>
-        <td class="txtr">{{ player.starting_elo }} *</td>
-        <td class="w15 txtc txt-col-white">|</td>
-        <td class="txtl">{{ player.last_elo }} **</td>
-        <td class="txtc">{{ player.unfinished }}</td>
-        <td class="txtc flex">
-          <div class="padl20 flex" v-if="player.form">
-            <span
-              class="span-form"
-              v-for="(form, idx) in player.form.slice(0, 6)"
-              v-bind:key="idx"
-            >
-              <PlayerFormLabel
-                :player-id="player.player_id"
-                :winner-id="form"
-              />
-            </span>
-          </div>
-        </td>
-        <td class="txtr">
-          <div class="accuracy-bar-wrapper mart10">
-            <span
-              class="accuracy-bar"
-              v-bind:style="
-                'width:' +
-                ((player.points / player.total_points) * this.barWidth).toFixed(
-                  0
-                ) +
-                'px'
-              "
-              >&nbsp;</span
-            >
-          </div>
-        </td>
-        <td class="txtr w50">
-          {{ player.points }} / {{ player.total_points }}
-        </td>
-      </tr>
-      <tr>
-        <td colspan="8">
-          <div class="padt20 txt-col-darker">
-            * player's ELO at the beginning of tournament / ** latest player's
-            ELO for this tournament
-          </div>
-          <div class="padt10">
-            Group's average ELO:
-            <span class="txt-col-green">
-              {{ performance.group_avg_elo }}
-            </span>
-          </div>
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <td class="text-left padl10">name</td>
+          <td class="text-center">performance</td>
+          <td class="text-center" colspan="3">elo</td>
+          <td class="text-center">games left</td>
+          <td class="text-left w230">
+            <div class="padl20">
+              <i class="fas fa-long-arrow-alt-left"></i> form (last 6 games)
+            </div>
+          </td>
+          <th class="text-center" colspan="2">points</th>
+        </tr>
+        <tr
+          v-for="(player, index) in this.performance.players"
+          v-bind:key="player.playerId"
+          class="group-container txt-col-darker"
+        >
+          <td>
+            <div class="level flex-full-width">
+              <span class="level-span">
+                <span class="txt-col-darer">{{ index + 1 }}. </span>
+                <router-link :to="'/player/' + player.player_id + '/profile'"
+                  >{{ player.player_name }}
+                </router-link>
+              </span>
+            </div>
+          </td>
+          <td class="text-center col-winner">{{ player.performance }}</td>
+          <td class="text-right">{{ player.starting_elo }} *</td>
+          <td class="w15 text-center text-white">|</td>
+          <td class="text-left">{{ player.last_elo }} **</td>
+          <td class="text-center">{{ player.unfinished }}</td>
+          <td class="text-center flex">
+            <div class="padl20 flex" v-if="player.form">
+              <span
+                class="span-form"
+                v-for="(form, idx) in player.form.slice(0, 6)"
+                v-bind:key="idx"
+              >
+                <PlayerFormLabel
+                  :player-id="player.player_id"
+                  :winner-id="form"
+                />
+              </span>
+            </div>
+          </td>
+          <td class="text-right">
+            <div class="accuracy-bar-wrapper mart10">
+              <span
+                class="accuracy-bar"
+                v-bind:style="
+                  'width:' +
+                  (
+                    (player.points / player.total_points) *
+                    this.barWidth
+                  ).toFixed(0) +
+                  'px'
+                "
+                >&nbsp;</span
+              >
+            </div>
+          </td>
+          <td class="text-right w50">
+            {{ player.points }} / {{ player.total_points }}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="8">
+            <div class="padt20 txt-col-darker">
+              * player's ELO at the beginning of tournament / ** latest player's
+              ELO for this tournament
+            </div>
+            <div class="padt10">
+              Group's average ELO:
+              <span class="txt-col-green">
+                {{ performance.group_avg_elo }}
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>

@@ -1,70 +1,78 @@
 <template>
   <template v-if="this.game && this.gameDetails">
     <table class="obs-table">
-      <tr style="background: #3f3f3f">
-        <td class="w200 padl10">
-          {{ this.gameDetails.summary.groupName }} / BO{{ this.game.maxSets }}
-        </td>
-        <td class="w50 txtc">SCORE</td>
-        <td>&nbsp;</td>
-        <td class="w50 txtc" style="width: *">SETS</td>
-      </tr>
-      <tr style="background: #5a5a5a">
-        <td class="padl10">{{ game.homePlayerName }}</td>
-        <td class="w30 txtc">
-          <div class="obs-score-current">
-            {{ homeScore }}
-          </div>
-        </td>
-        <td class="obs-tbl-scores">
-          <template v-for="(set, index) in this.game.scores" v-bind:key="index">
-            <div
-              style="width: 30px"
-              v-if="index + 1 < this.setNumber"
-              :class="
-                parseInt(set.home) > parseInt(set.away)
-                  ? 'txtc obs-set-won'
-                  : 'txtc obs-set-lost'
-              "
-            >
-              {{ set.home }}
+      <tbody>
+        <tr style="background: #3f3f3f">
+          <td class="w200 pl-2.5">
+            {{ this.gameDetails.summary.groupName }} / BO{{ this.game.maxSets }}
+          </td>
+          <td class="w50 text-center">SCORE</td>
+          <td>&nbsp;</td>
+          <td class="w50 text-center" style="width: *">SETS</td>
+        </tr>
+        <tr style="background: #5a5a5a">
+          <td class="padl10">{{ game.homePlayerName }}</td>
+          <td class="w30 text-center">
+            <div class="obs-score-current">
+              {{ homeScore }}
             </div>
-          </template>
-        </td>
-        <td class="txtc">
-          <div class="obs-score-total">
-            {{ this.homeScoreTotal }}
-          </div>
-        </td>
-      </tr>
-      <tr style="background: #5a5a5a">
-        <td class="padl10">{{ game.awayPlayerName }}</td>
-        <td class="w30 txtc">
-          <div class="obs-score-current">
-            {{ awayScore }}
-          </div>
-        </td>
-        <td class="obs-tbl-scores">
-          <template v-for="(set, index) in this.game.scores" v-bind:key="index">
-            <div
-              style="width: 30px"
-              v-if="index + 1 < this.setNumber"
-              :class="
-                parseInt(set.home) < parseInt(set.away)
-                  ? 'txtc obs-set-won'
-                  : 'txtc obs-set-lost'
-              "
+          </td>
+          <td class="obs-tbl-scores">
+            <template
+              v-for="(set, index) in this.game.scores"
+              v-bind:key="index"
             >
-              {{ set.away }}
+              <div
+                style="width: 30px"
+                v-if="index + 1 < this.setNumber"
+                :class="
+                  parseInt(set.home) > parseInt(set.away)
+                    ? 'text-center obs-set-won'
+                    : 'text-center obs-set-lost'
+                "
+              >
+                {{ set.home }}
+              </div>
+            </template>
+          </td>
+          <td class="text-center">
+            <div class="obs-score-total">
+              {{ this.homeScoreTotal }}
             </div>
-          </template>
-        </td>
-        <td class="txtc">
-          <div class="obs-score-total">
-            {{ this.awayScoreTotal }}
-          </div>
-        </td>
-      </tr>
+          </td>
+        </tr>
+        <tr style="background: #5a5a5a">
+          <td class="pl-2.5">{{ game.awayPlayerName }}</td>
+          <td class="w30 text-center">
+            <div class="obs-score-current">
+              {{ awayScore }}
+            </div>
+          </td>
+          <td class="obs-tbl-scores">
+            <template
+              v-for="(set, index) in this.game.scores"
+              v-bind:key="index"
+            >
+              <div
+                style="width: 30px"
+                v-if="index + 1 < this.setNumber"
+                :class="
+                  parseInt(set.home) < parseInt(set.away)
+                    ? 'text-center obs-set-won'
+                    : 'text-center obs-set-lost'
+                "
+              >
+                {{ set.away }}
+              </div>
+            </template>
+          </td>
+          <td class="text-center">
+            <div class="obs-score-total">
+              {{ this.awayScoreTotal }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </template>
 </template>
