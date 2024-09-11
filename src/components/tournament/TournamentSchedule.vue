@@ -1,81 +1,88 @@
 <template>
-  <div class="round-container-dark-small flex txt-col-darker flex-full-width">
-    <table class="tbl-nopad">
-      <tbody>
-        <tr>
-          <td class="pl-2.5">
-            <span v-if="fixtureCount === 0" class="text-white">
-              Full tournament schedule
-            </span>
-            <span v-else class="text-white">Tournament schedule</span>
-            <span class="ml-2.5" v-if="fixtureCount > 0"
-              >(next {{ fixtureCount }})</span
-            >
-          </td>
-          <td class="text-right padr10" style="padding: 0">
-            <template v-if="fixtureCount === 0">
-              <form @submit.prevent="nameSearch" style="display: inline-block">
-                <input
-                  v-model="searchName"
-                  placeholder="name"
-                  type="text"
-                  class="textInput text-left"
-                />
-              </form>
-              <span
-                class="padl10"
-                v-if="this.searchName !== '' && this.searchName.length >= 3"
-              >
-                <i
-                  @click="this.clearSearchName"
-                  class="far fa-times-circle"
-                ></i>
-              </span>
-            </template>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div
+    class="round-container-dark-small flex items-center justify-between txt-col-darker w-full px-4"
+  >
+    <div>
+      <span class="ml-2.5" v-if="fixtureCount > 0"
+        >Tournament schedule (next {{ fixtureCount }})</span
+      >
+      <span v-else class="text-white">Full tournament schedule</span>
+    </div>
+    <div>
+      <div v-if="fixtureCount === 0" class="text-white">
+        <span>
+          <form @submit.prevent="nameSearch" style="display: inline-block">
+            <input
+              v-model="searchName"
+              placeholder="name"
+              type="text"
+              class="textInput text-left"
+            />
+          </form>
+          <span
+            class="pl-2.5"
+            v-if="this.searchName !== '' && this.searchName.length >= 3"
+          >
+            <i @click="this.clearSearchName" class="far fa-times-circle"></i>
+          </span>
+        </span>
+      </div>
+      <div v-else>
+        <div class="ml-auto w-32">
+          <router-link :to="'/tournament/' + this.tournamentId + '/schedule'">
+            <div class="cursor-pointer rounded-md bg-gray-700 text-center py-1">
+              show all
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div v-if="matches.length > 0" class="pad10">
-    <table class="tbl-fixtures">
-      <tbody>
-        <tr class="table-th">
-          <td>date of match</td>
-          <td>group name</td>
-          <td>&nbsp;</td>
-        </tr>
-        <template v-for="(match, index) in this.matches" v-bind:key="index">
-          <tr class="tr-row" v-show="isShown(match)">
-            <td class="txt-col-darker">{{ match.date_of_match }}</td>
-            <td>{{ match.group_name }}</td>
-            <td>
-              <GameVersusTable :match="match" />
-            </td>
-            <td>
-              <router-link
-                :to="{ name: 'GameScoring', params: { id: match.match_id } }"
-                ><i class="far fa-play-circle"></i
-              ></router-link>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
-    <div class="mt-5" v-if="fixtureCount > 0">
-      <router-link :to="'/tournament/' + this.tournamentId + '/schedule'">
-        <div class="cursor-pointer rounded-md bg-gray-700 text-center py-1">
-          show all
+  <div v-if="matches.length > 0">
+    <template v-for="(group, name) in this.groupedMatches" v-bind:key="name">
+      <div class="mt-2.5">
+        <div
+          class="round-container-dark-small flex items-center justify-between txt-col-darker w-full px-4"
+        >
+          {{ name }}
         </div>
-      </router-link>
-    </div>
+        <div class="p-2.5">
+          <table class="tbl-fixtures">
+            <tbody>
+              <tr class="table-th">
+                <td>date of match</td>
+                <td>&nbsp;</td>
+              </tr>
+              <template v-for="(match, index) in group" v-bind:key="index">
+                <tr class="tr-row" v-show="isShown(match)">
+                  <td class="txt-col-darker">{{ match.date_of_match }}</td>
+                  <td>
+                    <GameVersusTable :match="match" />
+                  </td>
+                  <td>
+                    <router-link
+                      :to="{
+                        name: 'GameScoring',
+                        params: { id: match.match_id },
+                      }"
+                      ><i class="far fa-play-circle"></i
+                    ></router-link>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import GameVersusTable from "@/components/tournament/GameVersusTable.vue";
+import _ from "underscore";
 
 export default {
   name: "TournamentSchedule",
@@ -83,6 +90,7 @@ export default {
   props: ["fixtureCount", "officeId", "tournamentId"],
   data() {
     return {
+      groupedMatches: [],
       matches: [],
       searchName: "",
     };
@@ -98,6 +106,10 @@ export default {
       .then((res) => {
         if (res.data.length > 0) {
           this.matches = res.data;
+          this.groupedMatches = _.groupBy(res.data, function (item) {
+            return item.group_name;
+          });
+          console.log(this.groupedMatches);
         }
       });
   },
@@ -131,3 +143,4 @@ export default {
   padding: 0;
 }
 </style>
+<script setup lang="ts"></script>

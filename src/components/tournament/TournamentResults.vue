@@ -1,12 +1,23 @@
 <template>
-  <div class="round-container-dark-small flex txt-col-darker">
-    <span v-if="resultCount === 0" class="text-white"
-      >All tournament results</span
-    >
-    <span v-else class="text-white">Tournament results</span>
-    <span class="ml-2.5" v-if="resultCount > 0"
-      >(latest {{ resultCount }})</span
-    >
+  <div
+    class="round-container-dark-small flex items-center justify-between txt-col-darker w-full px-4"
+  >
+    <div class="flex items-center">
+      <span v-if="resultCount === 0" class="text-white"
+        >All tournament results</span
+      >
+      <span v-else class="text-white">Tournament results</span>
+      <span class="ml-2.5" v-if="resultCount > 0"
+        >(latest {{ resultCount }})</span
+      >
+    </div>
+    <div class="ml-auto w-32" v-if="resultCount > 0">
+      <router-link :to="'/tournament/' + this.tournamentId + '/results'">
+        <div class="cursor-pointer rounded-md bg-gray-700 text-center py-1">
+          show all
+        </div>
+      </router-link>
+    </div>
   </div>
 
   <div v-if="matches.length > 0" class="pad10">
@@ -53,13 +64,6 @@
         </template>
       </tbody>
     </table>
-    <div class="mt-5" v-if="resultCount > 0">
-      <router-link :to="'/tournament/' + this.tournamentId + '/results'">
-        <div class="cursor-pointer rounded-md bg-gray-700 text-center py-1">
-          show all
-        </div>
-      </router-link>
-    </div>
   </div>
 </template>
 

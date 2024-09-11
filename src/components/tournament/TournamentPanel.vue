@@ -45,12 +45,14 @@
           </td>
           <td class="text-right">
             <div>
-              <router-link :to="'/tournament/0/results'"
+              <router-link
+                :to="'/tournament/' + this.tournament.id + '/results'"
                 >all results <i class="far fa-play-circle"></i
               ></router-link>
             </div>
             <div>
-              <router-link :to="'/tournament/0/schedule'"
+              <router-link
+                :to="'/tournament/' + this.tournament.id + '/schedule'"
                 >full schedule <i class="far fa-play-circle"></i
               ></router-link>
             </div>

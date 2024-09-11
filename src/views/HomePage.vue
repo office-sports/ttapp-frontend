@@ -9,18 +9,20 @@
       <div class="rounded-2xl p-5 bg-container mb-5" v-if="this.tournament">
         <TournamentPanel :tournament="this.tournament" />
       </div>
-      <div class="rounded-2xl p-5 bg-container" v-if="this.tournament">
-        <TournamentResults
-          :result-count="10"
-          :tournament-id="this.tournament.id"
-        />
-      </div>
+
       <div
         class="rounded-2xl p-5 bg-container mt-5 mb-5"
         v-if="this.tournament"
       >
-        <TournamentSchedule
+        <TournamentGameFinder
           :fixture-count="10"
+          :tournament-id="this.tournament.id"
+        />
+      </div>
+
+      <div class="rounded-2xl p-5 bg-container" v-if="this.tournament">
+        <TournamentResults
+          :result-count="10"
           :tournament-id="this.tournament.id"
         />
       </div>
@@ -36,18 +38,18 @@
 <script>
 import axios from "axios";
 import TournamentResults from "@/components/tournament/TournamentResults.vue";
-import TournamentSchedule from "@/components/tournament/TournamentSchedule.vue";
 import TournamentPanel from "@/components/tournament/TournamentPanel.vue";
 import _ from "underscore";
 import PlayoffsGames from "@/components/tournament/PlayoffsGames.vue";
+import TournamentGameFinder from "@/components/tournament/TournamentGameFinder.vue";
 
 export default {
   name: "IndexPage",
   components: {
+    TournamentGameFinder,
     PlayoffsGames,
     TournamentPanel,
     TournamentResults,
-    TournamentSchedule,
   },
   data() {
     return {
