@@ -18,6 +18,7 @@ import TournamentStatistics from "@/views/tournament/TournamentStatistics.vue";
 import TournamentGroupPredictor from "@/views/tournament/TournamentGroupPredictor.vue";
 import TournamentPlayers from "@/views/tournament/TournamentPlayers.vue";
 import PlayerBadges from "@/views/player/PlayerBadges.vue";
+import PlayerAvailability from "@/views/player/PlayerAvailability.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -104,6 +105,11 @@ const router = createRouter({
       path: "/badges",
       name: PlayerBadges,
       component: PlayerBadges,
+    },
+    {
+      path: "/availability",
+      name: "PlayerAvailability",
+      component: PlayerAvailability,
     },
   ],
 });
