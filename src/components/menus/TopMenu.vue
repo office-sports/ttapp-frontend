@@ -9,7 +9,9 @@
         <RouterLink to="/tournaments">tournaments</RouterLink>
         <RouterLink to="/players">players</RouterLink>
         <RouterLink to="/leaders">leaders</RouterLink>
-        <RouterLink to="/availability">availability</RouterLink>
+        <RouterLink to="/availability" class="text-yellow-300"
+          >availability
+        </RouterLink>
       </nav>
     </div>
 
