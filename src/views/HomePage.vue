@@ -14,10 +14,7 @@
         class="rounded-2xl p-5 bg-container mt-5 mb-5"
         v-if="this.tournament"
       >
-        <TournamentGameFinder
-          :fixture-count="10"
-          :tournament-id="this.tournament.id"
-        />
+        <TournamentGameFinder :tournament-id="this.tournament.id" />
       </div>
 
       <div class="rounded-2xl p-5 bg-container" v-if="this.tournament">

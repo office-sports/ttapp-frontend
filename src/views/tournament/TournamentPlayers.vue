@@ -166,7 +166,6 @@ export default {
             });
           });
 
-          console.log(this.players);
           this.sortColumn("player_name");
         })
       )

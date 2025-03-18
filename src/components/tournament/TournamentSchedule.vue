@@ -109,7 +109,6 @@ export default {
           this.groupedMatches = _.groupBy(res.data, function (item) {
             return item.group_name;
           });
-          console.log(this.groupedMatches);
         }
       });
   },

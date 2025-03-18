@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import TopMenu from "./components/menus/TopMenu.vue";
+
+const route = useRoute();
 </script>
 
 <template>
-  <div v-if="this.$route['name'] === 'GameObs'">
+  <div v-if="route.name === 'GameObs'">
     <RouterView />
   </div>
   <div v-else>
@@ -15,7 +17,7 @@ import TopMenu from "./components/menus/TopMenu.vue";
     <div class="clear"></div>
 
     <div class="content-wrapper">
-      <RouterView :key="$route.fullPath" />
+      <RouterView :key="route.fullPath" />
     </div>
   </div>
 </template>

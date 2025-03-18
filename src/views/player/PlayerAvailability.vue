@@ -25,12 +25,12 @@
           >
             {{ group.groupName }}
           </div>
-          <div class="pt-4 pb-4">
+          <div class="pt-4 pb-4 grid grid-cols-3 gap-4">
             <template
               v-for="(player, index) in group.players"
               v-bind:key="index"
             >
-              <p class="inline-block px-4 py-2">
+              <p class="px-4">
                 <a href="#" @click="this.setPlayer(player.id)">{{
                   player.name
                 }}</a>
@@ -54,7 +54,7 @@
         >
 
         <span
-          class="inline-block rounded-sm h-8 w-16 mr-4 ml-8 border-gray-500 border border-dashed"
+          class="inline-block rounded-sm h-8 w-16 mr-4 ml-8 border-gray-100 border border-dashed"
           >&nbsp;</span
         >
         <span class="inline-block text-gray-400">
