@@ -193,15 +193,15 @@ export default {
     async toggleDate(day, month) {
       if (!day.isWithinRange) return;
 
-      const dayString = new Date(
-        Date.UTC(
-          new Date(month.label).getFullYear(),
-          new Date(month.label).getMonth(),
-          day.date
-        )
-      )
+      const [monthName, year] = month.label.split(" ");
+      const monthIndex = new Date(
+        Date.parse(monthName + " 1, 2023")
+      ).getMonth();
+      const dayString = new Date(Date.UTC(year, monthIndex, day.date))
         .toISOString()
         .split("T")[0];
+
+      console.log(dayString);
 
       if (this.playerDates.includes(dayString)) {
         try {
