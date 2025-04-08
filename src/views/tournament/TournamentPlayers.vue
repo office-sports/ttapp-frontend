@@ -35,8 +35,10 @@
                   <i class="fas fa-long-arrow-alt-left"></i> form (last 6 games)
                 </div>
               </td>
-              <td class="text-center">played</td>
-              <td class="text-center">tbd</td>
+              <td class="text-center" @click="sortColumn('finished')">
+                played
+              </td>
+              <td class="text-center" @click="sortColumn('unfinished')">tbd</td>
             </tr>
             <template
               v-for="(player, index) in this.players"
@@ -136,6 +138,8 @@ export default {
         starting_elo: "asc",
         last_elo: "asc",
         elo_change: "asc",
+        finished: "asc",
+        unfinished: "asc",
       },
     };
   },
