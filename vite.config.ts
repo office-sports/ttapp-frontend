@@ -14,10 +14,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8001",
+        target: "http://localhost:8888",
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
-    allowedHosts: ["ttapp.sportradar.ag"],
+    allowedHosts: ["ttapp.sportradar.ag", "ttapp.sportradar.com"],
   },
 });
