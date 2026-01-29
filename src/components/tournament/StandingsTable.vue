@@ -17,6 +17,7 @@
           <td class="text-center">+/-</td>
           <th class="text-center">rallies</th>
           <td class="text-center">+/-</td>
+          <td class="text-center" v-if="tournament.enable_timeliness_bonus">bonus</td>
           <td class="text-center">points</td>
         </tr>
         <tr
@@ -101,7 +102,10 @@
             {{ player.rallies_for }} - {{ player.rallies_against }}
           </td>
           <td class="text-center">{{ player.rallies_diff ?? 0 }}</td>
-          <td class="text-center">{{ player.points }}</td>
+          <td class="text-center" v-if="tournament.enable_timeliness_bonus">
+            <span class="txt-col-green">+{{ calculateBonusPoints(player) }}</span>
+          </td>
+          <td class="text-center">{{ formatPoints(player.points) }}</td>
         </tr>
       </tbody>
     </table>
@@ -190,6 +194,25 @@ export default {
       } else {
         this.toggleGroups.push(id);
       }
+    },
+    calculateBonusPoints(player) {
+      // Calculate base points from wins and draws
+      const basePoints = player.wins * 2 + player.draws;
+      // Bonus is total points minus base points
+      const bonus = player.points - basePoints;
+      // Return formatted bonus (max 2 decimal places)
+      return bonus > 0 ? bonus.toFixed(2) : '0';
+    },
+    formatPoints(points) {
+      // Format points to show 2 decimals when bonus is enabled
+      if (this.tournament && this.tournament.enable_timeliness_bonus) {
+        return Number(points).toFixed(2);
+      }
+      // Show whole numbers for non-bonus tournaments
+      if (Number.isInteger(points)) {
+        return points;
+      }
+      return points.toFixed(2);
     },
     formatMessage(msg) {
       let msgParts = msg.split("|");
