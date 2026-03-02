@@ -4,8 +4,16 @@
       <tbody>
         <tr>
           <td class="text-left padl10">
-            <div class="cutoutPic">
-              <img :src="playerPicUrl" class="pic" />
+            <div class="circular-pic">
+              <img 
+                :src="playerPicUrl" 
+                class="pic" 
+                @error="imageLoadError = true"
+                v-if="!imageLoadError"
+              />
+              <div v-if="imageLoadError" class="pic-fallback">
+                <i class="far fa-user"></i>
+              </div>
             </div>
           </td>
           <td class="text-left">
@@ -445,6 +453,7 @@ export default {
       activeTab: 1,
       player: null,
       playerPicUrl: null,
+      imageLoadError: false,
       winPercentage: 0,
       drawPercentage: 0,
       lossPercentage: 0,
@@ -586,5 +595,38 @@ export default {
   height: 15px;
   background: #303030;
   margin: 20px auto 0px;
+}
+
+.circular-pic {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid rgba(84, 84, 84, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pic-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-container);
+  color: white;
+}
+
+.pic-fallback i {
+  font-size: 60px;
+  color: rgba(200, 200, 200, 0.7);
 }
 </style>

@@ -19,10 +19,29 @@ import TournamentGroupPredictor from "@/views/tournament/TournamentGroupPredicto
 import TournamentPlayers from "@/views/tournament/TournamentPlayers.vue";
 import PlayerBadges from "@/views/player/PlayerBadges.vue";
 import PlayerAvailability from "@/views/player/PlayerAvailability.vue";
+import LoginPage from "@/views/auth/LoginPage.vue";
+import ProfileSettings from "@/views/auth/ProfileSettings.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/login",
+      name: "LoginPage",
+      component: LoginPage,
+    },
+    {
+      path: "/profile",
+      name: "ProfileSettings",
+      component: ProfileSettings,
+      children: [
+        {
+          path: "statistics",
+          name: "ProfileStatistics",
+          component: ProfileSettings,
+        },
+      ],
+    },
     {
       path: "/",
       name: "HomePage",
