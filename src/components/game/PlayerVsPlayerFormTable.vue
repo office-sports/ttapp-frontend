@@ -14,10 +14,7 @@
             />
           </td>
           <td>
-            <i
-              class="fas fa-minus"
-              v-if="i < this.commonResults.length - 1"
-            ></i>
+            &nbsp;
           </td>
         </template>
       </tr>
@@ -34,10 +31,7 @@
             />
           </td>
           <td>
-            <i
-              class="fas fa-minus"
-              v-if="i < this.commonResults.length - 1"
-            ></i>
+            &nbsp;
           </td>
         </template>
       </tr>

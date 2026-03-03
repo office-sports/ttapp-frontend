@@ -40,6 +40,11 @@ const router = createRouter({
           name: "ProfileStatistics",
           component: ProfileSettings,
         },
+        {
+          path: "settings",
+          name: "ProfileSettingsTab",
+          component: ProfileSettings,
+        },
       ],
     },
     {

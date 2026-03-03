@@ -23,7 +23,7 @@
             />
           </td>
           <td>
-            <i class="fas fa-minus" v-if="i < this.hCount - 1"></i>
+            &nbsp;
           </td>
         </template>
       </tr>
@@ -40,7 +40,7 @@
             />
           </td>
           <td>
-            <i class="fas fa-minus" v-if="i < this.aCount - 1"></i>
+            &nbsp;
           </td>
         </template>
       </tr>

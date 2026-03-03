@@ -1,185 +1,128 @@
 <template>
-  <div class="round-container" v-if="this.player">
-    <table class="tbl-fixed dsp-block marb20">
-      <tbody>
-        <tr>
-          <td class="text-left padl10">
-            <div class="circular-pic">
-              <img 
-                :src="playerPicUrl" 
-                class="pic" 
-                @error="imageLoadError = true"
-                v-if="!imageLoadError"
-              />
-              <div v-if="imageLoadError" class="pic-fallback">
-                <i class="far fa-user"></i>
-              </div>
-            </div>
-          </td>
-          <td class="text-left">
-            <div class="round-container-header padl20">
-              <span class="txt-col-green">{{ player.name }}</span>
-            </div>
-            <div class="padl20">
-              <table>
-                <tbody>
-                  <tr>
-                    <td class="w200 text-center">
-                      <span class="num-big col-winner">
-                        {{ player.elo }}
-                      </span>
-                    </td>
-                    <td class="w200 text-center">
-                      <span class="num-big">
-                        {{ player.win_percentage.toFixed(2) }}%
-                      </span>
-                    </td>
-                    <td class="w200 text-center">
-                      <span class="num-big">
-                        {{ player.draw_percentage.toFixed(2) }}%
-                      </span>
-                    </td>
-                    <td class="w200 text-center">
-                      <span class="num-big">
-                        {{ player.loss_percentage.toFixed(2) }}%
-                      </span>
-                    </td>
-                    <td class="w200 text-center">
-                      <span class="num-big"> {{ player.pps.toFixed(2) }} </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="txt-col-player">
-                      <div class="txt-bold text-center">ELO</div>
-                    </td>
-                    <td class="txt-col-player">
-                      <div class="txt-bold text-center">Win percentage</div>
-                    </td>
-                    <td class="txt-col-player">
-                      <div class="txt-bold text-center">Draw precentage</div>
-                    </td>
-                    <td class="txt-col-player">
-                      <div class="txt-bold text-center">Loss percentage</div>
-                    </td>
-                    <td class="txt-col-player">
-                      <div class="txt-bold text-center">
-                        Avg. points per set
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center v-bottom p-0">
-                      last change:
-                      <span v-if="this.eloChange < 0">
-                        {{ this.eloChange }}
-                        <i class="fas fa-arrow-alt-circle-down"></i>
-                      </span>
-                      <span class="lbl-pos" v-else-if="this.eloChange > 0">
-                        +{{ this.eloChange }}
-                        <i class="fas fa-arrow-alt-circle-up"></i>
-                      </span>
-                      <span v-else>{{ this.eloChange }}</span>
-                    </td>
-                    <td class="text-center">
-                      <div class="accuracy-bar-wrapper mart10">
-                        <span
-                          class="accuracy-bar"
-                          v-bind:style="
-                            'width:' +
-                            (
-                              (player.win_percentage * this.accuracyBarWidth) /
-                              100
-                            ).toFixed(0) +
-                            'px'
-                          "
-                          >&nbsp;</span
-                        >
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <div class="accuracy-bar-wrapper mart10">
-                        <span
-                          class="accuracy-bar"
-                          v-bind:style="
-                            'width:' +
-                            (
-                              (player.draw_percentage * this.accuracyBarWidth) /
-                              100
-                            ).toFixed(0) +
-                            'px'
-                          "
-                          >&nbsp;</span
-                        >
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <div class="accuracy-bar-wrapper mart10">
-                        <span
-                          class="accuracy-bar"
-                          v-bind:style="
-                            'width:' +
-                            (
-                              (player.loss_percentage * this.accuracyBarWidth) /
-                              100
-                            ).toFixed(0) +
-                            'px'
-                          "
-                          >&nbsp;</span
-                        >
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="round-container-dark-small flex txt-col-darker">
-      <span>Games played:</span>
-      <span class="ml-2.5 text-white">{{ player.games_played }}</span>
+  <div class="profile-container" v-if="this.player">
+    <div class="profile-left">
+      <div class="profile-picture">
+        <div class="circular-pic">
+          <img
+            :src="playerPicUrl"
+            class="pic"
+            @error="imageLoadError = true"
+            v-if="!imageLoadError"
+          />
+          <div v-if="imageLoadError" class="pic-fallback">
+            <i class="far fa-user"></i>
+          </div>
+        </div>
+      </div>
+      <div class="player-name">{{ player.name }}</div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-link" :class="{ active: activeTab === 1 }" @click="setActiveTab(1)">
+          <i class="far fa-play-circle"></i> Statistics
+        </div>
+        <div class="sidebar-link" :class="{ active: activeTab === 2 }" @click="setActiveTab(2)">
+          <i class="far fa-play-circle"></i> Games history
+        </div>
+        <div class="sidebar-link" :class="{ active: activeTab === 3 }" @click="setActiveTab(3)">
+          <i class="far fa-play-circle"></i> Upcoming games
+        </div>
+        <div class="sidebar-link" :class="{ active: activeTab === 4 }" @click="setActiveTab(4)">
+          <i class="far fa-play-circle"></i> Opponents
+        </div>
+      </nav>
     </div>
-    <div class="pad10 mart10">
-      <table>
-        <tbody>
-          <tr>
-            <td class="w200 padr20 v-top space-y-2">
-              <div
-                class="cursor-pointer rounded-md bg-gray-700 text-center py-1"
-                @click="setActiveTab(1)"
-              >
-                ELO progression
+    <div class="profile-content">
+      <div v-show="activeTab === 1">
+        <div class="stat-hero">
+          <div class="stat-hero-item stat-hero-elo-group">
+            <div class="stat-hero-elo-main">
+              <div class="stat-hero-value">
+                {{ player.elo }}
+                <span v-if="eloChange !== 0" class="elo-badge" :class="eloChange > 0 ? 'elo-up' : 'elo-down'">
+                  {{ eloChange > 0 ? '↑' : '↓' }} {{ Math.abs(eloChange) }}
+                </span>
               </div>
-              <div
-                class="cursor-pointer rounded-md bg-gray-700 text-center py-1"
-                @click="setActiveTab(2)"
-              >
-                Games history
-              </div>
-              <div
-                class="cursor-pointer rounded-md bg-gray-700 text-center py-1"
-                @click="setActiveTab(3)"
-              >
-                Upcoming games
-              </div>
-              <div
-                class="cursor-pointer rounded-md bg-gray-700 text-center py-1"
-                @click="setActiveTab(4)"
-              >
-                Opponents
-              </div>
-            </td>
-            <td>
-              <div v-show="this.activeTab === 1">
-                <GChart
-                  type="AreaChart"
-                  :data="lineChartData"
-                  :options="lineChartOptions"
-                  class="chartElo"
-                />
-              </div>
-              <div v-show="this.activeTab === 2">
+              <div class="stat-hero-label">Current ELO</div>
+            </div>
+          </div>
+          <div v-if="peakElo !== null" class="stat-hero-divider"></div>
+          <div v-if="peakElo !== null" class="stat-hero-item stat-hero-item-pair">
+            <div class="stat-hero-pair-row">
+              <div class="stat-hero-sub-value elo-positive">{{ peakElo }}</div>
+              <div class="stat-hero-sub-label">Peak ELO</div>
+            </div>
+            <div class="stat-hero-pair-row">
+              <div class="stat-hero-sub-value elo-negative">{{ bottomElo }}</div>
+              <div class="stat-hero-sub-label">Bottom ELO</div>
+            </div>
+          </div>
+          <div class="stat-hero-divider"></div>
+          <div class="stat-hero-item">
+            <div class="stat-hero-value">{{ player.games_played }}</div>
+            <div class="stat-hero-label">Games Played</div>
+          </div>
+          <div class="stat-hero-divider"></div>
+          <div class="stat-hero-item">
+            <div class="stat-hero-value">{{ player.pps.toFixed(1) }}</div>
+            <div class="stat-hero-label">Points Per Set</div>
+          </div>
+        </div>
+        <div class="wdl-bar-section">
+          <div class="wdl-bar">
+            <div class="wdl-segment wdl-wins" :style="{ width: player.win_percentage + '%' }"></div>
+            <div class="wdl-segment wdl-draws" :style="{ width: player.draw_percentage + '%' }"></div>
+            <div class="wdl-segment wdl-losses" :style="{ width: player.loss_percentage + '%' }"></div>
+          </div>
+          <div class="wdl-labels">
+            <div class="wdl-label">
+              <span class="wdl-dot wdl-dot-wins"></span>
+              <span class="wdl-count">{{ player.wins }}</span>
+              <span class="wdl-name">Wins</span>
+              <span class="wdl-pct">{{ player.win_percentage.toFixed(1) }}%</span>
+            </div>
+            <div class="wdl-label">
+              <span class="wdl-dot wdl-dot-draws"></span>
+              <span class="wdl-count">{{ player.draws }}</span>
+              <span class="wdl-name">Draws</span>
+              <span class="wdl-pct">{{ player.draw_percentage.toFixed(1) }}%</span>
+            </div>
+            <div class="wdl-label">
+              <span class="wdl-dot wdl-dot-losses"></span>
+              <span class="wdl-count">{{ player.losses }}</span>
+              <span class="wdl-name">Losses</span>
+              <span class="wdl-pct">{{ player.loss_percentage.toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-insights">
+          <div v-if="nemesis" class="stats-insight-item">
+            <router-link :to="'/player/' + nemesis.opponent_id + '/profile'" class="insight-value elo-negative insight-link">{{ nemesis.opponent_name }}</router-link>
+            <div class="insight-label">Nemesis <span class="insight-sub">({{ nemesis.losses }} losses)</span></div>
+          </div>
+          <div v-if="favouriteVictim" class="stats-insight-item">
+            <router-link :to="'/player/' + favouriteVictim.opponent_id + '/profile'" class="insight-value elo-positive insight-link">{{ favouriteVictim.opponent_name }}</router-link>
+            <div class="insight-label">Favourite Victim <span class="insight-sub">({{ favouriteVictim.wins }} wins)</span></div>
+          </div>
+          <div v-if="mostPlayedOpponent" class="stats-insight-item">
+            <router-link :to="'/player/' + mostPlayedOpponent.opponent_id + '/profile'" class="insight-value insight-link">{{ mostPlayedOpponent.opponent_name }}</router-link>
+            <div class="insight-label">Most Played <span class="insight-sub">({{ mostPlayedOpponent.games }} games)</span></div>
+          </div>
+        </div>
+
+        <div v-if="lineChartData" class="elo-chart-section">
+          <div class="elo-chart-header">
+            <div class="elo-chart-title">ELO Progression</div>
+            <div v-if="lastResults.length" class="last-results">
+              <template v-for="(winnerId, i) in [...lastResults].reverse()" :key="i">
+                <PlayerFormLabel :player-id="player.id" :winner-id="winnerId" />
+              </template>
+              <i class="fas fa-long-arrow-alt-right form-arrow"></i>
+            </div>
+          </div>
+          <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" class="chartElo" />
+        </div>
+      </div>
+              <div v-show="activeTab === 2">
                 <div style="font-size: 20px">GAMES HISTORY</div>
                 <table v-if="results" class="tbl-fixtures">
                   <tbody>
@@ -290,7 +233,7 @@
                   </tbody>
                 </table>
               </div>
-              <div v-show="this.activeTab === 3">
+              <div v-show="activeTab === 3">
                 <div class="padb10" style="font-size: 20px; color: white">
                   UPCOMING TOURNAMENT MATCHES
                 </div>
@@ -348,9 +291,9 @@
                   </tbody>
                 </table>
               </div>
-              <div v-show="this.activeTab === 4">
+              <div v-show="activeTab === 4">
                 <div style="font-size: 20px">OPPONENTS</div>
-                <table v-if="this.opponents" class="tbl-fixed mart20">
+                <table v-if="opponents" class="tbl-fixed mart20">
                   <tbody>
                     <tr>
                       <td class="w200">Opponent</td>
@@ -423,10 +366,6 @@
                   </tbody>
                 </table>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>
@@ -435,6 +374,7 @@
 import _, { forEach } from "underscore";
 import axios from "axios";
 import { GChart } from "vue-google-charts";
+import PlayerFormLabel from "@/components/game/PlayerFormLabel.vue";
 
 export default {
   name: "PlayerProfile",
@@ -443,7 +383,7 @@ export default {
       this.activeTab = data;
     },
   },
-  components: { GChart },
+  components: { GChart, PlayerFormLabel },
   data() {
     return {
       tournaments: [],
@@ -462,61 +402,40 @@ export default {
       results: [],
       schedule: [],
       eloChange: 0,
+      lastResults: [],
+      longestWinStreak: 0,
+      nemesis: null,
+      favouriteVictim: null,
+      mostPlayedOpponent: null,
+      peakElo: null,
+      bottomElo: null,
       strokeDashArrayWins: "0 100",
       strokeDashArrayDraws: "0 100",
       strokeDashArrayLosses: "0 100",
       lineChartData: null,
       lineChartOptions: {
         vAxis: {
-          baselineColor: "#aaa",
-          textStyle: {
-            color: "white",
-            fontSize: 13,
-          },
-          minorGridLines: {
-            count: 3,
-          },
-          gridlines: {
-            count: 2,
-            color: "#aaa",
-          },
+          baselineColor: "#333",
+          textStyle: { color: "#555", fontSize: 11 },
+          gridlines: { count: 3, color: "#2a2a2a" },
+          minorGridlines: { count: 0 },
         },
         hAxis: {
-          baselineColor: "#aaa",
-          textStyle: {
-            color: "white",
-            fontSize: 13,
-          },
-          minorGridLines: {
-            count: 3,
-          },
-          gridlines: {
-            count: 2,
-            color: "#aaa",
-          },
+          baselineColor: "#333",
+          textStyle: { color: "#555", fontSize: 11 },
+          gridlines: { count: 0 },
+          minorGridlines: { count: 0 },
         },
-        height: 300,
+        height: 220,
         lineWidth: 2,
-        pointSize: 10,
-        pointShape: {
-          type: "circle",
-        },
+        pointSize: 6,
         pointsVisible: true,
-        legend: {
-          position: "top",
-          textStyle: {
-            color: "white",
-            fontSize: 13,
-          },
-        },
+        legend: { position: "none" },
         fontName: "Quicksand",
         backgroundColor: "#1e1e26",
-        chart: {
-          title: "ELO progression",
-        },
-        chartArea: {
-          backgroundColor: "#28293d",
-        },
+        chartArea: { backgroundColor: "#1e1e26", left: 50, right: 20, top: 10, bottom: 30 },
+        colors: ["#93c47d"],
+        areaOpacity: 0.15,
       },
     };
   },
@@ -547,6 +466,11 @@ export default {
             ["order", "ELO history"],
             ...player.data.elo_history,
           ];
+          if (player.data.elo_history.length) {
+            const eloValues = player.data.elo_history.map(h => h[1]);
+            this.peakElo = Math.max(...eloValues);
+            this.bottomElo = Math.min(...eloValues);
+          }
 
           this.results = results.data;
           this.schedule = schedule.data;
@@ -563,6 +487,21 @@ export default {
             } else {
               this.eloChange = this.results[0].away_elo_diff;
             }
+            this.lastResults = this.results.slice(0, 7).map(r => r.winner_id);
+
+            let longest = 0, current = 0;
+            for (const r of [...this.results].reverse()) {
+              if (Number(r.winner_id) === Number(playerId)) { current++; longest = Math.max(longest, current); }
+              else { current = 0; }
+            }
+            this.longestWinStreak = longest;
+          }
+
+          if (this.opponents && this.opponents.length > 0) {
+            const opp = this.opponents;
+            this.nemesis = opp.reduce((m, o) => o.losses > (m?.losses ?? -1) ? o : m, null);
+            this.favouriteVictim = opp.reduce((m, o) => o.wins > (m?.wins ?? -1) ? o : m, null);
+            this.mostPlayedOpponent = opp.reduce((m, o) => o.games > (m?.games ?? -1) ? o : m, null);
           }
         })
       )
@@ -574,6 +513,141 @@ export default {
 </script>
 
 <style>
+.elo-chart-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(84, 84, 84, 0.3); }
+.elo-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.elo-chart-title { font-size: 12px; text-transform: uppercase; color: #888; font-weight: 500; letter-spacing: 0.05em; }
+.last-results { display: flex; align-items: center; gap: 3px; }
+.form-arrow { font-size: 10px; color: white; padding: 0 1px; }
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-link {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(84, 84, 84, 0.4);
+  color: white;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.sidebar-link:last-child { border-bottom: none; }
+.sidebar-link i { color: white; font-size: 12px; }
+.sidebar-link:hover { color: #269a47; }
+.sidebar-link.active { color: #269a47; font-weight: 600; }
+
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  background: var(--color-container);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 0;
+  align-items: stretch;
+}
+
+.profile-left {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: #0f1017;
+}
+
+.profile-picture {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.player-name {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.profile-content {
+  flex: 1;
+  padding: 20px;
+  min-width: 0;
+}
+
+.stat-hero {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 10px 0 24px 0;
+}
+.stat-hero-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-hero-value { font-size: 48px; font-weight: 800; color: white; line-height: 1; }
+.stat-hero-label { font-size: 12px; text-transform: uppercase; color: #888; font-weight: 500; letter-spacing: 0.05em; }
+.stat-hero-divider { width: 1px; height: 50px; background: rgba(84,84,84,0.5); }
+.elo-badge { font-size: 15px; font-weight: 600; vertical-align: middle; padding: 1px 5px; border-radius: 20px; margin-left: 6px; }
+.elo-up { color: #93c47d; background: rgba(147,196,125,0.15); }
+.elo-down { color: #d4836e; background: rgba(212,131,110,0.15); }
+.elo-positive { color: #93c47d; }
+.elo-negative { color: #d4836e; }
+.stat-hero-item-pair { display: flex; flex-direction: column; gap: 6px; }
+.stat-hero-elo-group { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+.stat-hero-elo-main { display: flex; flex-direction: column; gap: 2px; }
+.stat-hero-pair-row { display: flex; flex-direction: column; gap: 1px; }
+.stat-hero-sub-value { font-size: 24px; font-weight: 700; line-height: 1; }
+.stat-hero-sub-label { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 500; letter-spacing: 0.05em; }
+.wdl-bar-section { display: flex; flex-direction: column; gap: 14px; }
+
+.stats-insights {
+  display: flex;
+  gap: 0;
+  margin-top: 24px;
+  border-top: 1px solid rgba(84, 84, 84, 0.3);
+  padding-top: 20px;
+  flex-wrap: wrap;
+}
+.stats-insight-item {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 0 0;
+}
+.stats-insight-item:not(:last-child) {
+  border-right: 1px solid rgba(84, 84, 84, 0.3);
+  margin-right: 16px;
+}
+.insight-value { font-size: 18px; font-weight: 700; color: white; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.insight-link { text-decoration: none; }
+.insight-link:hover { text-decoration: underline; }
+.insight-label { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 500; letter-spacing: 0.05em; }
+.insight-sub { color: #666; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.wdl-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: rgba(84,84,84,0.3); }
+.wdl-segment { height: 100%; transition: width 0.4s ease; }
+.wdl-wins   { background: #93c47d; }
+.wdl-draws  { background: #d9ead3; }
+.wdl-losses { background: #d4836e; }
+.wdl-labels { display: flex; gap: 24px; }
+.wdl-label { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.wdl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.wdl-dot-wins   { background: #93c47d; }
+.wdl-dot-draws  { background: #d9ead3; }
+.wdl-dot-losses { background: #d4836e; }
+.wdl-count { color: white; font-weight: 700; }
+.wdl-name { color: #aaa; }
+.wdl-pct { color: #666; }
+
 .w150 {
   width: 150px;
 }
@@ -598,8 +672,8 @@ export default {
 }
 
 .circular-pic {
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
