@@ -14,39 +14,23 @@
           </div>
         </div>
       </div>
-
       <nav class="sidebar-nav">
-        <RouterLink
-          to="/profile"
-          class="sidebar-link"
-          :class="{ active: activeTab === 'statistics' }"
-          @click="activeTab = 'statistics'"
-        >
-          <i class="far fa-play-circle"></i>
-          Statistics
-        </RouterLink>
-        <RouterLink
-          to="/profile/settings"
-          class="sidebar-link"
-          :class="{ active: activeTab === 'settings' }"
-          @click="activeTab = 'settings'"
-        >
-          <i class="far fa-play-circle"></i>
-          Settings
-        </RouterLink>
+        <a :class="['sidebar-link', { active: activeTab === 'settings' }]" @click="activeTab = 'settings'">
+          <i class="fas fa-user"></i> Profile
+        </a>
+        <a :class="['sidebar-link', { active: activeTab === 'reschedule' }]" @click="activeTab = 'reschedule'; loadRescheduleTab()">
+          <i class="fas fa-calendar-alt"></i> Reschedule
+        </a>
       </nav>
     </div>
 
     <div class="profile-content">
-
       <div class="content-header">
-        <span v-if="activeTab === 'statistics'" class="content-title">Statistics</span>
-        <span v-if="activeTab === 'settings'" class="content-title">Account Settings</span>
+        <span class="content-title">{{ activeTab === 'reschedule' ? 'Reschedule Requests' : 'Account Settings' }}</span>
       </div>
 
-      <div class="round-container">
-        <template v-if="activeTab === 'settings'">
-          <div class="player-info marb20">
+      <div v-if="activeTab === 'settings'" class="round-container">
+        <div class="player-info marb20">
             <div class="info-item">
               <span class="info-label">Name</span>
               <span class="info-value">{{ player.name }}</span>
@@ -94,102 +78,169 @@
               </button>
             </div>
           </form>
-        </template>
+      </div>
 
-        <template v-if="activeTab === 'statistics'">
-          <div class="stat-hero">
-            <div class="stat-hero-item stat-hero-elo-group">
-              <div class="stat-hero-elo-main">
-                <div class="stat-hero-value">
-                  {{ player.elo }}
-                  <span v-if="player.elo_change !== 0" class="elo-badge" :class="player.elo_change > 0 ? 'elo-up' : 'elo-down'">
-                    {{ player.elo_change > 0 ? '↑' : '↓' }} {{ Math.abs(player.elo_change) }}
+      <!-- Reschedule tab -->
+      <div v-if="activeTab === 'reschedule'">
+
+        <!-- Settled requests -->
+        <div v-if="settledRequests.length > 0">
+          <div class="sched-section-title">Settled</div>
+          <div v-for="req in settledRequests" :key="req.id" class="request-card request-card-settled">
+            <div class="request-header">
+              <router-link :to="'/player/' + req.home_player_id + '/profile'" class="req-player-link">{{ req.home_player_name }}</router-link>
+              <span class="req-vs">vs</span>
+              <router-link :to="'/player/' + req.away_player_id + '/profile'" class="req-player-link">{{ req.away_player_name }}</router-link>
+              <span :class="'status-badge status-' + req.status">{{ req.status }}</span>
+            </div>
+            <div class="request-from">Proposed by <strong>{{ req.requester_name }}</strong></div>
+            <div class="request-dates">
+              <span class="date-label">Proposed:</span>
+              <span class="date-value">{{ formatDate(req.proposed_date_from) }}</span>
+              <template v-if="isRange(req)">
+                <span class="date-label">–</span>
+                <span class="date-value">{{ formatDate(req.proposed_date_to) }}</span>
+              </template>
+              <template v-if="req.status === 'accepted' && req.current_date_of_match">
+                <span class="date-label" style="margin-left:12px">New date:</span>
+                <span class="date-value" style="color:#6dd98c">{{ formatDate(req.current_date_of_match) }}</span>
+              </template>
+              <template v-else-if="req.original_date_of_match">
+                <span class="date-label" style="margin-left:12px">Original:</span>
+                <span class="date-value muted">{{ formatDate(req.original_date_of_match) }}</span>
+              </template>
+            </div>
+            <div class="request-actions">
+              <button class="btn-reschedule-small" @click="openReopenModal(req)">Propose new date</button>
+            </div>
+            <div v-if="actionError === req.id" class="action-error">Failed. Try again.</div>
+          </div>
+          <div class="sched-divider"></div>
+        </div>
+
+        <!-- Incoming requests (from opponent) -->
+        <div class="sched-section-title">Incoming Requests</div>
+        <div v-if="loadingRequests" class="empty-state">Loading…</div>
+        <div v-else-if="incomingRequests.length === 0" class="empty-state">No incoming requests.</div>
+
+        <div v-for="req in incomingRequests" :key="req.id" class="request-card">
+          <div class="request-header">
+            <router-link :to="'/player/' + req.home_player_id + '/profile'" class="req-player-link">{{ req.home_player_name }}</router-link>
+            <span class="req-vs">vs</span>
+            <router-link :to="'/player/' + req.away_player_id + '/profile'" class="req-player-link">{{ req.away_player_name }}</router-link>
+            <span class="status-badge status-pending">pending</span>
+          </div>
+          <div class="request-from">Proposed by <strong>{{ req.requester_name }}</strong></div>
+          <div class="request-dates">
+            <span class="date-label">Proposed:</span>
+            <span class="date-value">{{ formatDate(req.proposed_date_from) }}</span>
+            <template v-if="isRange(req)">
+              <span class="date-label">–</span>
+              <span class="date-value">{{ formatDate(req.proposed_date_to) }}</span>
+            </template>
+            <template v-if="req.original_date_of_match">
+              <span class="date-label" style="margin-left:12px">Original:</span>
+              <span class="date-value muted">{{ formatDate(req.original_date_of_match) }}</span>
+            </template>
+          </div>
+          <div v-if="isRange(req)" class="range-accept-row">
+            <span class="date-label">Pick date to confirm:</span>
+            <input type="date"
+              :min="req.proposed_date_from.slice(0,10)"
+              :max="req.proposed_date_to.slice(0,10)"
+              v-model="confirmedDates[req.id]"
+              class="confirm-date-input"
+            />
+          </div>
+          <div class="request-actions">
+            <button class="btn-accept" :disabled="actionLoading === req.id || (isRange(req) && !confirmedDates[req.id])" @click="accept(req)">Accept</button>
+            <button class="btn-counter" :disabled="actionLoading === req.id" @click="openCounter(req)">Counter</button>
+            <button class="btn-decline" :disabled="actionLoading === req.id" @click="decline(req)">Decline</button>
+          </div>
+          <div v-if="actionError === req.id" class="action-error">Failed. Try again.</div>
+        </div>
+
+        <!-- Outgoing requests (my own pending proposals) -->
+        <div class="sched-divider"></div>
+        <div class="sched-section-title">My Proposals</div>
+        <div v-if="!loadingRequests && outgoingRequests.length === 0" class="empty-state">No outgoing proposals.</div>
+
+        <div v-for="req in outgoingRequests" :key="req.id" class="request-card">
+          <div class="request-header">
+            <router-link :to="'/player/' + req.home_player_id + '/profile'" class="req-player-link">{{ req.home_player_name }}</router-link>
+            <span class="req-vs">vs</span>
+            <router-link :to="'/player/' + req.away_player_id + '/profile'" class="req-player-link">{{ req.away_player_name }}</router-link>
+            <span class="status-badge status-pending">pending</span>
+          </div>
+          <div class="request-dates">
+            <span class="date-label">Proposed:</span>
+            <span class="date-value">{{ formatDate(req.proposed_date_from) }}</span>
+            <template v-if="isRange(req)">
+              <span class="date-label">–</span>
+              <span class="date-value">{{ formatDate(req.proposed_date_to) }}</span>
+            </template>
+            <template v-if="req.original_date_of_match">
+              <span class="date-label" style="margin-left:12px">Original:</span>
+              <span class="date-value muted">{{ formatDate(req.original_date_of_match) }}</span>
+            </template>
+          </div>
+          <div class="request-actions">
+            <button class="btn-decline" :disabled="actionLoading === req.id" @click="cancel(req)">Cancel</button>
+          </div>
+          <div v-if="actionError === req.id" class="action-error">Failed. Try again.</div>
+        </div>
+
+        <!-- Upcoming matches section -->
+        <div class="sched-divider"></div>
+        <div class="sched-section-title">Upcoming Matches</div>
+        <div v-if="loadingSchedule" class="empty-state">Loading…</div>
+        <div v-else-if="schedule.length === 0" class="empty-state">No upcoming matches.</div>
+        <table v-else class="sched-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Opponent</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="game in schedule" :key="game.match_id">
+              <td class="td-date">{{ game.date_of_match ? formatDate(game.date_of_match) : '—' }}</td>
+              <td>
+                <router-link :to="'/player/' + (game.home_player_id === player.id ? game.away_player_id : game.home_player_id) + '/profile'" class="req-player-link">
+                  {{ game.home_player_id === player.id ? game.away_player_name : game.home_player_name }}
+                </router-link>
+              </td>
+              <td class="td-action">
+                <template v-if="gameRequest(game)">
+                  <span :class="'req-status-label req-status-' + gameRequest(game).status">
+                    {{ { pending: 'Requested', accepted: 'Settled', declined: 'Declined', countered: 'Requested', revoked: 'Revoked' }[gameRequest(game).status] || gameRequest(game).status }}
                   </span>
-                </div>
-                <div class="stat-hero-label">Current ELO</div>
-              </div>
-            </div>
-            <div v-if="peakElo !== null" class="stat-hero-divider"></div>
-            <div v-if="peakElo !== null" class="stat-hero-item stat-hero-item-pair">
-              <div class="stat-hero-pair-row">
-                <div class="stat-hero-sub-value elo-positive">{{ peakElo }}</div>
-                <div class="stat-hero-sub-label">Peak ELO</div>
-              </div>
-              <div class="stat-hero-pair-row">
-                <div class="stat-hero-sub-value elo-negative">{{ bottomElo }}</div>
-                <div class="stat-hero-sub-label">Bottom ELO</div>
-              </div>
-            </div>
-            <div class="stat-hero-divider"></div>
-            <div class="stat-hero-item">
-              <div class="stat-hero-value">{{ player.games_played }}</div>
-              <div class="stat-hero-label">Games Played</div>
-            </div>
-            <div class="stat-hero-divider"></div>
-            <div class="stat-hero-item">
-              <div class="stat-hero-value">{{ player.pps.toFixed(1) }}</div>
-              <div class="stat-hero-label">Points Per Set</div>
-            </div>
-          </div>
-
-          <div class="wdl-bar-section">
-            <div class="wdl-bar">
-              <div class="wdl-segment wdl-wins" :style="{ width: player.win_percentage + '%' }"></div>
-              <div class="wdl-segment wdl-draws" :style="{ width: player.draw_percentage + '%' }"></div>
-              <div class="wdl-segment wdl-losses" :style="{ width: player.loss_percentage + '%' }"></div>
-            </div>
-            <div class="wdl-labels">
-              <div class="wdl-label">
-                <span class="wdl-dot wdl-dot-wins"></span>
-                <span class="wdl-count">{{ player.wins }}</span>
-                <span class="wdl-name">Wins</span>
-                <span class="wdl-pct">{{ player.win_percentage.toFixed(1) }}%</span>
-              </div>
-              <div class="wdl-label">
-                <span class="wdl-dot wdl-dot-draws"></span>
-                <span class="wdl-count">{{ player.draws }}</span>
-                <span class="wdl-name">Draws</span>
-                <span class="wdl-pct">{{ player.draw_percentage.toFixed(1) }}%</span>
-              </div>
-              <div class="wdl-label">
-                <span class="wdl-dot wdl-dot-losses"></span>
-                <span class="wdl-count">{{ player.losses }}</span>
-                <span class="wdl-name">Losses</span>
-                <span class="wdl-pct">{{ player.loss_percentage.toFixed(1) }}%</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="stats-insights">
-            <div v-if="nemesis" class="stats-insight-item">
-              <router-link :to="'/player/' + nemesis.opponent_id + '/profile'" class="insight-value elo-negative insight-link">{{ nemesis.opponent_name }}</router-link>
-              <div class="insight-label">Nemesis <span class="insight-sub">({{ nemesis.losses }} losses)</span></div>
-            </div>
-            <div v-if="favouriteVictim" class="stats-insight-item">
-              <router-link :to="'/player/' + favouriteVictim.opponent_id + '/profile'" class="insight-value elo-positive insight-link">{{ favouriteVictim.opponent_name }}</router-link>
-              <div class="insight-label">Favourite Victim <span class="insight-sub">({{ favouriteVictim.wins }} wins)</span></div>
-            </div>
-            <div v-if="mostPlayedOpponent" class="stats-insight-item">
-              <router-link :to="'/player/' + mostPlayedOpponent.opponent_id + '/profile'" class="insight-value insight-link">{{ mostPlayedOpponent.opponent_name }}</router-link>
-              <div class="insight-label">Most Played <span class="insight-sub">({{ mostPlayedOpponent.games }} games)</span></div>
-            </div>
-          </div>
-
-          <div v-if="lineChartData" class="elo-chart-section">
-            <div class="elo-chart-header">
-              <div class="elo-chart-title">ELO Progression</div>
-              <div v-if="lastResults.length" class="last-results">
-                <template v-for="(winnerId, i) in [...lastResults].reverse()" :key="i">
-                  <PlayerFormLabel :player-id="player.id" :winner-id="winnerId" />
                 </template>
-                <i class="fas fa-long-arrow-alt-right form-arrow"></i>
-              </div>
-            </div>
-            <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" />
-          </div>
-        </template>
+                <button v-else-if="canReschedule(game)" class="btn-reschedule-small" @click="rescheduleGame = { ...game, id: game.match_id }">Reschedule</button>
+                <span v-else class="past-label">Past</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <RescheduleModal
+      v-if="rescheduleGame"
+      :game="rescheduleGame"
+      @close="rescheduleGame = null"
+      @submitted="onRescheduleSubmitted"
+    />
+
+    <RescheduleModal
+      v-if="counterTarget"
+      :game="counterGame"
+      :counter-request-id="counterTarget.id"
+      @close="counterTarget = null; counterGame = null"
+      @submitted="onCounterSubmitted"
+    />
+
   </div>
 
   <div v-else class="loader">
@@ -200,11 +251,10 @@
 <script>
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { GChart } from "vue-google-charts";
-import PlayerFormLabel from "@/components/game/PlayerFormLabel.vue";
+import RescheduleModal from "@/components/game/RescheduleModal.vue";
 
 export default {
-  components: { GChart, PlayerFormLabel },
+  components: { RescheduleModal },
   setup() {
     const router = useRouter();
     return { router };
@@ -212,7 +262,7 @@ export default {
   data() {
     return {
       player: null,
-      activeTab: "statistics",
+      activeTab: "settings",
       imageLoadError: false,
       form: {
         nickname: "",
@@ -223,39 +273,38 @@ export default {
       success: "",
       loading: false,
       mustChangePassword: false,
-      lastResults: [],
-      longestWinStreak: 0,
-      nemesis: null,
-      favouriteVictim: null,
-      mostPlayedOpponent: null,
-      peakElo: null,
-      bottomElo: null,
-      lineChartData: null,
-      lineChartOptions: {
-        vAxis: {
-          baselineColor: "#333",
-          textStyle: { color: "#555", fontSize: 11 },
-          gridlines: { count: 3, color: "#2a2a2a" },
-          minorGridlines: { count: 0 },
-        },
-        hAxis: {
-          baselineColor: "#333",
-          textStyle: { color: "#555", fontSize: 11 },
-          gridlines: { count: 0 },
-          minorGridlines: { count: 0 },
-        },
-        height: 220,
-        lineWidth: 2,
-        pointSize: 6,
-        pointsVisible: true,
-        legend: { position: "none" },
-        fontName: "Quicksand",
-        backgroundColor: "#1e1e26",
-        chartArea: { backgroundColor: "#1e1e26", left: 50, right: 20, top: 10, bottom: 30 },
-        colors: ["#93c47d"],
-        areaOpacity: 0.15,
-      },
+      rescheduleRequests: [],
+      confirmedDates: {},
+      loadingRequests: false,
+      loadingSchedule: false,
+      schedule: [],
+      rescheduleGame: null,
+      actionLoading: null,
+      actionError: null,
+      counterTarget: null,
+      counterGame: null,
     };
+  },
+  computed: {
+    settledRequests() {
+      const settled = this.rescheduleRequests.filter(r => ['accepted','declined','revoked','countered'].includes(r.status));
+      // Keep only the latest request per game (highest id)
+      const latest = new Map();
+      for (const r of settled) {
+        if (!latest.has(r.game_id) || r.id > latest.get(r.game_id).id) {
+          latest.set(r.game_id, r);
+        }
+      }
+      return [...latest.values()];
+    },
+    incomingRequests() {
+      const myId = Number(localStorage.getItem("playerId"));
+      return this.rescheduleRequests.filter(r => r.status === 'pending' && r.requester_id !== myId);
+    },
+    outgoingRequests() {
+      const myId = Number(localStorage.getItem("playerId"));
+      return this.rescheduleRequests.filter(r => r.status === 'pending' && r.requester_id === myId);
+    },
   },
   methods: {
     async loadProfile() {
@@ -272,36 +321,6 @@ export default {
 
         this.player = response.data;
         this.form.nickname = this.player.nickname || "";
-        this.lineChartData = [["Game", "ELO"], ...this.player.elo_history];
-        if (this.player.elo_history.length) {
-          const eloValues = this.player.elo_history.map(h => h[1]);
-          this.peakElo = Math.max(...eloValues);
-          this.bottomElo = Math.min(...eloValues);
-        }
-
-        const results = await axios.get(`/api/players/${this.player.id}/results`);
-        if (results.data && results.data.length > 0) {
-          const last = results.data[0];
-          this.player.elo_change = last.home_player_id === this.player.id
-            ? last.home_elo_diff
-            : last.away_elo_diff;
-          this.lastResults = results.data.slice(0, 7).map(r => r.winner_id);
-
-          let longest = 0, current = 0;
-          for (const r of [...results.data].reverse()) {
-            if (Number(r.winner_id) === Number(this.player.id)) { current++; longest = Math.max(longest, current); }
-            else { current = 0; }
-          }
-          this.longestWinStreak = longest;
-        }
-
-        const opponents = await axios.get(`/api/players/${this.player.id}/opponents`);
-        if (opponents.data && opponents.data.length > 0) {
-          const opp = opponents.data;
-          this.nemesis = opp.reduce((m, o) => o.losses > (m?.losses ?? -1) ? o : m, null);
-          this.favouriteVictim = opp.reduce((m, o) => o.wins > (m?.wins ?? -1) ? o : m, null);
-          this.mostPlayedOpponent = opp.reduce((m, o) => o.games > (m?.games ?? -1) ? o : m, null);
-        }
       } catch (error) {
         console.error("Failed to load profile", error);
         this.router.push("/login");
@@ -366,6 +385,98 @@ export default {
       }
     },
 
+    authHeaders() {
+      return { Authorization: `Bearer ${localStorage.getItem("authToken")}` };
+    },
+    formatDate(d) {
+      if (!d) return "—";
+      const dt = new Date(d);
+      return isNaN(dt) ? d : dt.toLocaleDateString(undefined, { dateStyle: "medium" });
+    },
+    async loadRescheduleRequests() {
+      if (!this.player) return;
+      this.loadingRequests = true;
+      try {
+        const res = await axios.get(`/api/players/${this.player.id}/reschedule`, { headers: this.authHeaders() });
+        this.rescheduleRequests = res.data || [];
+        window.dispatchEvent(new Event('rescheduleUpdated'));
+      } finally {
+        this.loadingRequests = false;
+      }
+    },
+    async loadSchedule() {
+      if (!this.player) return;
+      this.loadingSchedule = true;
+      try {
+        const res = await axios.get(`/api/players/${this.player.id}/schedule`);
+        this.schedule = res.data || [];
+      } finally {
+        this.loadingSchedule = false;
+      }
+    },
+    loadRescheduleTab() {
+      this.loadRescheduleRequests();
+      this.loadSchedule();
+    },
+    canReschedule(game) {
+      if (!game.date_of_match) return true;
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (new Date(game.date_of_match) < today) return false;
+      const req = this.gameRequest(game);
+      return !req || req.status !== 'pending';
+    },
+    gameRequest(game) {
+      const id = game.match_id || game.id;
+      return this.rescheduleRequests.find(r => r.game_id === id) || null;
+    },
+    onRescheduleSubmitted() {
+      this.rescheduleGame = null;
+      this.loadRescheduleRequests();
+    },
+    isRange(req) {
+      return req.proposed_date_to && req.proposed_date_to !== req.proposed_date_from;
+    },
+    async accept(req) {
+      this.actionLoading = req.id; this.actionError = null;
+      try {
+        const body = this.isRange(req) ? { confirmed_date: this.confirmedDates[req.id] } : {};
+        await axios.post(`/api/reschedule/${req.id}/accept`, body, { headers: this.authHeaders() });
+        await Promise.all([this.loadRescheduleRequests(), this.loadSchedule()]);
+      } catch (_) { this.actionError = req.id; } finally { this.actionLoading = null; }
+    },
+    async decline(req) {
+      this.actionLoading = req.id; this.actionError = null;
+      try {
+        await axios.post(`/api/reschedule/${req.id}/decline`, {}, { headers: this.authHeaders() });
+        await this.loadRescheduleRequests();
+      } catch (_) { this.actionError = req.id; } finally { this.actionLoading = null; }
+    },
+    async cancel(req) {
+      this.actionLoading = req.id; this.actionError = null;
+      try {
+        await axios.post(`/api/reschedule/${req.id}/decline`, {}, { headers: this.authHeaders() });
+        await this.loadRescheduleRequests();
+      } catch (_) { this.actionError = req.id; } finally { this.actionLoading = null; }
+    },
+    openReopenModal(req) {
+      this.rescheduleGame = {
+        id: req.game_id,
+        home_player_id: req.home_player_id,
+        away_player_id: req.away_player_id,
+        home_player_name: req.home_player_name,
+        away_player_name: req.away_player_name,
+        date_of_match: req.current_date_of_match,
+      };
+    },
+    openCounter(req) {
+      this.counterTarget = req;
+      this.counterGame = { id: req.game_id, home_player_id: req.home_player_id, away_player_id: req.away_player_id, home_player_name: req.home_player_name, away_player_name: req.away_player_name, date_of_match: req.current_date_of_match };
+    },
+    async onCounterSubmitted() {
+      this.counterTarget = null; this.counterGame = null;
+      await this.loadRescheduleRequests();
+    },
+
     handleLogout() {
       localStorage.removeItem("authToken");
       localStorage.removeItem("playerId");
@@ -374,7 +485,6 @@ export default {
     },
   },
   mounted() {
-    this.activeTab = this.$route.path.includes("settings") ? "settings" : "statistics";
     this.loadProfile();
     
     // Check if password change was required
@@ -977,4 +1087,191 @@ td {
 .wdl-pct {
   color: #666;
 }
+
+.nav-badge {
+  background: #4a7c59;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  padding: 1px 6px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.empty-state { color: #555; font-size: 14px; padding: 10px 0; }
+
+.request-card {
+  background: #0f1017;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.request-card-settled {
+  opacity: 0.65;
+}
+.request-card-settled:hover {
+  opacity: 1;
+}
+
+.request-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.req-vs { color: #555; font-size: 11px; }
+
+.req-player-link { color: #c8d8c0; text-decoration: none; }
+.req-player-link:hover { text-decoration: underline; }
+
+.request-from { font-size: 12px; color: #666; }
+
+.request-dates {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.date-label { color: #555; }
+.date-value { color: #ccc; font-weight: 500; }
+.date-value.muted { color: #666; }
+
+.request-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+
+.btn-accept {
+  background: #4a7c59; color: #fff; border: none;
+  border-radius: 6px; padding: 3px 11px; font-size: 12px;
+  cursor: pointer; font-family: inherit;
+}
+.btn-accept:hover:not(:disabled) { background: #5a9469; }
+
+.btn-counter {
+  background: #2a3a4a; color: #7bb8e0; border: none;
+  border-radius: 6px; padding: 3px 11px; font-size: 12px;
+  cursor: pointer; font-family: inherit;
+}
+.btn-counter:hover:not(:disabled) { background: #354a5e; }
+
+.btn-decline {
+  background: #2a2a35; color: #888; border: none;
+  border-radius: 6px; padding: 3px 11px; font-size: 12px;
+  cursor: pointer; font-family: inherit;
+}
+.btn-decline:hover:not(:disabled) { background: #3a2a2a; color: #e06c6c; }
+
+.btn-accept:disabled, .btn-counter:disabled, .btn-decline:disabled { opacity: 0.5; cursor: default; }
+
+.action-error { font-size: 11px; color: #e06c6c; }
+
+.range-accept-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.confirm-date-input {
+  background: #1e1e26;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: #e0e0e0;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  color-scheme: dark;
+  min-width: 150px;
+}
+.confirm-date-input:focus { border-color: #555; }
+
+.pending-badge {
+  margin-left: 8px;
+  font-size: 11px;
+  color: #7bb8e0;
+  background: rgba(123,184,224,0.1);
+  border-radius: 8px;
+  padding: 1px 7px;
+}
+
+.status-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  padding: 1px 7px;
+}
+.status-pending   { color: #7bb8e0; background: rgba(123,184,224,0.1); }
+.status-accepted  { color: #6dd98c; background: rgba(109,217,140,0.1); }
+.status-declined  { color: #e06c6c; background: rgba(224,108,108,0.1); }
+.status-countered { color: #e0b96c; background: rgba(224,185,108,0.1); }
+.status-revoked   { color: #888;    background: rgba(136,136,136,0.1); }
+
+.sched-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.sched-divider {
+  height: 1px;
+  background: rgba(84, 84, 84, 0.3);
+  margin: 16px 0 14px;
+}
+
+.sched-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sched-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+  padding: 0 12px 6px 0;
+  text-align: left;
+  font-weight: 600;
+}
+.sched-table td {
+  padding: 6px 12px 6px 0;
+  border-top: 1px solid #1a1a24;
+  font-size: 13px;
+  color: #ccc;
+  vertical-align: middle;
+}
+.td-date { color: #888; font-size: 12px; white-space: nowrap; }
+.td-action { text-align: right; }
+
+.btn-reschedule-small {
+  background: #2a3a4a;
+  color: #7bb8e0;
+  border: none;
+  border-radius: 7px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-reschedule-small:hover { background: #354a5e; }
+.past-label { color: #444; font-size: 12px; }
+.settled-label { color: #6dd98c; font-size: 12px; }
+.req-status-label { font-size: 12px; }
+.req-status-pending   { color: #7bb8e0; }
+.req-status-accepted  { color: #6dd98c; }
+.req-status-declined  { color: #e06c6c; }
+.req-status-countered { color: #7bb8e0; }
+.req-status-revoked   { color: #555; }
 </style>

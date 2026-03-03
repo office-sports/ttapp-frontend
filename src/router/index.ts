@@ -21,6 +21,8 @@ import PlayerBadges from "@/views/player/PlayerBadges.vue";
 import PlayerAvailability from "@/views/player/PlayerAvailability.vue";
 import LoginPage from "@/views/auth/LoginPage.vue";
 import ProfileSettings from "@/views/auth/ProfileSettings.vue";
+import AdminPanel from "@/views/auth/AdminPanel.vue";
+import MyGames from "@/views/auth/MyGames.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,21 +33,19 @@ const router = createRouter({
       component: LoginPage,
     },
     {
+      path: "/my-games",
+      name: "MyGames",
+      component: MyGames,
+    },
+    {
       path: "/profile",
       name: "ProfileSettings",
       component: ProfileSettings,
-      children: [
-        {
-          path: "statistics",
-          name: "ProfileStatistics",
-          component: ProfileSettings,
-        },
-        {
-          path: "settings",
-          name: "ProfileSettingsTab",
-          component: ProfileSettings,
-        },
-      ],
+    },
+    {
+      path: "/admin",
+      name: "AdminPanel",
+      component: AdminPanel,
     },
     {
       path: "/",

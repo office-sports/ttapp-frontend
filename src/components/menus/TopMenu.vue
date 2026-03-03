@@ -10,11 +10,8 @@
         <RouterLink to="/tournaments">tournaments</RouterLink>
         <RouterLink to="/players">players</RouterLink>
         <RouterLink to="/leaders">leaders</RouterLink>
-        <RouterLink to="/availability" class="text-yellow-300"
-          >availability
-        </RouterLink>
         <!-- Login link when not logged in -->
-        <RouterLink v-if="!isLoggedIn" to="/login" class="nav-link">login</RouterLink>
+        <RouterLink v-if="!isLoggedIn" to="/login" class="nav-link" style="color:#fcd34d">login</RouterLink>
       </nav>
 
       <div class="office-selector-top">
@@ -41,10 +38,22 @@
         <span class="logged-user">{{ userName }}</span>
       </div>
       <div class="user-info-right">
-        <RouterLink to="/profile" class="nav-link">settings</RouterLink>
-        <span class="text-gray-500">|</span>
-        <a href="#" class="nav-link" @click.prevent="logout">logout</a>
-      </div>
+          <div v-if="pendingCount > 0 || settledCount > 0" class="reschedule-info">
+            <span class="reschedule-info-label">reschedules</span>
+            <RouterLink to="/profile" class="reschedule-count-link">
+              <span v-if="pendingCount > 0" class="notif-badge notif-pending">{{ pendingCount }} pending</span>
+              <span v-if="settledCount > 0" class="notif-badge notif-settled">{{ settledCount }} settled</span>
+            </RouterLink>
+          </div>
+          <span v-if="pendingCount > 0 || settledCount > 0" class="text-gray-500">|</span>
+          <RouterLink to="/profile" class="nav-link">settings</RouterLink>
+          <template v-if="isAdmin">
+            <span class="text-gray-500">|</span>
+            <RouterLink to="/admin" class="nav-link nav-admin">admin</RouterLink>
+          </template>
+          <span class="text-gray-500">|</span>
+          <a href="#" class="nav-link" @click.prevent="logout">logout</a>
+        </div>
     </div>
   </div>
 </template>
@@ -59,6 +68,9 @@ export default {
       officeId: 0,
       isLoggedIn: false,
       userName: "",
+      isAdmin: false,
+      pendingCount: 0,
+      settledCount: 0,
     };
   },
   methods: {
@@ -70,6 +82,7 @@ export default {
       localStorage.removeItem("authToken");
       localStorage.removeItem("playerId");
       localStorage.removeItem("playerName");
+      localStorage.removeItem("isAdmin");
       this.isLoggedIn = false;
       this.userName = "";
       this.$router.push("/login");
@@ -77,7 +90,24 @@ export default {
     checkAuthStatus() {
       this.isLoggedIn = !!localStorage.getItem("authToken");
       this.userName = localStorage.getItem("playerName") || "";
-    }
+      this.isAdmin = localStorage.getItem("isAdmin") === "1";
+      if (this.isLoggedIn) this.fetchPendingCount();
+      else { this.pendingCount = 0; this.settledCount = 0; }
+    },
+    async fetchPendingCount() {
+      const playerId = localStorage.getItem("playerId");
+      const token = localStorage.getItem("authToken");
+      if (!playerId || !token) return;
+      try {
+        const res = await axios.get(`/api/players/${playerId}/reschedule`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const myId = Number(playerId);
+        const requests = res.data || [];
+        this.pendingCount = requests.filter(r => r.status === 'pending').length;
+        this.settledCount = requests.filter(r => ['accepted','declined','revoked'].includes(r.status)).length;
+      } catch (_) { this.pendingCount = 0; }
+    },
   },
   watch: {
     $route() {
@@ -91,6 +121,9 @@ export default {
     // Listen for auth status changes
     window.addEventListener('authStatusChanged', () => {
       this.checkAuthStatus();
+    });
+    window.addEventListener('rescheduleUpdated', () => {
+      if (this.isLoggedIn) this.fetchPendingCount();
     });
 
     // Listen for storage changes (auth token updates)
@@ -136,13 +169,50 @@ export default {
 .nav-link {
   color: white;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 14px;
+}
+
+.notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  height: 16px;
+  border-radius: 8px;
+  padding: 0 6px;
+  line-height: 1;
+  color: #fff;
+}
+.notif-pending { background: #2a6496; }
+.notif-settled { background: #4a7c59; }
+
+.reschedule-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.reschedule-info-label {
+  font-size: 11px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.reschedule-count-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
 }
 
 .nav-link:hover {
   color: #808082;
 }
+.nav-admin { color: #e0b96c; }
+.nav-admin:hover { color: #c9963a; }
 
 .sep {
   margin: 0 8px;

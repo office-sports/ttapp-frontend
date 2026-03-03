@@ -74,6 +74,7 @@ export default {
           localStorage.setItem("authToken", response.data.token);
           localStorage.setItem("playerId", response.data.player_id);
           localStorage.setItem("playerName", response.data.name);
+          localStorage.setItem("isAdmin", response.data.is_admin ? "1" : "0");
           
           // Dispatch custom event to notify TopMenu
           window.dispatchEvent(new Event('authStatusChanged'));

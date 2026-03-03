@@ -244,10 +244,11 @@
                       <td>opponent</td>
                       <td class="text-center">opponent's ELO rating</td>
                       <td class="text-center">ELO diff</td>
+                      <td></td>
                     </tr>
                     <tr
                       v-for="event in schedule"
-                      v-bind:key="event.id"
+                      v-bind:key="event.match_id"
                       class="row-data"
                     >
                       <td>
@@ -286,6 +287,13 @@
                         <span v-else>
                           {{ event.home_elo - player.elo }}
                         </span>
+                      </td>
+                      <td class="text-center">
+                        <button
+                          v-if="isMyGame(event) && canReschedule(event)"
+                          class="btn-reschedule-small"
+                          @click="rescheduleGame = { ...event, id: event.match_id }"
+                        >Reschedule</button>
                       </td>
                     </tr>
                   </tbody>
@@ -368,6 +376,13 @@
               </div>
     </div>
   </div>
+
+  <RescheduleModal
+    v-if="rescheduleGame"
+    :game="rescheduleGame"
+    @close="rescheduleGame = null"
+    @submitted="rescheduleGame = null"
+  />
 </template>
 
 <script>
@@ -375,6 +390,7 @@ import _, { forEach } from "underscore";
 import axios from "axios";
 import { GChart } from "vue-google-charts";
 import PlayerFormLabel from "@/components/game/PlayerFormLabel.vue";
+import RescheduleModal from "@/components/game/RescheduleModal.vue";
 
 export default {
   name: "PlayerProfile",
@@ -382,8 +398,18 @@ export default {
     setActiveTab(data) {
       this.activeTab = data;
     },
+    canReschedule(game) {
+      if (!game.date_of_match) return true;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return new Date(game.date_of_match) >= today;
+    },
+    isMyGame(game) {
+      const myId = Number(localStorage.getItem("playerId"));
+      return myId && (game.home_player_id === myId || game.away_player_id === myId);
+    },
   },
-  components: { GChart, PlayerFormLabel },
+  components: { GChart, PlayerFormLabel, RescheduleModal },
   data() {
     return {
       tournaments: [],
@@ -401,6 +427,7 @@ export default {
       resultsByGroup: [],
       results: [],
       schedule: [],
+      rescheduleGame: null,
       eloChange: 0,
       lastResults: [],
       longestWinStreak: 0,
@@ -703,4 +730,17 @@ export default {
   font-size: 60px;
   color: rgba(200, 200, 200, 0.7);
 }
+
+.btn-reschedule-small {
+  background: #2a3a4a;
+  color: #7bb8e0;
+  border: none;
+  border-radius: 7px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-reschedule-small:hover { background: #354a5e; }
 </style>
