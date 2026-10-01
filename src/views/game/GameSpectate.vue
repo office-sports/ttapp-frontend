@@ -330,6 +330,7 @@ export default {
   align-items: stretch;
   margin-top: 14px;
   background: #11121a;
+  border: 1px solid #262833;
   border-radius: 14px;
   overflow: hidden;
 }
@@ -340,20 +341,17 @@ export default {
   display: flex;
   align-items: center;
   gap: 22px;
-  border: 1px solid transparent;
+  position: relative;
 }
 
 .spectate-player-home {
-  border-left: 3px solid transparent;
 }
 
 .spectate-player-away {
   justify-content: flex-end;
-  border-right: 3px solid transparent;
 }
 
 .spectate-player.is-serving {
-  border-color: rgba(38, 154, 71, 0.65);
   background: linear-gradient(
     90deg,
     rgba(38, 154, 71, 0.08),
@@ -367,6 +365,24 @@ export default {
     rgba(38, 154, 71, 0.08),
     rgba(38, 154, 71, 0)
   );
+}
+
+.spectate-player.is-serving::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 3px;
+  background: #269a47;
+}
+
+.spectate-player-home.is-serving::before {
+  left: 0;
+}
+
+.spectate-player-away.is-serving::before {
+  right: 0;
 }
 
 .player-avatar {
@@ -425,8 +441,8 @@ export default {
 .spectate-current {
   min-height: 168px;
   padding: 18px 24px 20px;
-  border-left: 1px solid #262833;
-  border-right: 1px solid #262833;
+  border-left: 1px solid #20222b;
+  border-right: 1px solid #20222b;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -558,7 +574,7 @@ export default {
 }
 
 .set-card.current {
-  border-color: #5a6070;
+  border-color: #444955;
   background: #20222b;
 }
 
@@ -586,9 +602,11 @@ export default {
 }
 
 .spectate-table-stage {
-  margin: 28px auto 0;
+  margin: 24px auto 0;
   max-width: 1120px;
-  overflow: hidden;
+  overflow: visible;
+  background: transparent;
+  line-height: 0;
 }
 
 .spectate-table-image {
@@ -600,7 +618,7 @@ export default {
 .spectator-panel {
   width: fit-content;
   min-width: 180px;
-  margin: 10px auto 0;
+  margin: -18px auto 0;
   padding: 9px 16px;
   display: flex;
   align-items: center;
