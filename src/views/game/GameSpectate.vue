@@ -1,151 +1,121 @@
 <template>
-  <template v-if="this.game && this.gameDetails">
-    <div class="round-container">
-      <div class="round-container-dark-small flex txt-col-darker">
-        <span class="text-white">Game detailed summary</span>
-        <span class="padl10">{{
-          this.gameDetails.summary.tournamentName
-        }}</span>
-        <span class="padl10">{{ this.gameDetails.summary.groupName }}</span>
+  <template v-if="game && gameDetails">
+    <div class="round-container spectate-shell">
+      <div class="round-container-dark-small spectate-header">
+        <div class="spectate-header-copy">
+          <span class="text-white">Game detailed summary</span>
+          <span>{{ gameDetails.summary.tournamentName }}</span>
+          <span>{{ gameDetails.summary.groupName }}</span>
+        </div>
       </div>
-      <div class="pad10">
-        <table class="tbl-fixed">
-          <tbody>
-            <tr>
-              <td class="w200"></td>
-              <td class="text-center txt-col-darker">SCORE</td>
-              <template
-                v-for="(set, index) in this.game.scores"
-                v-bind:key="index"
-              >
-                <td
-                  v-if="index + 1 < this.setNumber"
-                  class="text-center txt-col-darker"
-                >
-                  SET {{ index + 1 }}
-                </td>
-              </template>
-            </tr>
-            <tr>
-              <td>
-                {{ game.homePlayerName }}
-              </td>
-              <td class="text-center">
-                {{ this.homeScoreTotal }}
-              </td>
-              <template
-                v-for="(set, index) in this.game.scores"
-                v-bind:key="index"
-              >
-                <td
-                  v-if="index + 1 < this.setNumber"
-                  :class="
-                    parseInt(set.home) > parseInt(set.away)
-                      ? 'text-center txt-col-green'
-                      : 'text-center'
-                  "
-                >
-                  {{ set.home }}
-                </td>
-              </template>
-            </tr>
-            <tr>
-              <td>
-                {{ game.awayPlayerName }}
-              </td>
-              <td class="text-center">
-                {{ this.awayScoreTotal }}
-              </td>
-              <template
-                v-for="(set, index) in this.game.scores"
-                v-bind:key="index"
-              >
-                <td
-                  v-if="index + 1 < this.setNumber"
-                  :class="
-                    parseInt(set.home) < parseInt(set.away)
-                      ? 'text-center txt-col-green'
-                      : 'text-center'
-                  "
-                >
-                  {{ set.away }}
-                </td>
-              </template>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="round-container mt-2.5">
-      <div class="round-container-dark-small flex txt-col-darker">
-        {{ this.spectators }} SPECTATORS &nbsp;
-        <span
-          v-for="i in range(1, this.spectators)"
-          v-bind:key="i"
-          class="text-white"
+
+      <div class="spectate-score-panel">
+        <div
+          class="spectate-player spectate-player-home"
+          :class="{ 'is-serving': currentServerId === game.homePlayerId }"
         >
-          <i class="fas fa-child"></i>&nbsp;
-        </span>
+          <div class="player-avatar">{{ initials(game.homePlayerName) }}</div>
+          <div class="player-copy">
+            <div class="player-name">{{ game.homePlayerName }}</div>
+            <div class="player-meta">
+              <span>Sets</span>
+              <strong>{{ homeScoreTotal }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="spectate-current">
+          <div class="current-set-label">SET {{ setNumber }}</div>
+
+          <div class="current-score">
+            <div
+              class="current-score-number"
+              :class="{ 'is-serving-score': currentServerId === game.homePlayerId }"
+            >
+              {{ homeScore }}
+            </div>
+            <div class="current-score-separator">–</div>
+            <div
+              class="current-score-number"
+              :class="{ 'is-serving-score': currentServerId === game.awayPlayerId }"
+            >
+              {{ awayScore }}
+            </div>
+          </div>
+
+          <div class="serve-status" v-if="currentServerName">
+            <i class="fas fa-table-tennis"></i>
+            <span>{{ currentServerName }} to serve</span>
+            <span class="serve-status-separator">•</span>
+            <span>{{ serveText }}</span>
+          </div>
+        </div>
+
+        <div
+          class="spectate-player spectate-player-away"
+          :class="{ 'is-serving': currentServerId === game.awayPlayerId }"
+        >
+          <div class="player-copy player-copy-away">
+            <div class="player-name">{{ game.awayPlayerName }}</div>
+            <div class="player-meta player-meta-away">
+              <span>Sets</span>
+              <strong>{{ awayScoreTotal }}</strong>
+            </div>
+          </div>
+          <div class="player-avatar">{{ initials(game.awayPlayerName) }}</div>
+        </div>
+      </div>
+
+      <div class="recent-points-panel">
+        <div class="recent-points-label">Recent points</div>
+        <div class="recent-points-list">
+          <span
+            v-for="(point, index) in recentPoints"
+            :key="index"
+            class="recent-point"
+            :class="point"
+            :title="point === 'home' ? game.homePlayerName : game.awayPlayerName"
+          ></span>
+          <span v-if="recentPoints.length === 0" class="recent-points-empty">
+            No points yet
+          </span>
+        </div>
+      </div>
+
+      <div class="set-strip">
+        <div
+          v-for="setIndex in game.maxSets"
+          :key="setIndex"
+          class="set-card"
+          :class="{ current: setIndex === setNumber }"
+        >
+          <div class="set-card-label">Set {{ setIndex }}</div>
+          <div v-if="setIndex <= setNumber" class="set-card-score">
+            <span :class="{ won: isSetWinner(setIndex, 'home') }">
+              {{ setHome(setIndex) }}
+            </span>
+            <span>–</span>
+            <span :class="{ won: isSetWinner(setIndex, 'away') }">
+              {{ setAway(setIndex) }}
+            </span>
+          </div>
+          <div v-else class="set-card-score set-card-empty">–</div>
+        </div>
       </div>
     </div>
-    <div
-      class="mid-current-score flex-center"
-      style="margin-top: 50px; overflow: hidden"
-    >
-      <div class="score-card">
-        {{ homeScore }}
-        <div class="score-card-cover"></div>
-      </div>
-      &nbsp;
-      <div class="score-card">
-        {{ awayScore }}
-        <div class="score-card-cover"></div>
-      </div>
+
+    <div class="spectate-table-stage">
+      <img
+        src="@/assets/images/ttapp-spectate-table.webp"
+        alt="Table tennis table"
+        class="spectate-table-image"
+      />
     </div>
-    <div class="padt20 mart20">
-      <div class="table-wrapper">
-        <div class="ball"></div>
-        <div class="ball-shadow"></div>
-        <div id="midtablenet">&nbsp;</div>
-        <div id="midtable" class="grd">&nbsp;</div>
-        <div id="ltable">&nbsp;</div>
-        <div id="rtable">&nbsp;</div>
-        <div id="sidetable">&nbsp;</div>
-        <table class="table-users">
-          <tbody>
-            <tr>
-              <td>
-                {{ this.game.homePlayerName }}
-              </td>
-              <td class="text-right">
-                {{ this.game.awayPlayerName }}
-              </td>
-            </tr>
-            <tr>
-              <td class="text-left">
-                <div
-                  class="serve-paddles"
-                  v-if="this.currentServerId === this.game.homePlayerId"
-                >
-                  <span v-for="index in this.numServes" :key="index">
-                    <i class="fas fa-table-tennis"></i>
-                  </span>
-                </div>
-              </td>
-              <td class="text-right">
-                <div
-                  class="serve-paddles"
-                  v-if="this.currentServerId === this.game.awayPlayerId"
-                >
-                  <span v-for="index in this.numServes" :key="index">
-                    <i class="fas fa-table-tennis"></i>
-                  </span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+
+    <div class="spectator-panel">
+      <i class="fas fa-users"></i>
+      <strong>{{ spectators }}</strong>
+      <span>{{ spectators === 1 ? "spectator" : "spectators" }}</span>
     </div>
   </template>
 </template>
@@ -169,50 +139,109 @@ export default {
       setNumber: 1,
       game: null,
       gameDetails: null,
-      statusMessage: null,
       spectators: 0,
+      recentPoints: [],
     };
   },
-  methods: {
-    range: function (min, max) {
-      var array = [];
-      var j = 0;
-      for (var i = min; i <= max; i++) {
-        array[j] = i;
-        j++;
+  computed: {
+    currentServerName() {
+      if (!this.game) return "";
+      if (this.currentServerId === this.game.homePlayerId) {
+        return this.game.homePlayerName;
       }
-      return array;
+      if (this.currentServerId === this.game.awayPlayerId) {
+        return this.game.awayPlayerName;
+      }
+      return "";
     },
-    isWinner(playerId) {
-      return playerId === this.game.winnerId;
+    serveText() {
+      if (!this.numServes) return "serve";
+      return `${this.numServes} ${this.numServes === 1 ? "serve" : "serves"} left`;
+    },
+  },
+  methods: {
+    initials(name) {
+      return (name || "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join("");
+    },
+    setScore(setIndex) {
+      if (setIndex === this.setNumber) {
+        return { home: this.homeScore, away: this.awayScore };
+      }
+
+      const set = this.game?.scores?.[setIndex - 1];
+      if (!set || setIndex > this.setNumber) {
+        return { home: "-", away: "-" };
+      }
+
+      return { home: set.home, away: set.away };
+    },
+    setHome(setIndex) {
+      return this.setScore(setIndex).home;
+    },
+    setAway(setIndex) {
+      return this.setScore(setIndex).away;
+    },
+    isSetWinner(setIndex, side) {
+      if (setIndex >= this.setNumber) return false;
+
+      const score = this.setScore(setIndex);
+      const home = parseInt(score.home);
+      const away = parseInt(score.away);
+
+      if (Number.isNaN(home) || Number.isNaN(away)) return false;
+      return side === "home" ? home > away : away > home;
+    },
+    syncRecentPoints(details) {
+      const sets = details?.sets ?? {};
+      const currentSet = sets[this.setNumber] ?? sets[String(this.setNumber)];
+      const events = currentSet?.events ?? [];
+
+      this.recentPoints = events
+        .slice(-10)
+        .map((event) => (event.is_home_point === 1 ? "home" : "away"));
+    },
+    appendRecentPoint(side) {
+      this.recentPoints = [...this.recentPoints, side].slice(-10);
     },
   },
   mounted() {
     this.socketHandler = new SocketHandler();
     this.socketHandler.setAppSocket();
     this.socketHandler.setGameSocket(this.$route.params.id);
+
     axios
       .all([
         axios.get("/api/games/" + this.$route.params.id),
         axios.get("/api/games/" + this.$route.params.id + "/details"),
+        axios.get("/api/games/" + this.$route.params.id + "/serve"),
       ])
       .then(
-        axios.spread((game, gameDetails) => {
+        axios.spread((game, gameDetails, serve) => {
           if (game.data.winner_id !== 0) {
             this.$router.push({
               name: "GameResult",
               params: { id: game.data.match_id },
             });
-          } else {
-            this.game = new Game(game.data);
-            this.gameDetails = new DetailedSummary(gameDetails.data);
-
-            this.homeScore = this.game.currentHomePoints;
-            this.awayScore = this.game.currentAwayPoints;
-
-            this.setNumber =
-              this.game.homeScoreTotal + this.game.awayScoreTotal + 1;
+            return;
           }
+
+          this.game = new Game(game.data);
+          this.gameDetails = new DetailedSummary(gameDetails.data);
+
+          this.homeScore = this.game.currentHomePoints;
+          this.awayScore = this.game.currentAwayPoints;
+          this.homeScoreTotal = this.game.homeScoreTotal;
+          this.awayScoreTotal = this.game.awayScoreTotal;
+          this.setNumber = serve.data.set_number;
+          this.currentServerId = serve.data.current_server_id;
+          this.numServes = serve.data.num_serves;
+
+          this.syncRecentPoints(gameDetails.data);
         })
       )
       .catch((error) => {
@@ -225,320 +254,413 @@ export default {
             params: { id: data.id },
           });
         });
+
         this.socketHandler.gameSocket.on("MESSAGE", (data) => {
+          const previousHome = this.homeScore;
+          const previousAway = this.awayScore;
+          const previousSet = this.setNumber;
+
+          const nextSet =
+            data.currentSet ??
+            data.homeScoreTotal + data.awayScoreTotal + 1;
+
+          if (nextSet !== previousSet) {
+            this.recentPoints = [];
+          } else if (data.score.homeScore > previousHome) {
+            this.appendRecentPoint("home");
+          } else if (data.score.awayScore > previousAway) {
+            this.appendRecentPoint("away");
+          } else if (
+            data.score.homeScore < previousHome ||
+            data.score.awayScore < previousAway
+          ) {
+            axios
+              .get("/api/games/" + this.$route.params.id + "/details")
+              .then((details) => this.syncRecentPoints(details.data))
+              .catch(() => {});
+          }
+
           this.homeScore = data.score.homeScore;
           this.awayScore = data.score.awayScore;
-
           this.homeScoreTotal = data.homeScoreTotal;
           this.awayScoreTotal = data.awayScoreTotal;
-
           this.currentServerId = data.currentServerId;
-
           this.numServes = data.numServes;
-          this.setNumber = this.homeScoreTotal + this.awayScoreTotal + 1;
-
+          this.setNumber = nextSet;
           this.game.scores = data.setScores;
         });
+
         this.socketHandler.gameSocket.on("CONNECTIONS", (data) => {
           this.spectators = data;
         });
       });
   },
+  unmounted() {
+    if (this.socketHandler?.gameSocket) {
+      this.socketHandler.gameSocket.disconnect();
+    }
+    if (this.socketHandler?.appSocket) {
+      this.socketHandler.appSocket.disconnect();
+    }
+  },
 };
 </script>
 
-<style>
-.table-wrapper {
-  height: 300px;
-  width: 600px;
-  margin: 0 auto;
-  border: 0px solid #efefef;
-  position: relative;
+<style scoped>
+.spectate-shell {
+  padding: 20px;
+}
+
+.spectate-header {
   display: flex;
+  align-items: center;
+  min-height: 48px;
 }
 
-.mid-current-score {
-  margin: 0 auto;
-  text-align: center;
-  font-size: 30pt;
+.spectate-header-copy {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #85858c;
 }
 
-.mid-spectators {
-  margin: 0 auto;
-  text-align: center;
-  font-size: 20pt;
-}
-
-@keyframes animLeft {
-  0% {
-    transform: skew(0deg);
-    /* background-color: #2399b5;*/
-  }
-  50% {
-    /* background-color: transparent;*/
-  }
-  100% {
-    height: 50px;
-    transform: skew(-45deg);
-    /*background-color: #2399b5;*/
-  }
-}
-
-@keyframes animMid {
-  0% {
-  }
-  100% {
-    height: 50px;
-  }
-}
-
-@keyframes animRight {
-  0% {
-    transform: skew(0deg);
-    /* background-color: #2399b5;*/
-  }
-  50% {
-    /* background-color: transparent;*/
-  }
-  100% {
-    height: 50px;
-    transform: skew(45deg);
-    /*background-color: #2399b5;*/
-  }
-}
-
-.grd {
-  background: linear-gradient(
-    0deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(116, 136, 186, 1) 0%,
-    rgba(82, 99, 155, 1) 100%
-  );
-}
-
-@keyframes animNet {
-  0% {
-    height: 250px;
-  }
-  100% {
-    height: 70px;
-  }
-}
-
-#midtablenet {
-  animation: animNet 5s forwards;
-  left: 50%;
-  border: 1px solid white;
-  margin: 0 auto;
-  text-align: center;
-  position: relative;
-  height: 70px;
-  top: -20px;
-  z-index: 1;
-  width: 0px;
-}
-
-#midtable {
-  animation: animMid 5s forwards;
-  position: absolute;
-  left: 50%;
-  width: 500px;
-  margin-left: -250px;
-  height: 200px;
-  border-top: 2px solid white;
-  border-bottom: 2px solid white;
-}
-
-#ltable {
-  min-width: 300px;
-  background: linear-gradient(
-    0deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(116, 136, 186, 1) 0%,
-    rgba(82, 99, 155, 1) 100%
-  );
-  transform: skew(10deg);
-  animation: animLeft 5s forwards;
-  width: 280px !important;
-  height: 200px;
-  border-radius: 3px 0 0 3px;
-  border-top: 2px solid white;
-  border-left: 2px solid white;
-  border-bottom: 2px solid white;
-  border-right: none;
-  position: relative;
-}
-
-.score-card {
-  background: rgb(255 255 255);
-  padding: 0 5px;
-  color: black;
-  border-radius: 5px;
-  max-height: 60px;
+.spectate-score-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.9fr) minmax(0, 1fr);
+  align-items: stretch;
+  margin-top: 14px;
+  background: #11121a;
+  border-radius: 14px;
   overflow: hidden;
-  font-weight: 900;
-  max-width: 45px;
 }
 
-.score-card-cover {
-  border-top: 1px solid black;
-  top: -32px;
-  position: relative;
-  width: 55px;
-  left: -5px;
-  height: 28px;
+.spectate-player {
+  min-height: 168px;
+  padding: 30px 34px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  border: 1px solid transparent;
+}
+
+.spectate-player-home {
+  border-left: 3px solid transparent;
+}
+
+.spectate-player-away {
+  justify-content: flex-end;
+  border-right: 3px solid transparent;
+}
+
+.spectate-player.is-serving {
+  border-color: rgba(38, 154, 71, 0.65);
   background: linear-gradient(
-    180deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(166, 166, 166, 1) 100%
+    90deg,
+    rgba(38, 154, 71, 0.08),
+    rgba(38, 154, 71, 0)
   );
-  opacity: 0.4;
 }
 
-#rtable {
-  min-width: 300px;
+.spectate-player-away.is-serving {
   background: linear-gradient(
-    0deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(116, 136, 186, 1) 0%,
-    rgba(82, 99, 155, 1) 100%
+    270deg,
+    rgba(38, 154, 71, 0.08),
+    rgba(38, 154, 71, 0)
   );
-  transform: skew(10deg);
-  animation: animRight 5s forwards;
-  width: 280px !important;
-  height: 200px;
-  border-radius: 0 3px 3px 0;
-  border-top: 2px solid white;
-  border-left: none;
-  border-bottom: 2px solid white;
-  border-right: 2px solid white;
-  position: relative;
 }
 
-#sidetable {
-  width: 655px;
-  height: 15px;
-  background: white;
-  top: 53px;
-  position: absolute;
-  animation: animSide 5s forwards;
+.player-avatar {
+  width: 86px;
+  height: 86px;
+  flex: 0 0 86px;
+  border: 1px solid #4e5360;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a7abb7;
+  font-size: 25px;
+  font-weight: 600;
+  background: #1d1f28;
 }
 
-@keyframes animSide {
-  0% {
-    left: 4px;
-    width: 600px;
-    top: 203px;
-    height: 0px;
-  }
-  50% {
-    width: 661px;
-    left: -26px;
-  }
-  100% {
-    left: -24px;
-    width: 655px;
-    top: 53px;
-    height: 15px;
-  }
+.is-serving .player-avatar {
+  border-color: #269a47;
+  color: #c4e9cf;
 }
 
-.serve-paddle {
-  color: #636363;
-  font-size: 14pt;
+.player-copy-away {
+  text-align: right;
+}
+
+.player-name {
+  font-size: 25px;
+  line-height: 1.2;
+  color: #f0f0f2;
+  font-weight: 600;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+  color: #8b8b92;
+}
+
+.player-meta-away {
+  justify-content: flex-end;
+}
+
+.player-meta strong {
+  min-width: 34px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #242630;
+  color: #f5f5f5;
+  text-align: center;
+  font-size: 19px;
+}
+
+.spectate-current {
+  min-height: 168px;
+  padding: 18px 24px 20px;
+  border-left: 1px solid #262833;
+  border-right: 1px solid #262833;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.current-set-label {
+  margin-bottom: 10px;
+  color: #85858c;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.current-score {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.current-score-number {
+  min-width: 84px;
+  padding: 7px 15px;
+  border: 1px solid #454a58;
+  border-radius: 10px;
+  background: #1a1c24;
+  color: #f7f7f7;
+  font-size: 54px;
+  line-height: 1.15;
+  font-weight: 700;
   text-align: center;
 }
 
-.w-pbp {
-  width: 30px;
+.current-score-number.is-serving-score {
+  border-color: #269a47;
+  background: rgba(38, 154, 71, 0.14);
 }
 
-table td {
-  border: 0px solid #000000;
+.current-score-separator {
+  color: #777b87;
+  font-size: 30px;
 }
 
-.ball {
-  opacity: 0;
-  animation: animBall linear 3s infinite;
-  animation-delay: 5s;
-  background-color: #fff;
+.serve-status {
+  margin-top: 13px;
+  min-height: 32px;
+  padding: 6px 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #373a46;
+  border-radius: 17px;
+  background: #191b23;
+  color: #d8d8dc;
+  font-size: 13px;
+}
+
+.serve-status i {
+  color: #f0f0f0;
+}
+
+.serve-status-separator {
+  color: #626672;
+}
+
+.recent-points-panel {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 14px;
+  padding: 11px 18px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  align-items: center;
+  background: #0f1017;
+  border: 1px solid #242630;
+  border-radius: 10px;
+}
+
+.recent-points-label {
+  color: #d6d6d8;
+  font-size: 14px;
+}
+
+.recent-points-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.recent-point {
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  height: 1rem;
-  position: absolute;
-  width: 1rem;
-  z-index: 5;
-  top: -50px;
+  display: inline-block;
 }
 
-.ball-shadow {
-  opacity: 0;
-  animation: animBallShadow linear 3s infinite;
-  animation-delay: 5s;
-  background-color: #000;
-  border-radius: 50%;
-  height: 1rem;
-  position: absolute;
-  width: 1rem;
-  z-index: 3;
-  top: 23px;
-  transform: scale(1.5, 0.4);
+.recent-point.home {
+  background: #4bdd76;
 }
 
-@keyframes animBallShadow {
-  0% {
-    opacity: 0.5;
-    left: 0px;
-  }
-  40% {
-    top: 23px;
-  }
-  50% {
-    left: 600px;
-    opacity: 0.5;
-  }
-  90% {
-    top: 23px;
-  }
-  100% {
-    left: 0px;
-    opacity: 0.5;
-  }
+.recent-point.away {
+  background: #424755;
 }
 
-@keyframes animBall {
-  0% {
-    opacity: 1;
-    left: 0px;
-    top: -50px;
-  }
-  40% {
-    opacity: 1;
-    top: 20px;
-  }
-  50% {
-    opacity: 1;
-    left: 600px;
-    top: -50px;
-  }
-  90% {
-    opacity: 1;
-    top: 20px;
-  }
-  100% {
-    opacity: 1;
-    left: 0px;
-    top: -50px;
-  }
+.recent-points-empty {
+  color: #686a72;
+  font-size: 13px;
 }
 
-.table-users {
-  position: absolute;
-  top: 80px;
-  font-size: 20pt;
+.set-strip {
+  margin: 12px auto 0;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
 }
 
-.table-users td {
-  width: 50%;
+.set-card {
+  width: 86px;
+  min-height: 54px;
+  padding: 7px 8px;
+  box-sizing: border-box;
+  border: 1px solid #373a46;
+  border-radius: 7px;
+  background: #181a22;
+  text-align: center;
+}
+
+.set-card.current {
+  border-color: #5a6070;
+  background: #20222b;
+}
+
+.set-card-label {
+  color: #9b9da5;
+  font-size: 11px;
+}
+
+.set-card-score {
+  margin-top: 2px;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  color: #e4e4e7;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.set-card-score .won {
+  color: #39c45f;
+}
+
+.set-card-empty {
+  color: #6d707a;
+}
+
+.spectate-table-stage {
+  margin: 28px auto 0;
+  max-width: 1120px;
+  overflow: hidden;
+}
+
+.spectate-table-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.spectator-panel {
+  width: fit-content;
+  min-width: 180px;
+  margin: 10px auto 0;
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #2b2d36;
+  border-radius: 10px;
+  background: #0f1017;
+  color: #9b9ca3;
+  font-size: 13px;
+}
+
+.spectator-panel i,
+.spectator-panel strong {
+  color: #f2f2f2;
+}
+
+@media (max-width: 900px) {
+  .spectate-score-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .spectate-current {
+    order: -1;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #262833;
+  }
+
+  .spectate-player {
+    min-height: auto;
+    padding: 20px 24px;
+  }
+
+  .spectate-player-away {
+    justify-content: flex-start;
+  }
+
+  .player-copy-away,
+  .player-meta-away {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .spectate-player-away .player-copy {
+    order: 2;
+  }
+
+  .spectate-player-away .player-avatar {
+    order: 1;
+  }
+
+  .recent-points-panel {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .recent-points-list {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 }
 </style>
